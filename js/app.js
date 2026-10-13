@@ -189,7 +189,7 @@
 
   function pageHome() {
     const r = myResult();
-    const order = ["rascal", "flora", "captain", "lorey", "sol", "ocean", "pixie", "sequoia", "flow", "atlas", "rebel", "ash", "compass"];
+    const order = ["rebel", "flora", "captain", "lorey", "sol", "ocean", "compass", "pixie", "sequoia", "flow", "atlas", "ash", "rascal"];
     const parade = order.map((id, i) => {
       const x = 4 + i * (92 / (order.length - 1));
       const h = [70, 82, 92, 78, 100, 86, 80, 74, 88, 76, 94, 72, 68][i];
@@ -228,7 +228,6 @@
     app.innerHTML = `<section class="quiz">
       <div class="quiz-progress">${C.quiz.map((_, k) => `<span class="${k < i ? "done" : k === i ? "now" : ""}"></span>`).join("")}</div>
       <div class="eyebrow">Question ${i + 1} of ${C.quiz.length}</div>
-      ${q.draft ? `<div class="draft-tag">DRAFT QUESTION</div>` : ""}
       <h2>${esc(q.q)}</h2>
       <div class="answers">${q.answers.map((a, k) => `<button class="answer${quizAnswers[i] === k ? " picked" : ""}" data-k="${k}">${esc(a.text)}</button>`).join("")}</div>
       <div class="quiz-nav">
@@ -824,9 +823,11 @@
       <span class="bar" style="--c:${esc(it.c.colorHex)}"><i style="width:${(it.count / cloudItems[0].count) * 100}%"></i></span>
       <span class="muted">${Math.round(it.pct * 100)}%</span></li>`).join("");
   }
-  function drawCloud() {
+  function drawCloud(redraw) {
     const el = document.getElementById("cloud"); if (!el || !cloudItems) return;
     const W = el.clientWidth || 360, base = Math.min(W, 760);
+    cloudWidth = el.clientWidth;
+    el.classList.toggle("no-anim", !!redraw);
     const maxCount = Math.max(1, cloudItems[0].count);
     const maxH = base * .46, minH = base * .15, LBL = 22, pad = 6;
     const boxes = cloudItems.map(it => {
@@ -856,7 +857,16 @@
         <div class="lbl" style="font-size:${Math.max(11, Math.min(18, 10 + b.ih * sc / 22))}px">${esc(b.it.c.name)} <span>${Math.round(b.it.pct * 100)}%</span></div>
       </a>`).join("");
   }
-  window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(drawCloud, 200); });
+  // Phones fire "resize" while scrolling (the address bar slides in and out), so only
+  // redraw the cloud when the width actually changes, e.g. rotating the phone.
+  let cloudWidth = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const el = document.getElementById("cloud");
+      if (el && el.clientWidth !== cloudWidth) drawCloud(true);
+    }, 200);
+  });
 
   /* ---------------- Secret ---------------- */
   function pageSecret() {
@@ -875,7 +885,7 @@
       <p>A thank-you from ${esc(S.artist)}.</p>
       <div class="video">${v
         ? `<iframe src="${esc(v)}" title="A message from ${esc(S.artist)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
-        : `<div class="ph"><div><h3>demit's video goes here</h3><p>Add the unlisted video link as <code>secretVideoUrl</code> in data/config.js.</p></div></div>`}</div>
+        : `<div class="ph"><div><h3>A message from ${esc(S.artist)} is on its way ✦</h3><p>Check back soon.</p></div></div>`}</div>
       <div class="btn-row center"><a class="btn" href="#/results">See who SF is</a><a class="btn ghost" href="#/characters">All characters</a></div>
     </section>`;
     confetti();

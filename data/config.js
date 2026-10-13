@@ -215,7 +215,7 @@ window.CONFIG = {
      appear in fewer answers aren't disadvantaged). Ties → higher raw
      score, then whoever scored most recently. Current mapping gives
      each character a 7–8.5% chance across all answer combinations.
-     Questions 1–7 are from the Ceros sample; 8–9 are new drafts. */
+     Questions 1–7 are from the Ceros sample; 8–9 were added by Claude. */
   quiz: [
     { q: "What first brought you to San Francisco?", answers: [
       { text: "A dream I couldn't chase anywhere else.", main: "rascal", also: "captain" },
@@ -259,13 +259,13 @@ window.CONFIG = {
       { text: "The courage to challenge and reinvent.", main: "rebel", also: "captain" },
       { text: "A future worth building for others.", main: "compass", also: "sequoia" } ] },
 
-    { q: "Your friends call you when they need…", draft: true, answers: [
+    { q: "Your friends call you when they need…", answers: [
       { text: "A plan that actually works.", main: "sequoia", also: "compass" },
       { text: "Someone to really listen.", main: "ocean", also: "atlas" },
       { text: "The best story at dinner.", main: "lorey", also: "sol" },
       { text: "Honest advice, no sugarcoating.", main: "captain", also: "rebel" } ] },
 
-    { q: "Pick something to carry through the city.", draft: true, answers: [
+    { q: "Pick something to carry through the city.", answers: [
       { text: "A hand mirror", main: "pixie", also: "ash" },
       { text: "A ruler", main: "compass", also: "sequoia" },
       { text: "A wave", main: "flow", also: "rascal" },

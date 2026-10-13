@@ -45,7 +45,7 @@ Open `…/384post/#/test` (or add `?test=1` to the URL). A yellow "TEST MODE" ba
 
 Every answer points to a **main** character (3 points) and an **also** character (1 point). The winner is whoever earned the highest *percentage* of the points they could possibly have gotten, so characters that appear in fewer answers aren't disadvantaged. With the current mapping, each of the 13 characters has a roughly equal chance (7–8.5%) across every possible combination of answers. If you rewrite questions, keep each character as a `main` 2–3 times and as an `also` 2–4 times to stay balanced.
 
-Questions 1–7 are from the Ceros sample; 8–9 are new drafts (shown with a "DRAFT" tag — delete `draft: true` to hide it).
+Questions 1–7 are from the Ceros sample; 8–9 were added by Claude (no label shows on the site).
 
 ## Character art
 

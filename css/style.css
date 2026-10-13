@@ -260,3 +260,10 @@ model-viewer:not(:defined) > * { display: none; }
 .mapboxgl-popup-content { border: var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 12px 14px; font: 15px/1.4 var(--body); background: #fff; }
 .mapboxgl-popup-content h4 { font: 800 19px/1.1 var(--display); margin: 0 0 4px; }
 .mapboxgl-popup-close-button { font-size: 20px; padding: 2px 8px; }
+
+/* ---------- No sideways wiggle on phones ---------- */
+html, body { overflow-x: hidden; }
+@supports (overflow: clip) { html, body { overflow-x: clip; } }
+.parade { overflow-x: clip; }
+@supports not (overflow: clip) { .parade { overflow: hidden; } }
+.cloud.no-anim img { animation: none; }
