@@ -35,7 +35,7 @@ window.CONFIG = {
 
     // Google Analytics 4 measurement ID, e.g. "G-ABC123XYZ". Leave empty
     // while testing so test clicks don't pollute the real numbers.
-    gaMeasurementId: "",
+    gaMeasurementId: "G-T55WBWZXNS",
 
     // Mapbox map (optional). Paste a URL-restricted PUBLIC token (starts with "pk.").
     // Leave empty to fall back to basic OpenStreetMap tiles (emergency/testing only).

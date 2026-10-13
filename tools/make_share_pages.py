@@ -74,26 +74,36 @@ def character_card(c, s):
     d.text((x, 375), c["archetype"].upper(), font=af, fill=SOFT)
     d.text((x, 420), c["element"], font=font("SourceSans3-600.woff", 30), fill=SOFT)
     d.line((x, 488, W - 50, 488), fill=INK, width=3)
-    d.text((x, 505), s["imageHashtag"], font=font("Bricolage-800.woff", 44), fill=INK)
-    d.text((x, 558), "384 Post · Union Square · mural by " + s["artist"], font=font("SourceSans3-600.woff", 24), fill=SOFT)
+    paste_lettering(im, x, 508, W - x - 50, 44)
+    d.text((x, 562), s["imageHashtag"] + " · Union Square · mural by " + s["artist"], font=font("SourceSans3-600.woff", 22), fill=SOFT)
     return im
+
+
+def paste_lettering(im, x, y, max_w, max_h, center_w=None):
+    """demit's hand-drawn '384 POST ST' lettering."""
+    lt = Image.open(os.path.join(ROOT, "assets", "brand", "384-post-lettering.png")).convert("RGBA")
+    lt.thumbnail((max_w, max_h), Image.LANCZOS)
+    if center_w: x = (center_w - lt.width) // 2
+    im.paste(lt, (int(x), int(y)), lt)
+    return lt.width
 
 
 def default_card(chars, s):
     W, H = 1200, 630
     im = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(im)
-    tf = font("Bricolage-800.woff", 76)
-    d.text((W / 2, 70), "Which Colorful Character", font=tf, fill=INK, anchor="mt")
-    d.text((W / 2, 150), "are you?", font=tf, fill=(220, 74, 78), anchor="mt")
+    lw = paste_lettering(im, None, 34, 560, 56, center_w=W)
+    tf = font("Bricolage-800.woff", 64)
+    d.text((W / 2, 118), "Which Colorful Character", font=tf, fill=INK, anchor="mt")
+    d.text((W / 2, 186), "are you?", font=tf, fill=(220, 74, 78), anchor="mt")
     order = ["rascal", "flora", "captain", "lorey", "sol", "ocean", "pixie", "sequoia", "flow", "atlas", "rebel", "ash", "compass"]
-    heights = [230, 250, 280, 240, 300, 260, 245, 235, 270, 240, 285, 230, 220]
+    heights = [200, 215, 240, 205, 255, 225, 210, 200, 230, 205, 245, 200, 190]
     for i, cid in enumerate(order):
         art = Image.open(os.path.join(ROOT, "assets", "characters", cid + ".png")).convert("RGBA")
         art.thumbnail((260, heights[i]), Image.LANCZOS)
         cx = 70 + i * (W - 140) / (len(order) - 1)
         im.paste(art, (int(cx - art.width / 2), 560 - art.height), art)
-    d.text((W / 2, 585), s["imageHashtag"] + " · 384 Post · Union Square · mural by " + s["artist"], font=font("SourceSans3-700.woff", 26), fill=INK, anchor="mt")
+    d.text((W / 2, 585), s["imageHashtag"] + " · Union Square · mural by " + s["artist"], font=font("SourceSans3-700.woff", 26), fill=INK, anchor="mt")
     return im
 
 

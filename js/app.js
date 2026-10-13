@@ -198,7 +198,7 @@
     }).join("");
     app.innerHTML = `
       <section class="hero">
-        <div class="eyebrow">384 Post · Union Square · a mural by ${esc(S.artist)}</div>
+        <div class="eyebrow">Union Square · a mural by ${esc(S.artist)}</div>
         <h1>Which <em>Colorful Character</em> are you?</h1>
         <p>Every one of us arrives in San Francisco with a distinct story. Find the character who shares yours.</p>
         <div class="btn-row center">
@@ -353,10 +353,15 @@
     g.fillText(c.archetype.toUpperCase(), W / 2, 1555);
     g.font = "600 36px 'Source Sans 3', sans-serif";
     g.fillText(`${c.element} · ${c.trait} · carries a ${c.object.toLowerCase()}`, W / 2, 1610);
-    g.fillStyle = "#1B1A17"; g.font = "800 58px 'Bricolage Grotesque', sans-serif";
-    g.fillText(SH.imageHashtag || "#384Post", W / 2, 1745);
+    try { // demit's hand-drawn "384 POST ST" lettering
+      const lt = await loadImg("assets/brand/384-post-lettering.png");
+      const lw = 640, lh = lw * lt.naturalHeight / lt.naturalWidth;
+      g.drawImage(lt, (W - lw) / 2, 1690, lw, lh);
+    } catch (e) {
+      g.fillStyle = "#1B1A17"; g.font = "800 58px 'Bricolage Grotesque', sans-serif"; g.fillText("384 Post St", W / 2, 1745);
+    }
     g.font = "600 32px 'Source Sans 3', sans-serif"; g.fillStyle = "#5E5A50";
-    g.fillText(`384 Post · Union Square · mural by ${S.artist}`, W / 2, 1800);
+    g.fillText(`${SH.imageHashtag || "#384Post"} · Union Square · mural by ${S.artist}`, W / 2, 1820);
     const blob = await new Promise((res, rej) => cv.toBlob(b => (b ? res(b) : rej(new Error("no image"))), "image/png"));
     shareImgCache[c.id] = blob;
     return blob;
@@ -810,7 +815,7 @@
       .sort((a, b) => b.count - a.count);
     const meta = document.getElementById("resMeta"); if (!meta) return;
     meta.innerHTML = data.source === "sample"
-      ? `<span class="sample-note">Sample numbers for the concept — real counts appear once analytics is connected.</span>`
+      ? ""
       : `${total.toLocaleString()} people have found their character${data.updated ? ` · updated ${new Date(data.updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}` : ""}`;
     drawCloud();
     const me = myResult();
