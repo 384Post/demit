@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Colorful Characters · 384 Post</title>
+  <meta name="description" content="Which Colorful Character of San Francisco are you? A mural by demit omphroy at 384 Post, Union Square.">
+  <meta name="theme-color" content="#FBF7EA">
+  <meta property="og:title" content="Which Colorful Character are you?">
+  <meta property="og:description" content="Take the quiz, then hunt for all 13 giant characters around San Francisco.">
+  <meta property="og:image" content="https://example.github.io/384post/assets/share/og-default.png">
+  <meta property="og:url" content="https://example.github.io/384post/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="testBanner" class="test-banner" hidden>
+    TEST MODE · progress is simulated · <a href="#/test">turn off</a>
+  </div>
+
+  <header class="site-header">
+    <a href="#/" class="logo" aria-label="Home">384<span>POST</span></a>
+    <nav class="nav">
+      <a href="#/quiz" data-nav="quiz">Quiz</a>
+      <a href="#/characters" data-nav="characters">Characters</a>
+      <a href="#/hunt" data-nav="hunt">Hunt</a>
+      <a href="#/results" data-nav="results">Results</a>
+    </nav>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="site-footer">
+    <p>Colorful Characters of San Francisco · mural by <span id="artistName"></span></p>
+    <p>384 Post Street · Union Square · <span id="hashtag"></span></p>
+  </footer>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true"></div>
+  </div>
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="data/config.js"></script>
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

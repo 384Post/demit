@@ -1,0 +1,6 @@
+{
+  "source": "sample",
+  "updated": "2026-10-12T00:00:00Z",
+  "note": "SAMPLE NUMBERS for the concept. The GitHub Action replaces this file with real Google Analytics counts once connected.",
+  "counts": { "sol": 412, "rebel": 287, "captain": 198, "sequoia": 164, "rascal": 356, "ocean": 241, "atlas": 133, "compass": 97, "flora": 221, "lorey": 309, "pixie": 176, "flow": 268, "ash": 118 }
+}
