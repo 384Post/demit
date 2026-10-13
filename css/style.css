@@ -261,9 +261,54 @@ model-viewer:not(:defined) > * { display: none; }
 .mapboxgl-popup-content h4 { font: 800 19px/1.1 var(--display); margin: 0 0 4px; }
 .mapboxgl-popup-close-button { font-size: 20px; padding: 2px 8px; }
 
-/* ---------- No sideways wiggle on phones ---------- */
+/* ---------- No sideways wiggle: anything wider than the screen is trimmed at the screen edge ---------- */
 html, body { overflow-x: hidden; }
 @supports (overflow: clip) { html, body { overflow-x: clip; } }
-.parade { overflow-x: clip; }
-@supports not (overflow: clip) { .parade { overflow: hidden; } }
 .cloud.no-anim img { animation: none; }
+
+/* Home parade: on narrower screens it runs edge to edge, so the outer characters
+   step off the sides of the screen instead of being trimmed inside the page margin. */
+@media (max-width: 1000px) {
+  .parade { max-width: none; width: 100vw; margin-left: calc(50% - 50vw); margin-right: 0; }
+}
+
+/* ---------- Hunt instructions ---------- */
+.linkish.strong { color: var(--ink); font-weight: 700; font-size: 16px; text-underline-offset: 3px; }
+.modal-card .howto { text-align: left; }
+.modal-card:has(.howto) { max-width: 560px; }
+.howto h2 { font-size: 30px; }
+.howto ol { padding-left: 22px; margin: 6px 0 0; display: grid; gap: 10px; font-size: 16px; }
+.howto li::marker { font-weight: 800; font-family: var(--display); }
+
+/* ---------- Footer ---------- */
+.site-footer { text-align: left; padding: 34px 16px 40px; color: var(--ink); background: var(--paper-2); }
+.foot-inner { max-width: 1080px; margin: 0 auto; }
+.foot-top { display: grid; gap: 28px; }
+@media (min-width: 760px) { .foot-top { grid-template-columns: 1fr 1.2fr; align-items: start; } }
+.foot-lettering { height: 28px; width: auto; margin-bottom: 10px; }
+.foot-tag { margin: 0 0 14px; font-size: 15px; color: var(--ink-soft); }
+.foot-contacts { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.foot-contacts .eyebrow { grid-column: 1 / -1; margin: 0; }
+.contact { display: flex; flex-direction: column; gap: 2px; font-size: 15px; }
+.contact b { font-family: var(--display); font-size: 18px; text-transform: uppercase; letter-spacing: .02em; }
+.contact span { color: var(--ink-soft); font-size: 13px; }
+.contact a { color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.contact a:hover { text-decoration: underline; }
+.foot-legal { border-top: 2px solid var(--ink); margin-top: 26px; padding-top: 16px; font-size: 12px; line-height: 1.55; color: var(--ink-soft); }
+.foot-legal p { margin: 0 0 10px; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-weight: 700; font-size: 13px; }
+.foot-links a { color: var(--ink); }
+
+/* ---------- Terms page ---------- */
+.legal { max-width: 720px; margin: 0 auto; padding-top: 28px; }
+.legal h3 { margin-top: 26px; font-size: 21px; }
+.legal p, .legal li { font-size: 16px; }
+.legal ul { padding-left: 20px; display: grid; gap: 8px; }
+
+/* ---------- AR tip ---------- */
+.ar-tip { text-align: left; }
+.ar-tip h3 { font-size: 26px; }
+.ar-tip ol { padding-left: 22px; margin: 6px 0 0; display: grid; gap: 8px; font-size: 16px; }
+.ar-tip li::marker { font-weight: 800; font-family: var(--display); }
+.ar-prompt { position: absolute; left: 50%; bottom: 90px; transform: translateX(-50%); background: rgba(27,26,23,.82); color: #fff; font: 600 16px/1.3 var(--body); padding: 10px 16px; border-radius: 999px; white-space: nowrap; }
+.ar-btn[hidden] { display: none; }

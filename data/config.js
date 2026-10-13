@@ -24,7 +24,19 @@ window.CONFIG = {
       shortText: "I'm {name}, {archetype}! ✨ Which of {artist}'s Colorful Characters of San Francisco are you? Find yours at 384 Post in Union Square.",
       imageHashtag: "#384Post"   // printed on the share image
     },
-    siteUrl: "https://384post.github.io/demit/",   // ← your GitHub Pages URL (used in share text)
+    siteUrl: "https://384post.github.io/demit/",
+    // The main 384 Post page (Ceros). Shared links land here; the site links back to it.
+    cerosUrl: "https://view.ceros.com/cbre-strike-team/384-post",
+
+    // ---- Footer ----
+    contacts: [
+      { name: "Alex Sagues", license: "Lic. 02055525", phone: "+1 415 772 0306", email: "Alex.Sagues@cbre.com" },
+      { name: "Madeline Redmond", license: "Lic. 02186119", phone: "+1 703 732 8553", email: "Madeline.Redmond@cbre.com" }
+    ],
+    artworkNotice: "All Colorful Characters artwork, characters, names and descriptions © 2026 demit omphroy. All rights reserved. Used with permission; may not be copied or reused without the artist's written consent.",
+    cbreNotice: "© 2026 CBRE, Inc. This information has been obtained from sources believed reliable. We have not verified it and make no guarantee, warranty or representation about it. Any projections, opinions, assumptions or estimates used are for example only and do not represent the current or future performance of the property. You and your advisors should conduct a careful, independent investigation of the property to determine to your satisfaction the suitability of the property for your needs.",
+    privacyPolicyUrl: "https://www.cbre.com/about-us/global-web-privacy-and-cookie-policy",
+    californiaPrivacyUrl: "https://www.cbre.com/about-us/california-consumer-privacy-policy",   // ← your GitHub Pages URL (used in share text)
 
     unlockRadiusMeters: 100,     // how close someone must be to "find" a character
 

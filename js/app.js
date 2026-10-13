@@ -17,8 +17,33 @@
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
-  document.getElementById("artistName").textContent = S.artist;
-  document.getElementById("hashtag").textContent = S.hashtag;
+  /* ---------------- Footer ---------------- */
+  (function footer() {
+    const tel = n => "tel:" + String(n).replace(/[^\d+]/g, "");
+    document.getElementById("siteFooter").innerHTML = `
+      <div class="foot-inner">
+        <div class="foot-top">
+          <div>
+            <img class="foot-lettering" src="assets/brand/384-post-lettering.svg" alt="384 Post St">
+            <p class="foot-tag">Colorful Characters of San Francisco · a mural by ${esc(S.artist)}<br>384 Post Street · Union Square · San Francisco</p>
+            ${S.cerosUrl ? `<a class="btn small orange" href="${esc(S.cerosUrl)}">Explore 384 Post →</a>` : ""}
+          </div>
+          <div class="foot-contacts">
+            <div class="eyebrow">Leasing contacts</div>
+            ${(S.contacts || []).map(k => `<div class="contact">
+              <b>${esc(k.name)}</b><span>${esc(k.license)}</span>
+              <a href="${tel(k.phone)}">${esc(k.phone)}</a>
+              <a href="mailto:${esc(k.email)}">${esc(k.email)}</a>
+            </div>`).join("")}
+          </div>
+        </div>
+        <div class="foot-legal">
+          ${S.artworkNotice ? `<p>${esc(S.artworkNotice)}</p>` : ""}
+          ${S.cbreNotice ? `<p>${esc(S.cbreNotice)}</p>` : ""}
+          <p class="foot-links"><a href="#/terms">Terms of use</a><a href="#/terms#privacy">Privacy</a>${S.privacyPolicyUrl ? `<a href="${esc(S.privacyPolicyUrl)}" target="_blank" rel="noopener">CBRE privacy &amp; cookie policy</a>` : ""}</p>
+        </div>
+      </div>`;
+  })();
 
   /* ---------------- Storage (browser-only; survives refresh, not device switches) ---------------- */
   const mem = {};
@@ -48,7 +73,8 @@
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag("js", new Date());
-    window.gtag("config", S.gaMeasurementId, { send_page_view: false });
+    // Basic, privacy-friendly analytics only: no ad personalization or Google Signals.
+    window.gtag("config", S.gaMeasurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false });
   }
   function track(name, params) {
     if (isTest() || !window.gtag) return;
@@ -204,6 +230,7 @@
         <div class="btn-row center">
           <a class="btn red" href="#/quiz">${r ? "Retake the quiz" : "Take the quiz"}</a>
           ${r ? `<a class="btn ghost" href="#/result/${r}">I'm ${esc(byId[r].name)} →</a>` : ""}
+          ${S.cerosUrl ? `<a class="btn ghost" href="${esc(S.cerosUrl)}">Explore 384 Post</a>` : ""}
         </div>
       </section>
       <div class="parade" aria-hidden="true">${parade}</div>
@@ -256,7 +283,7 @@
     const c = byId[id]; if (!c) return notFound();
     app.innerHTML = profileHTML(c, true) + shareHTML(c) + `
       <div class="callout blue">
-        <b>Your hunt starts with your Colorful Pairings:</b> ${c.pairings.filter(p => byId[p]).map(p => `${esc(byId[p].name)} at ${esc(byId[p].spot.name)}`).join(" and ")}. Find them first, then collect all ${TOTAL}.
+        <b>${esc(c.name)}'s hunt spot: ${esc(c.spot.name)}.</b> ${TOTAL - 1} more Colorful Characters are waiting around the city. Find them in any order. <a href="#/hunt">Start the hunt →</a>
       </div>`;
     bindShare(c);
   }
@@ -392,7 +419,7 @@
       case "instagram":
       case "tiktok":
       case "download":
-        return shareImageToApp(platform, c, long + " " + tags + " " + (S.siteUrl || ""));
+        return shareImageToApp(platform, c, long + " " + tags + " " + (S.cerosUrl || S.siteUrl || ""));
     }
   }
   function shareImageToApp(platform, c, caption) {
@@ -535,6 +562,7 @@
           <div class="eyebrow">The Colorful Character Hunt</div>
           <h2>Giants are hiding around San Francisco</h2>
           <p class="muted">Walk within about ${Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10} feet of a spot to unlock its character — then see them towering up to 30 feet tall in AR. Find all ${TOTAL} for a secret message from ${esc(S.artist)}.</p>
+          <p style="margin:0"><button class="linkish strong" id="howBtn">How the hunt works</button></p>
         </div>
         <div>
           <div class="counter" id="counter">${n}<small> / ${TOTAL} found</small></div>
@@ -546,7 +574,7 @@
           <div class="loc-status" id="locStatus">Location is off. Your position never leaves your phone.</div>
         </div>
       </section>
-      ${r ? `<div class="callout"><b>You're ${esc(byId[r].name)}.</b> Start with your pairings, marked with a red ring: ${byId[r].pairings.filter(p => byId[p]).map(p => esc(byId[p].name)).join(" & ")}.</div>` : `<div class="callout"><a href="#/quiz"><b>Take the quiz</b></a> first to get a personal starting route.</div>`}
+      ${r ? `<div class="callout"><b>You're ${esc(byId[r].name)}!</b> Your character is circled in red on the map. Hunt in any order: start with whoever's closest.</div>` : `<div class="callout"><a href="#/quiz"><b>Take the quiz</b></a> to find your character, then hunt for all ${TOTAL}.</div>`}
       ${isTest() ? testToolsHTML() : ""}
       <div id="map" role="application" aria-label="Map of hunt locations"></div>
       <div class="hunt-list" id="huntList"></div>
@@ -558,13 +586,32 @@
     renderHuntList();
     initMap(focusId);
     document.getElementById("locBtn").addEventListener("click", startLocation);
+    document.getElementById("howBtn").addEventListener("click", showHowTo);
     document.getElementById("saveBtn").addEventListener("click", saveProgress);
     if (isTest()) bindTestTools();
     if (store.get("locOn") && !isTest()) startLocation();
   }
 
+  function showHowTo() {
+    const ft = Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10;
+    openModal(`<div class="howto">
+      <div class="eyebrow">The Colorful Character Hunt</div>
+      <h2>How the hunt works</h2>
+      <ol>
+        <li><b>Keep this page open while you explore.</b> The site can only spot you while it's open on your screen. It can't alert you when your phone is locked or the browser is closed, so open the Hunt page when you get to a spot.</li>
+        <li><b>Tap "Start finding" and allow location.</b> Your location stays on your phone and is never sent anywhere. Each spot shows how far away it is.</li>
+        <li><b>Walk within about ${ft} feet of a spot.</b> The character unlocks automatically, with a little celebration. Hunt in any order. Spots marked "Bonus" are farther out.</li>
+        <li><b>See them in AR.</b> Tap to place the character in front of you through your phone camera, at giant size for that spot, or switch to life-size. Any character you've found, and your own quiz character, can be viewed again anytime.</li>
+        <li><b>Your progress saves automatically</b> on this phone, in this browser. If you switch phones or browsers (say, from Instagram's built-in browser to Safari), tap <b>Save my progress</b> for a link, then open it in the new browser. The link is a snapshot of what you've found so far, so make a new one whenever you want to carry over newer finds. Tip: iPhones can clear saved progress after about a week without a visit, so a saved link is a good backup.</li>
+        <li><b>Find all ${TOTAL}</b> to unlock a secret message from ${esc(S.artist)}.</li>
+      </ol>
+      <p class="muted" style="font-size:14px;margin:14px 0 0"><b>Stay safe:</b> watch where you're walking, stay on public sidewalks and paths, and never use AR in the street or while driving. Location accuracy varies, especially between tall buildings.</p>
+      <div class="btn-row center" style="margin-top:18px"><button class="btn" data-close>Got it</button></div>
+    </div>`);
+  }
+
   function pinHTML(c) {
-    const f = isFound(c.id), mine = myResult() && byId[myResult()].pairings.includes(c.id) && !f;
+    const f = isFound(c.id), mine = myResult() === c.id;
     return `<div class="pin ${f ? "" : "locked"} ${mine ? "mine" : ""}" style="--c:${esc(c.colorHex)};position:relative">
       <img src="${ART(c.id)}" alt="">${c.spot.bonus ? '<span class="star">★</span>' : ""}</div>`;
   }
@@ -589,16 +636,16 @@
   function refreshPins() { if (mapView) mapView.pins(); }
   function renderHuntList() {
     const el = document.getElementById("huntList"); if (!el) return;
-    const r = myResult(), mine = r ? byId[r].pairings : [];
+    const r = myResult();
     const list = chars.slice().sort((a, b) =>
-      (isFound(a.id) - isFound(b.id)) || (mine.includes(b.id) - mine.includes(a.id)) || (a.spot.bonus - b.spot.bonus) ||
+      (isFound(a.id) - isFound(b.id)) || (a.spot.bonus - b.spot.bonus) ||
       (mePos ? distanceM(mePos, a.spot) - distanceM(mePos, b.spot) : a.number - b.number));
     el.innerHTML = list.map(c => {
       const f = isFound(c.id);
       return `<div class="h-card ${f ? "" : "locked"}">
         <div class="pic" style="--c:${esc(c.colorHex)}"><img src="${ART(c.id)}" alt=""></div>
         <div>
-          <h4>${esc(c.name)}${f ? '<span class="badge found">Found</span>' : ""}${mine.includes(c.id) && !f ? '<span class="badge mine">Pairing</span>' : ""}${c.spot.bonus ? '<span class="badge">Bonus</span>' : ""}</h4>
+          <h4>${esc(c.name)}${f ? '<span class="badge found">Found</span>' : ""}${r === c.id ? '<span class="badge mine">You</span>' : ""}${c.spot.bonus ? '<span class="badge">Bonus</span>' : ""}</h4>
           <div class="meta">${esc(c.spot.name)}${mePos ? " · " + fmtDist(distanceM(mePos, c.spot)) : ""}</div>
           <div class="acts">
             <a class="btn ghost" href="#/hunt/${c.id}" data-focus="${c.id}">Map</a>
@@ -776,8 +823,10 @@
           ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
           camera-controls touch-action="pan-y" interaction-prompt="none"
           camera-orbit="0deg 85deg auto" field-of-view="30deg" shadow-intensity="0.6" shadow-softness="1" exposure="1.1" tone-mapping="neutral">
-          <button slot="ar-button" class="btn red ar-btn">See ${esc(c.name)} in your space</button>
+          <span slot="ar-button" hidden></span>
+          <div slot="ar-prompt" class="ar-prompt">Point at the ground and move your phone slowly…</div>
         </model-viewer>
+        <button class="btn red ar-btn" id="arGo" hidden>See ${esc(c.name)} in your space</button>
       </div>
       <p class="muted" style="margin-top:14px">${giant ? `Giant-size, about ${c.spot.giantFeet} feet tall here: after you tap the button, aim at the ground, then walk back about ${c.spot.giantFeet} feet to fit them on screen.` : "Life-size, about as tall as you: after you tap the button, aim at the ground and stand next to them for a photo."} Snap a photo and tag <b>${esc(S.hashtag)}</b>! On a computer, drag to spin them around.</p>
       <div class="btn-row"><a class="btn ghost small" href="#/c/${c.id}">Read ${esc(c.name)}'s story</a><a class="btn ghost small" href="#/hunt">Back to the hunt</a></div>
@@ -785,7 +834,40 @@
     loadModelViewer().then(ok => {
       if (!ok) { const mv = document.getElementById("mv"); if (mv) mv.outerHTML = `<div class="art-stage" style="--c:${esc(c.colorHex)}"><img src="${ART(c.id)}" alt=""></div><p class="muted">The 3D viewer couldn't load on this connection.</p>`; return; }
       const mv = document.getElementById("mv");
-      if (mv) mv.addEventListener("ar-status", e => { if (e.detail.status === "session-started") track("ar_open", { character: c.id, size: giant ? "giant" : "life" }); });
+      if (!mv) return;
+      mv.addEventListener("ar-status", e => { if (e.detail.status === "session-started") track("ar_open", { character: c.id, size: giant ? "giant" : "life" }); });
+      // Our own AR button, so we can show a quick "how to place them" tip first.
+      const go = document.getElementById("arGo");
+      const showIfAR = () => { if (go && mv.canActivateAR) go.hidden = false; };
+      mv.addEventListener("load", showIfAR); setTimeout(showIfAR, 400);
+      if (go) go.addEventListener("click", () => {
+        // Show the placement tip the first time only; after that, go straight to the camera.
+        if (store.get("arTipSeen")) { try { mv.activateAR(); } catch (e) { toast("AR isn't available in this browser."); } }
+        else arTip(c, giant, mv);
+      });
+    });
+  }
+
+  // Native AR viewers (iPhone Quick Look, Android Scene Viewer) give almost no guidance,
+  // so explain the three moves right before the camera opens.
+  function arTip(c, giant, mv) {
+    const back = giant ? `walk back about ${c.spot.giantFeet} feet and look up` : "step back for a photo";
+    openModal(`<div class="ar-tip">
+      <div class="eyebrow">Before the camera opens</div>
+      <h3>Placing ${esc(c.name)}</h3>
+      <ol>
+        <li><b>Point your camera at the ground</b> a few steps ahead.</li>
+        <li><b>Move your phone slowly</b> side to side until ${esc(c.name)} appears.</li>
+        <li><b>Tap ${esc(c.name)}</b> (or the screen) to place them, then ${back}.</li>
+      </ol>
+      <p class="muted" style="font-size:14px;margin:10px 0 0">Pinch to rotate, and use your camera button to snap a photo. Tag ${esc(S.hashtag)}!</p>
+      <div class="btn-row center" style="margin-top:16px"><button class="btn red" id="arOpen">Open camera</button></div>
+    </div>`);
+    const open = document.getElementById("arOpen");
+    if (open) open.addEventListener("click", () => {
+      store.set("arTipSeen", true);
+      closeModal();
+      try { mv.activateAR(); } catch (e) { toast("AR isn't available in this browser."); }
     });
   }
 
@@ -892,6 +974,47 @@
     track("secret_video_view", {});
   }
 
+  function pageTerms() {
+    const k = (S.contacts || [])[0];
+    app.innerHTML = `<section class="legal">
+      <div class="eyebrow">Last updated October 2026</div>
+      <h2>Terms of use &amp; privacy</h2>
+      <p>This site is an interactive art experience featuring the Colorful Characters of San Francisco, a mural by ${esc(S.artist)} at 384 Post Street, presented by CBRE, Inc. By using it, you agree to these terms.</p>
+
+      <h3>Just for fun</h3>
+      <p>The quiz, character results and popularity counts are for entertainment only. They aren't a personality assessment or advice of any kind, and the results page shows approximate, anonymous totals.</p>
+
+      <h3>The hunt and AR: please be safe</h3>
+      <p>Taking part in the character hunt is voluntary and at your own risk. Stay aware of your surroundings, follow traffic laws and posted rules, keep to public sidewalks and paths, respect private property, and never use your phone in the street or while driving. Hunt locations are public places we don't own or control; their access, hours and conditions may change, and spots may be moved or removed at any time. GPS accuracy varies, and AR features may not work on every device or browser. Parents and guardians should supervise children.</p>
+
+      <h3>No guarantees</h3>
+      <p>This site and everything on it are provided "as is" and "as available," without warranties of any kind, express or implied. We don't guarantee that the site will be available, uninterrupted, accurate or error-free, or that any feature (including saved progress, unlocks, rewards or results) will work as described. Content and features may change or end at any time without notice.</p>
+
+      <h3>Limitation of liability</h3>
+      <p>To the fullest extent permitted by law, CBRE, Inc., the owner of 384 Post Street, ${esc(S.artist)}, and their affiliates, employees and partners are not liable for any loss, injury, damage or expense of any kind arising from your use of this site or your participation in the hunt.</p>
+
+      <h3>Artwork and content</h3>
+      <p>${esc(S.artworkNotice || "")} The site's design and other content may not be copied or reused without permission.</p>
+
+      <h3>Other services and links</h3>
+      <p>This site uses or links to services run by others, including Mapbox (maps), Google Maps (walking directions), Google Analytics, social networks and Ceros. Their own terms and privacy policies apply when you use them.</p>
+
+      <h3 id="privacy">Privacy</h3>
+      <ul>
+        <li><b>We don't ask for or collect your name, email or contact details.</b></li>
+        <li><b>Your location stays on your phone.</b> It's used only in your browser to unlock nearby characters and is never sent to us.</li>
+        <li><b>Your quiz result and hunt progress are saved only in your browser</b> on your device. Clearing your browser data deletes them.</li>
+        <li><b>Anonymous usage statistics.</b> We use Google Analytics, which sets cookies, to count visits and actions such as quiz results, characters found, shares and AR views. Advertising features are turned off. You can block analytics cookies in your browser settings or with Google's <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">opt-out add-on</a>.</li>
+        <li><b>Maps.</b> Mapbox provides the hunt map and receives standard technical information (such as your IP address and device type) needed to load it.</li>
+      </ul>
+      <p>For more about how CBRE handles personal information, see the ${S.privacyPolicyUrl ? `<a href="${esc(S.privacyPolicyUrl)}" target="_blank" rel="noopener">CBRE Global Web Privacy &amp; Cookie Policy</a>` : "CBRE privacy policy"}${S.californiaPrivacyUrl ? ` and the <a href="${esc(S.californiaPrivacyUrl)}" target="_blank" rel="noopener">CBRE California Privacy Policy</a>` : ""}.</p>
+
+      <h3>Changes and questions</h3>
+      <p>We may update these terms from time to time; the date above shows the latest version.${k ? ` Questions? Contact <a href="mailto:${esc(k.email)}">${esc(k.name)}</a>.` : ""}</p>
+    </section>`;
+    if (location.hash.includes("#privacy")) setTimeout(() => { const el = document.getElementById("privacy"); if (el) el.scrollIntoView(); }, 50);
+  }
+
   function notFound() {
     app.innerHTML = `<section class="secret"><h2>Hmm, that page wandered off.</h2><a class="btn" href="#/">Home</a></section>`;
   }
@@ -909,7 +1032,8 @@
     [/^results$/, pageResults],
     [/^secret$/, pageSecret],
     [/^restore\/([\w-]+)$/, pageRestore],
-    [/^test$/, pageToggleTest]
+    [/^test$/, pageToggleTest],
+    [/^terms(?:#privacy)?$/, pageTerms]
   ];
   function route() {
     cleanupHunt();

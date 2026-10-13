@@ -38,6 +38,8 @@ Open `…/384post/#/test` (or add `?test=1` to the URL). A yellow "TEST MODE" ba
 | Quiz questions / answers | the `quiz` list |
 | Secret video | `settings.secretVideoUrl` |
 | Hashtag, artist name | `settings` |
+| Footer contacts, artwork & CBRE notices, privacy links | `settings.contacts`, `artworkNotice`, `cbreNotice`, `privacyPolicyUrl` |
+| Where shared links and "Explore 384 Post" go | `settings.cerosUrl` |
 
 **Getting coordinates:** in Google Maps, right-click the exact spot → click the numbers at the top to copy `lat, lng`. The current coordinates are approximate — check each one on site.
 
@@ -123,4 +125,5 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 - [ ] demit's secret video (unlisted link)
 - [ ] GA property + IT sign-off on the service account
 - [ ] Approve share text + hashtags (#384Post #ColorfulCharacters #UnionSquare)
+- [ ] CBRE legal/marketing review of the Terms & privacy page (`#/terms`) and footer notices
 - [ ] Social wall approach (curated vs. share-only)

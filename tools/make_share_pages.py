@@ -9,7 +9,7 @@ Run it from the project folder whenever you change:
 It creates:
   assets/share/<id>.png      1200x630 preview image per character (shows on X, Facebook, LinkedIn, Bluesky)
   assets/share/og-default.png preview image for the main site link
-  share/<id>.html            tiny page with the preview tags; visitors are forwarded to that character
+  share/<id>.html            tiny page with the preview tags; visitors are forwarded to the 384 Post Ceros page
 and updates the preview tags in index.html.
 
 Needs Python 3 + Pillow (pip install pillow).
@@ -29,7 +29,7 @@ def font(name, size):
 def read_config():
     src = open(os.path.join(ROOT, "data", "config.js"), encoding="utf-8").read()
     get = lambda key: re.search(key + r':\s*"([^"]*)"', src).group(1)
-    settings = {k: get(k) for k in ("siteUrl", "artist", "imageHashtag")}
+    settings = {k: get(k) for k in ("siteUrl", "cerosUrl", "artist", "imageHashtag")}
     chars = []
     for block in re.split(r"\n\s*\{\s*\n\s*id:", src)[1:]:
         block = "id:" + block
@@ -128,12 +128,12 @@ PAGE = """<!doctype html>
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{img}">
 <link rel="canonical" href="{url}">
-<meta http-equiv="refresh" content="0; url=../#/c/{id}">
+<meta http-equiv="refresh" content="0; url={dest}">
 <style>body{{font-family:system-ui,sans-serif;background:#FBF7EA;color:#1B1A17;display:grid;place-items:center;min-height:90vh}}</style>
 </head>
 <body>
-<p><a href="../#/c/{id}">Meet {name} →</a></p>
-<script>location.replace("../" + location.search + "#/c/{id}");</script>
+<p><a href="{dest}">Meet {name} at 384 Post →</a></p>
+<script>location.replace("{dest}");</script>
 </body>
 </html>
 """
@@ -151,7 +151,7 @@ def main():
             title=html.escape(f"I'm {c['name']}, {c['archetype']}"), desc=html.escape(desc),
             url=f"{site}share/{c['id']}.html", img=f"{site}assets/share/{c['id']}.png",
             alt=html.escape(f"{c['name']}, {c['archetype']}, a Colorful Character by {s['artist']}"),
-            id=c["id"], name=html.escape(c["name"]))
+            id=c["id"], name=html.escape(c["name"]), dest=html.escape(s["cerosUrl"] or f"../#/c/{c['id']}"))
         open(os.path.join(ROOT, "share", c["id"] + ".html"), "w", encoding="utf-8").write(page)
     default_card(chars, s).save(os.path.join(ROOT, "assets", "share", "og-default.png"), optimize=True)
 
