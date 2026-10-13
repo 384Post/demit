@@ -24,7 +24,7 @@ window.CONFIG = {
       shortText: "I'm {name}, {archetype}! ✨ Which of {artist}'s Colorful Characters of San Francisco are you? Find yours at 384 Post in Union Square.",
       imageHashtag: "#384Post"   // printed on the share image
     },
-    siteUrl: "https://example.github.io/384post/",   // ← your GitHub Pages URL (used in share text)
+    siteUrl: "https://384post.github.io/demit/",   // ← your GitHub Pages URL (used in share text)
 
     unlockRadiusMeters: 100,     // how close someone must be to "find" a character
 
@@ -36,6 +36,13 @@ window.CONFIG = {
     // Google Analytics 4 measurement ID, e.g. "G-ABC123XYZ". Leave empty
     // while testing so test clicks don't pollute the real numbers.
     gaMeasurementId: "",
+
+    // Mapbox map (optional). Paste a URL-restricted PUBLIC token (starts with "pk.").
+    // Leave empty to fall back to basic OpenStreetMap tiles (emergency/testing only).
+    mapboxToken: "pk.eyJ1IjoibGh1ZmZtYW5jYnJlIiwiYSI6ImNtdjZlN3J5ejAxa3gyeHBxN3FjejdqbHEifQ.rmqGXEF9O1lin0F_VPlLdw",
+    // Map look: any Mapbox style URL, e.g. one you design in Mapbox Studio
+    // ("mapbox://styles/your-account/your-style-id").
+    mapboxStyle: "mapbox://styles/mapbox/light-v11",
 
     // Where the results page reads popularity counts from. The GitHub
     // Action in /.github/workflows refreshes this file from GA hourly.

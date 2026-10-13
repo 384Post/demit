@@ -109,7 +109,8 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 - **GPS downtown is rough** (often ±10–30 m, worse between tall buildings). That's why the unlock radius is generous.
 - **AR**: iPhone uses Apple's built-in AR viewer (Quick Look), Android uses Google's Scene Viewer. Figures are placed in front of the person rather than pinned to exact coordinates, which keeps them steady.
 - **The secret video isn't truly secret** — someone determined could find the link in the page. Host it as *unlisted*.
-- **Map tiles** come from CARTO/OpenStreetMap's free service, which is fine for a concept. For a big public launch, consider a free-tier key from MapTiler or Stadia Maps for guaranteed capacity.
+- **Map:** with `mapboxToken` set in `data/config.js`, the hunt map uses Mapbox (free up to 50,000 map loads a month). Each visitor counts as one map load per visit, even if they leave the Hunt page and come back. With the token left empty, the map falls back to basic OpenStreetMap tiles, which are fine for an emergency or testing but aren't meant for heavy public traffic. Mapbox has no hard spending cap: watch the usage page in your Mapbox account (it also emails you if you go over the free tier), and if you ever need to stop usage instantly, empty `mapboxToken` and push (or delete the token in Mapbox).
+- **Mapbox token setup:** create a new public token (not the "Default public token", which can't be restricted) with only the default public scopes, and add the URL restriction `https://384post.github.io` (no path; browsers only send the site's origin with map requests). The token is visible in the code, which is normal for public tokens; the URL restriction is what stops others using it.
 - Libraries (Leaflet for the map, Google's model-viewer for AR) are bundled in `vendor/`, so nothing depends on outside script CDNs.
 
 ## Open items for the team
@@ -121,6 +122,5 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 - [ ] Proofread character copy (e.g. "Septor" → set to "Scepter"; Sequoia's "turn things imaginations")
 - [ ] demit's secret video (unlisted link)
 - [ ] GA property + IT sign-off on the service account
-- [ ] Set `siteUrl`, then rebuild share previews (`tools/make_share_pages.py`)
 - [ ] Approve share text + hashtags (#384Post #ColorfulCharacters #UnionSquare)
 - [ ] Social wall approach (curated vs. share-only)

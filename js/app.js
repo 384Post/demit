@@ -419,13 +419,107 @@
     }));
   }
 
+  /* ---------------- Map ----------------
+     Uses Mapbox when settings.mapboxToken is set; otherwise basic OpenStreetMap tiles (emergency/testing only).
+     One map is created per visit and reused when people come back to the Hunt page,
+     so each visitor counts as a single Mapbox "map load" (the thing Mapbox bills for). */
+  const MAPBOX_VERSION = "3.32.0";
+  const mapHost = document.createElement("div");
+  mapHost.className = "map-host";
+  let mapView = null, mapViewPromise = null;
+  const coreSpots = () => chars.filter(c => !c.spot.bonus);
+  function loadMapbox() {
+    if (window.mapboxgl) return Promise.resolve(true);
+    return new Promise(res => {
+      const css = document.createElement("link"); css.rel = "stylesheet";
+      css.href = `https://api.mapbox.com/mapbox-gl-js/v${MAPBOX_VERSION}/mapbox-gl.css`;
+      document.head.appendChild(css);
+      const js = document.createElement("script");
+      js.src = `https://api.mapbox.com/mapbox-gl-js/v${MAPBOX_VERSION}/mapbox-gl.js`;
+      js.onload = () => res(!!window.mapboxgl); js.onerror = () => res(false);
+      document.head.appendChild(js);
+    });
+  }
+  function getMapView() {
+    if (mapView) return Promise.resolve(mapView);
+    if (!mapViewPromise) {
+      mapViewPromise = (S.mapboxToken ? loadMapbox() : Promise.resolve(false)).then(ok => {
+        try { mapView = ok ? makeMapbox() : makeLeaflet(); }
+        catch (e) { console.warn("map", e); mapView = window.L ? makeLeaflet() : null; }
+        return mapView;
+      });
+    }
+    return mapViewPromise;
+  }
+  function makeLeaflet() {
+    if (!window.L) return null;
+    const m = L.map(mapHost, { scrollWheelZoom: false, zoomControl: true });
+    // Emergency/testing fallback only: OpenStreetMap's volunteer-run tiles aren't meant for heavy traffic.
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(m);
+    const markers = {}; let me = null;
+    const icon = c => L.divIcon({ className: "", html: pinHTML(c), iconSize: [52, 52], iconAnchor: [26, 26], popupAnchor: [0, -24] });
+    return {
+      pins() {
+        chars.forEach(c => {
+          if (markers[c.id]) { markers[c.id].setIcon(icon(c)); markers[c.id].setPopupContent(popupHTML(c)); }
+          else markers[c.id] = L.marker([c.spot.lat, c.spot.lng], { icon: icon(c), title: c.name, keyboard: true }).addTo(m).bindPopup(popupHTML(c));
+        });
+      },
+      focus(c, open) { m.setView([c.spot.lat, c.spot.lng], 16); if (open) setTimeout(() => markers[c.id] && markers[c.id].openPopup(), 300); },
+      fitCore() { m.fitBounds(coreSpots().map(c => [c.spot.lat, c.spot.lng]), { padding: [30, 30] }); },
+      setMe(p) {
+        if (!me) me = L.marker([p.lat, p.lng], { icon: L.divIcon({ className: "", html: '<div class="me-dot"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }), zIndexOffset: 1000 }).addTo(m);
+        else me.setLatLng([p.lat, p.lng]);
+      },
+      center(p) { m.setView([p.lat, p.lng], 16); },
+      resize() { m.invalidateSize(); }
+    };
+  }
+  function makeMapbox() {
+    mapboxgl.accessToken = S.mapboxToken;
+    const m = new mapboxgl.Map({
+      container: mapHost, style: S.mapboxStyle || "mapbox://styles/mapbox/light-v11",
+      center: [-122.405, 37.792], zoom: 13, cooperativeGestures: true
+    });
+    m.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-left");
+    const markers = {}; let me = null;
+    const bounds = () => { const b = new mapboxgl.LngLatBounds(); coreSpots().forEach(c => b.extend([c.spot.lng, c.spot.lat])); return b; };
+    return {
+      pins() {
+        chars.forEach(c => {
+          if (markers[c.id]) { markers[c.id].getElement().innerHTML = pinHTML(c); markers[c.id].getPopup().setHTML(popupHTML(c)); return; }
+          const el = document.createElement("div");
+          el.innerHTML = pinHTML(c); el.style.cursor = "pointer"; el.setAttribute("aria-label", c.name); el.setAttribute("role", "button");
+          markers[c.id] = new mapboxgl.Marker({ element: el })
+            .setLngLat([c.spot.lng, c.spot.lat])
+            .setPopup(new mapboxgl.Popup({ offset: 28, maxWidth: "260px" }).setHTML(popupHTML(c)))
+            .addTo(m);
+        });
+      },
+      focus(c, open) {
+        m.jumpTo({ center: [c.spot.lng, c.spot.lat], zoom: 15.5 });
+        const mk = markers[c.id];
+        if (open && mk && !mk.getPopup().isOpen()) mk.togglePopup();
+      },
+      fitCore() { m.fitBounds(bounds(), { padding: 40, duration: 0 }); },
+      setMe(p) {
+        if (!me) { const el = document.createElement("div"); el.className = "me-dot"; me = new mapboxgl.Marker({ element: el }).setLngLat([p.lng, p.lat]).addTo(m); }
+        else me.setLngLat([p.lng, p.lat]);
+      },
+      center(p) { m.jumpTo({ center: [p.lng, p.lat], zoom: 15.5 }); },
+      resize() { m.resize(); }
+    };
+  }
+
   /* ---------------- Hunt ---------------- */
-  let map = null, watchId = null, mePos = null, meMarker = null, markers = {};
+  let watchId = null, mePos = null;
   function cleanupHunt() {
     if (watchId != null && navigator.geolocation) navigator.geolocation.clearWatch(watchId);
     watchId = null;
-    if (map) { map.remove(); map = null; }
-    markers = {}; meMarker = null;
+    if (mapHost.parentNode) mapHost.parentNode.removeChild(mapHost); // keep the map alive for next time
   }
 
   function pageHunt(focusId) {
@@ -478,35 +572,17 @@
       ${canAR(c.id) ? `<a class="btn small red" href="#/ar/${c.id}">View in AR</a>` : `<a href="${directions(c)}" target="_blank" rel="noopener">Walking directions →</a>`}`;
   }
   function initMap(focusId) {
-    if (!window.L) { document.getElementById("map").innerHTML = '<p style="padding:20px">Map couldn\'t load — check your connection.</p>'; return; }
-    map = L.map("map", { scrollWheelZoom: false, zoomControl: true });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      maxZoom: 19, subdomains: "abcd",
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    }).addTo(map);
-    chars.forEach(c => {
-      const m = L.marker([c.spot.lat, c.spot.lng], {
-        icon: L.divIcon({ className: "", html: pinHTML(c), iconSize: [52, 52], iconAnchor: [26, 26], popupAnchor: [0, -24] }),
-        title: c.name, keyboard: true
-      }).addTo(map).bindPopup(popupHTML(c));
-      markers[c.id] = m;
-    });
-    const core = chars.filter(c => !c.spot.bonus).map(c => [c.spot.lat, c.spot.lng]);
-    if (focusId && byId[focusId]) {
-      map.setView([byId[focusId].spot.lat, byId[focusId].spot.lng], 16);
-      setTimeout(() => markers[focusId] && markers[focusId].openPopup(), 300);
-    } else {
-      map.fitBounds(core, { padding: [30, 30] });
-    }
-    if (mePos) drawMe();
-  }
-  function refreshPins() {
-    chars.forEach(c => {
-      const m = markers[c.id]; if (!m) return;
-      m.setIcon(L.divIcon({ className: "", html: pinHTML(c), iconSize: [52, 52], iconAnchor: [26, 26], popupAnchor: [0, -24] }));
-      m.setPopupContent(popupHTML(c));
+    const holder = document.getElementById("map");
+    holder.appendChild(mapHost);
+    getMapView().then(v => {
+      if (!mapHost.isConnected) return;
+      if (!v) { holder.innerHTML = '<p style="padding:20px">Map couldn\'t load — check your connection.</p>'; return; }
+      v.resize(); v.pins();
+      if (focusId && byId[focusId]) v.focus(byId[focusId], true); else v.fitCore();
+      if (mePos) v.setMe(mePos);
     });
   }
+  function refreshPins() { if (mapView) mapView.pins(); }
   function renderHuntList() {
     const el = document.getElementById("huntList"); if (!el) return;
     const r = myResult(), mine = r ? byId[r].pairings : [];
@@ -529,9 +605,8 @@
       </div>`;
     }).join("");
     el.querySelectorAll("[data-focus]").forEach(a => a.addEventListener("click", e => {
-      if (!map) return; e.preventDefault();
-      const c = byId[a.dataset.focus];
-      map.setView([c.spot.lat, c.spot.lng], 16); markers[c.id].openPopup();
+      if (!mapView) return; e.preventDefault();
+      mapView.focus(byId[a.dataset.focus], true);
       document.getElementById("map").scrollIntoView({ behavior: "smooth", block: "center" });
     }));
     el.querySelectorAll("[data-teleport]").forEach(b => b.addEventListener("click", () => teleport(b.dataset.teleport)));
@@ -562,11 +637,8 @@
     }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
     if (btn) btn.textContent = "Starting…";
   }
-  function drawMe() {
-    if (!map || !mePos) return;
-    if (!meMarker) meMarker = L.marker([mePos.lat, mePos.lng], { icon: L.divIcon({ className: "", html: '<div class="me-dot"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }), zIndexOffset: 1000 }).addTo(map);
-    else meMarker.setLatLng([mePos.lat, mePos.lng]);
-  }
+  function drawMe() { if (mapView && mePos) mapView.setMe(mePos); }
+
   function onPosition(pos) {
     mePos = pos; drawMe();
     const slack = Math.min(pos.acc || 0, 40); // forgive a little GPS wobble
@@ -658,7 +730,7 @@
     const c = byId[id]; if (!c) return;
     // land a few meters off the exact spot, like real GPS would
     const pos = { lat: c.spot.lat + 0.0002, lng: c.spot.lng - 0.0002, acc: 8 };
-    if (map) map.setView([pos.lat, pos.lng], 16);
+    if (mapView) mapView.center(pos);
     onPosition(pos);
   }
   function pageToggleTest() {
