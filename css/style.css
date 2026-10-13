@@ -192,10 +192,13 @@ p { margin: 0 0 1em; }
 
 /* ---------- Results cloud ---------- */
 .cloud { position: relative; margin: 24px auto 10px; }
-.cloud a { position: absolute; text-decoration: none; text-align: center; transition: transform .2s; }
+.rank-row { display: flex; justify-content: center; align-items: flex-end; margin-bottom: 18px; }
+.cloud a { position: relative; display: flex; flex-direction: column; align-items: center; text-decoration: none; text-align: center; transition: transform .2s; }
+.cloud .rk { position: absolute; top: 0; left: 50%; transform: translate(-50%, -40%); font: 800 12px/1 var(--display); background: var(--ink); color: var(--paper); border-radius: 999px; padding: 3px 7px; z-index: 1; display: none; }
+.rank-row:first-child .rk { display: block; font-size: 14px; background: var(--yellow); color: var(--ink); border: 2px solid var(--ink); }
 .cloud a:hover { transform: scale(1.06) rotate(-2deg); z-index: 2; }
-.cloud img { width: 100%; height: auto; filter: drop-shadow(3px 4px 0 rgba(0,0,0,.14)); animation: pop .7s cubic-bezier(.2,1.6,.4,1) both; animation-delay: var(--d); }
-.cloud .lbl { font: 700 14px/1.1 var(--display); white-space: nowrap; }
+.cloud img { width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(3px 4px 0 rgba(0,0,0,.14)); animation: pop .7s cubic-bezier(.2,1.6,.4,1) both; animation-delay: var(--d); }
+.cloud .lbl { font: 700 14px/1.1 var(--display); white-space: nowrap; margin-top: 6px; }
 .cloud .lbl span { color: var(--ink-soft); font-weight: 500; }
 .cloud a.you img { filter: drop-shadow(0 0 0 var(--red)) drop-shadow(3px 4px 0 var(--red)); }
 .rank { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 8px; }
@@ -312,3 +315,77 @@ html, body { overflow-x: hidden; }
 .ar-tip li::marker { font-weight: 800; font-family: var(--display); }
 .ar-prompt { position: absolute; left: 50%; bottom: 90px; transform: translateX(-50%); background: rgba(27,26,23,.82); color: #fff; font: 600 16px/1.3 var(--body); padding: 10px 16px; border-radius: 999px; white-space: nowrap; }
 .ar-btn[hidden] { display: none; }
+
+/* ---------- Units toggle ---------- */
+.units { display: inline-flex; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; margin-top: 10px; }
+.units button { font: 700 13px/1 var(--body); padding: 6px 12px; border: 0; background: #fff; color: var(--ink); cursor: pointer; }
+.units button.on { background: var(--ink); color: var(--paper); }
+.cloud .lbl.stack span { display: block; margin-top: 2px; }
+.cloud a.you .lbl { color: var(--red); }
+
+/* ---------- Hunt tabs (Giant SF Hunt / Hidden in the Mural) ---------- */
+.hunt-tabs { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
+.hunt-tabs a { flex: 1 1 0; min-width: 0; text-align: center; text-decoration: none; color: var(--ink);
+  font: 700 16px/1.15 var(--body); padding: 12px 10px; border: var(--line); border-radius: 14px; background: #fff;
+  box-shadow: 3px 3px 0 var(--ink); }
+.hunt-tabs a small { display: block; font-weight: 600; font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+.hunt-tabs a.on { background: var(--ink); color: var(--paper); }
+.hunt-tabs a.on small { color: var(--paper-2); }
+
+/* ---------- Hidden in the Mural ---------- */
+.mural-head { position: relative; }
+.obj-cloud { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 14px;
+  margin: 30px 0 10px; padding: 8px 0; row-gap: 22px; --k: 1; }
+@media (max-width: 600px) { .obj-cloud, .obj-tray { --k: .72; } .obj-cloud { gap: 6px 8px; } }
+.obj { --s: 80px; margin: 0 calc(var(--mx, 0px) * var(--k, 1)); width: max(52px, calc(var(--s) * var(--k, 1))); height: max(52px, calc(var(--s) * var(--k, 1)));
+  padding: 4px; border: 0; background: none; cursor: pointer; border-radius: 14px;
+  transform: translate(0, var(--y, 0)) rotate(var(--r, 0deg)); transition: transform .15s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.obj img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+.obj:hover { transform: translate(0, var(--y, 0)) rotate(var(--r, 0deg)) scale(1.08); }
+.obj:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.obj.got { animation: got .3s ease-in forwards; }
+@keyframes got { 30% { transform: scale(1.25) rotate(var(--r)); } 100% { transform: scale(.2) rotate(var(--r)); opacity: 0; } }
+.obj.arrive { animation: arrive .5s cubic-bezier(.2,1.6,.4,1); }
+@keyframes arrive { from { transform: scale(.2); opacity: 0; } }
+.pop-bit { position: fixed; width: 11px; height: 14px; margin: -7px 0 0 -5px; border: 1.5px solid var(--ink); border-radius: 40% 60% 50% 50%;
+  z-index: 2000; pointer-events: none; animation: popbit .8s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes popbit { 0% { transform: translate(0, 0) scale(.4); } 70% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1); opacity: 0; } }
+.obj-empty { margin: 8px 0 0; }
+
+.found-tray { margin-top: 26px; border: var(--line); border-radius: var(--radius); background: #fff; padding: 16px; box-shadow: var(--shadow); scroll-margin-top: 20px; }
+.found-tray h3 { margin: 0 0 8px; font: 800 22px/1 var(--display); }
+.found-tray h3 span { display: inline-block; min-width: 1.6em; padding: 2px 8px; margin-left: 4px; border-radius: 99px; background: var(--yellow); border: 2px solid var(--ink); font-size: 16px; text-align: center; vertical-align: 3px; }
+.obj-tray { display: flex; flex-wrap: wrap; gap: 4px; min-height: 56px; align-items: center; }
+.obj.in-tray { --s: 56px !important; margin: 0; width: 52px; height: 52px; background: var(--paper); transform: none; }
+.obj.in-tray:hover { transform: scale(1.06); }
+.tray-hint { font-size: 14px; margin: 10px 0 0; }
+
+.obj-bar { position: sticky; bottom: 14px; display: block; width: max-content; margin: 14px auto 0; z-index: 50; font-size: 15px;
+  background: var(--ink); color: var(--paper); text-decoration: none; font-weight: 700; padding: 10px 18px; border-radius: 999px;
+  box-shadow: 3px 3px 0 rgba(27,26,23,.25); }
+
+.done-sticker { position: absolute; top: 8px; right: 0; width: 112px; height: 112px; border-radius: 50%;
+  background: var(--yellow); border: var(--line); box-shadow: 3px 3px 0 var(--ink); display: grid; place-items: center; text-align: center;
+  transform: rotate(10deg); animation: sticker .6s cubic-bezier(.2,1.6,.4,1) both; z-index: 2; }
+.done-sticker img { width: 46px; margin-bottom: -18px; }
+.done-sticker span { font: 800 15px/1.05 var(--display); }
+@keyframes sticker { from { transform: rotate(-30deg) scale(.2); opacity: 0; } }
+@media (max-width: 600px) { .done-sticker { width: 88px; height: 88px; top: 0; } .done-sticker img { width: 36px; margin-bottom: -14px; } .done-sticker span { font-size: 12px; }
+  .mural-head > div:first-child { padding-right: 84px; } }
+
+.bloom { position: fixed; inset: 0; display: grid; place-items: center; z-index: 1900; pointer-events: none; }
+.bloom img { width: min(70vw, 420px); animation: bloom 2.1s cubic-bezier(.2,1.2,.4,1) forwards; }
+@keyframes bloom { 0% { transform: scale(0) rotate(-200deg); opacity: 0; } 45% { transform: scale(1.05) rotate(10deg); opacity: 1; }
+  75% { transform: scale(1) rotate(0); opacity: 1; } 100% { transform: scale(1.4) rotate(15deg); opacity: 0; } }
+.done-flower { text-align: center; margin: 4px 0 6px; }
+.done-flower img { display: block; margin: 0 auto; width: 120px; animation: spinslow 8s linear infinite; }
+@keyframes spinslow { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .done-flower img, .done-sticker, .obj.arrive { animation: none; } }
+
+/* demit's links */
+.artist-links { margin: 6px 0 0; font-size: 15px; }
+.artist-links span { color: var(--ink-soft); }
+.artist-links a { color: var(--ink); font-weight: 700; }
+.foot-artist { margin: 0 0 12px; font-size: 14px; }

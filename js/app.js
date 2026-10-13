@@ -17,6 +17,14 @@
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
+  // demit's Instagram + website, wherever his name appears
+  function artistLinks(cls) {
+    const l = [];
+    if (S.artistInstagram) l.push(`<a href="${esc(S.artistInstagram)}" target="_blank" rel="noopener">Instagram</a>`);
+    if (S.artistWebsite) l.push(`<a href="${esc(S.artistWebsite)}" target="_blank" rel="noopener">Website</a>`);
+    return l.length ? `<p class="artist-links ${cls || ""}"><span>${esc(S.artist)}:</span> ${l.join(" · ")}</p>` : "";
+  }
+
   /* ---------------- Footer ---------------- */
   (function footer() {
     const tel = n => "tel:" + String(n).replace(/[^\d+]/g, "");
@@ -26,6 +34,7 @@
           <div>
             <img class="foot-lettering" src="assets/brand/384-post-lettering.svg" alt="384 Post St">
             <p class="foot-tag">Colorful Characters of San Francisco · a mural by ${esc(S.artist)}<br>384 Post Street · Union Square · San Francisco</p>
+            ${artistLinks("foot-artist")}
             ${S.cerosUrl ? `<a class="btn small orange" href="${esc(S.cerosUrl)}">Explore 384 Post →</a>` : ""}
           </div>
           <div class="foot-contacts">
@@ -40,7 +49,7 @@
         <div class="foot-legal">
           ${S.artworkNotice ? `<p>${esc(S.artworkNotice)}</p>` : ""}
           ${S.cbreNotice ? `<p>${esc(S.cbreNotice)}</p>` : ""}
-          <p class="foot-links"><a href="#/terms">Terms of use</a><a href="#/terms#privacy">Privacy</a>${S.privacyPolicyUrl ? `<a href="${esc(S.privacyPolicyUrl)}" target="_blank" rel="noopener">CBRE privacy &amp; cookie policy</a>` : ""}</p>
+          <p class="foot-links">${S.contactFormUrl ? `<a href="${esc(S.contactFormUrl)}" target="_blank" rel="noopener">Stay in touch</a>` : ""}<a href="#/terms">Terms of use</a><a href="#/terms#privacy">Privacy</a>${S.privacyPolicyUrl ? `<a href="${esc(S.privacyPolicyUrl)}" target="_blank" rel="noopener">CBRE privacy &amp; cookie policy</a>` : ""}</p>
         </div>
       </div>`;
   })();
@@ -62,6 +71,15 @@
   const isFound = id => !!getFound()[id];
   const foundCount = () => Object.keys(getFound()).filter(id => byId[id]).length;
   const myResult = () => (byId[store.get("result")] ? store.get("result") : null);
+  // Hidden-in-the-mural objects (honor system: people tap what they spot at the building)
+  const OBJS = C.muralObjects || [];
+  const objById = {}; OBJS.forEach(o => (objById[o.id] = o));
+  const OBJ_TOTAL = OBJS.length;
+  const OBJ_CODE_ORDER = OBJS.map(o => o.id).sort(); // stable order for save links (independent of the cloud order)
+  const objKey = () => (isTest() ? "testObjFound" : "objFound");
+  const getObj = () => store.get(objKey(), {});
+  const objCount = () => Object.keys(getObj()).filter(id => objById[id]).length;
+  const OBJ_ART = id => `assets/objects/${id}.svg`;
   // AR is open for: characters you've found, your own quiz character (anytime), and everything in test mode
   const canAR = id => isFound(id) || myResult() === id || isTest();
 
@@ -124,9 +142,21 @@
     const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
     return 2 * R * Math.asin(Math.sqrt(h));
   }
+  // Units: US (feet/miles) by default; visitors can switch to metric on the Hunt page.
+  const metric = () => store.get("units") === "metric";
+  function len(feet, word) { // a length given in feet → "330 feet" or "100 meters" (word=true) / "330 ft" or "100 m"
+    if (!metric()) return `${feet} ${word ? "feet" : "ft"}`;
+    const m = feet * 0.3048, r = m >= 20 ? Math.round(m / 5) * 5 : Math.max(1, Math.round(m));
+    return `${r} ${word ? "meters" : "m"}`;
+  }
   function fmtDist(m) {
-    if (m < 1000) return Math.round(m / 10) * 10 + " m away";
-    const mi = m / 1609.34; return (mi < 10 ? mi.toFixed(1) : Math.round(mi)) + " mi away";
+    if (metric()) {
+      if (m < 1000) return Math.round(m / 10) * 10 + " m away";
+      return (m / 1000).toFixed(m < 10000 ? 1 : 0) + " km away";
+    }
+    const ft = m * 3.28084, mi = m / 1609.34;
+    if (ft < 1000) return Math.max(10, Math.round(ft / 10) * 10) + " ft away";
+    return (mi < 10 ? mi.toFixed(1) : Math.round(mi)) + " mi away";
   }
   const directions = c => `https://www.google.com/maps/dir/?api=1&destination=${c.spot.lat},${c.spot.lng}&travelmode=walking`;
 
@@ -236,7 +266,7 @@
       <div class="parade" aria-hidden="true">${parade}</div>
       <section class="cards3">
         <a class="tile" href="#/quiz"><h3>1 · Find yours</h3><p>Nine quick questions match you with one of 13 characters.</p></a>
-        <a class="tile" href="#/hunt"><h3>2 · Hunt the city</h3><p>Giant characters are hiding around SF. Get close to unlock them in AR. ${foundCount() ? `<b>${foundCount()} of ${TOTAL} found.</b>` : ""}</p></a>
+        <a class="tile" href="#/hunt"><h3>2 · Hunt the city</h3><p>Giant characters are hiding around SF, and ${OBJ_TOTAL} objects are hidden in the mural itself. ${foundCount() ? `<b>${foundCount()} of ${TOTAL} found.</b>` : ""}</p></a>
         <a class="tile" href="#/results"><h3>3 · Who is SF?</h3><p>See which characters the city is made of, live.</p></a>
       </section>
       <section class="statement">
@@ -298,7 +328,8 @@
     app.innerHTML = `<section style="padding-top:28px">
       <div class="eyebrow">The cast</div>
       <h2>Meet all ${TOTAL} Colorful Characters</h2>
-      <p class="muted">Each embodies the elemental forces and personalities that shape us.</p>
+      <p class="muted">Each embodies the elemental forces and personalities that shape us. Art by ${esc(S.artist)}.</p>
+      ${artistLinks()}
       <div class="gallery">${chars.map(c => `
         <a class="g-item" href="#/c/${c.id}">
           <div class="pic" style="--c:${esc(c.colorHex)}"><img src="${ART(c.id)}" alt="" loading="lazy"></div>
@@ -556,12 +587,12 @@
   function pageHunt(focusId) {
     const r = myResult();
     const n = foundCount();
-    app.innerHTML = `
+    app.innerHTML = huntTabs("giants") + `
       <section class="hunt-head">
         <div>
           <div class="eyebrow">The Colorful Character Hunt</div>
           <h2>Giants are hiding around San Francisco</h2>
-          <p class="muted">Walk within about ${Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10} feet of a spot to unlock its character — then see them towering up to 30 feet tall in AR. Find all ${TOTAL} for a secret message from ${esc(S.artist)}.</p>
+          <p class="muted">Walk within about ${len(Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10, true)} of a spot to unlock its character — then see them towering up to ${len(30, true)} tall in AR. Find all ${TOTAL} for a secret message from ${esc(S.artist)}.</p>
           <p style="margin:0"><button class="linkish strong" id="howBtn">How the hunt works</button></p>
         </div>
         <div>
@@ -572,6 +603,9 @@
             ${n === TOTAL ? `<a class="btn red" href="#/secret">Secret unlocked ✦</a>` : ""}
           </div>
           <div class="loc-status" id="locStatus">Location is off. Your position never leaves your phone.</div>
+          <div class="units" role="group" aria-label="Units">
+            <button data-units="us" class="${metric() ? "" : "on"}">ft / mi</button><button data-units="metric" class="${metric() ? "on" : ""}">m / km</button>
+          </div>
         </div>
       </section>
       ${r ? `<div class="callout"><b>You're ${esc(byId[r].name)}!</b> Your character is circled in red on the map. Hunt in any order: start with whoever's closest.</div>` : `<div class="callout"><a href="#/quiz"><b>Take the quiz</b></a> to find your character, then hunt for all ${TOTAL}.</div>`}
@@ -587,20 +621,23 @@
     initMap(focusId);
     document.getElementById("locBtn").addEventListener("click", startLocation);
     document.getElementById("howBtn").addEventListener("click", showHowTo);
+    app.querySelectorAll("[data-units]").forEach(b => b.addEventListener("click", () => {
+      store.set("units", b.dataset.units); route();
+    }));
     document.getElementById("saveBtn").addEventListener("click", saveProgress);
     if (isTest()) bindTestTools();
     if (store.get("locOn") && !isTest()) startLocation();
   }
 
   function showHowTo() {
-    const ft = Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10;
+    const ft = len(Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10, true);
     openModal(`<div class="howto">
       <div class="eyebrow">The Colorful Character Hunt</div>
       <h2>How the hunt works</h2>
       <ol>
         <li><b>Keep this page open while you explore.</b> The site can only spot you while it's open on your screen. It can't alert you when your phone is locked or the browser is closed, so open the Hunt page when you get to a spot.</li>
         <li><b>Tap "Start finding" and allow location.</b> Your location stays on your phone and is never sent anywhere. Each spot shows how far away it is.</li>
-        <li><b>Walk within about ${ft} feet of a spot.</b> The character unlocks automatically, with a little celebration. Hunt in any order. Spots marked "Bonus" are farther out.</li>
+        <li><b>Walk within about ${ft} of a spot.</b> The character unlocks automatically, with a little celebration. Hunt in any order. Spots marked "Bonus" are farther out.</li>
         <li><b>See them in AR.</b> Tap to place the character in front of you through your phone camera, at giant size for that spot, or switch to life-size. Any character you've found, and your own quiz character, can be viewed again anytime.</li>
         <li><b>Your progress saves automatically</b> on this phone, in this browser. If you switch phones or browsers (say, from Instagram's built-in browser to Safari), tap <b>Save my progress</b> for a link, then open it in the new browser. The link is a snapshot of what you've found so far, so make a new one whenever you want to carry over newer finds. Tip: iPhones can clear saved progress after about a week without a visit, so a saved link is a good backup.</li>
         <li><b>Find all ${TOTAL}</b> to unlock a secret message from ${esc(S.artist)}.</li>
@@ -677,7 +714,7 @@
       store.set("locOn", true);
       onPosition({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy });
       const s2 = document.getElementById("locStatus");
-      if (s2) { s2.className = "loc-status on"; s2.textContent = `Finding characters near you (±${Math.round(p.coords.accuracy)} m)`; }
+      if (s2) { s2.className = "loc-status on"; s2.textContent = "Location on · finding characters near you"; }
       const b2 = document.getElementById("locBtn"); if (b2) { b2.textContent = "Location on"; b2.disabled = true; }
     }, err => {
       store.del("locOn");
@@ -728,32 +765,199 @@
     }
   }
 
+  /* ---------------- Hidden in the Mural ---------------- */
+  function huntTabs(active) {
+    return `<nav class="hunt-tabs" aria-label="Hunts">
+      <a href="#/hunt" class="${active === "giants" ? "on" : ""}">Giant SF Hunt <small>${foundCount()}/${TOTAL}</small></a>
+      <a href="#/mural" class="${active === "mural" ? "on" : ""}">Hidden in the Mural <small>${objCount()}/${OBJ_TOTAL}</small></a>
+    </nav>`;
+  }
+  // small fixed wobble so the cloud looks hand-placed (the same for everyone)
+  const wob = (i, k) => { const x = Math.sin((i + 1) * 12.9898 * k) * 43758.5453; return x - Math.floor(x); };
+  function objBtn(o, inTray) {
+    const i = OBJS.indexOf(o);
+    const rot = Math.round((wob(i, 1) - .5) * 24), dy = Math.round((wob(i, 2) - .5) * 26), mx = Math.round(wob(i, 3) * 14);
+    return `<button class="obj${inTray ? " in-tray" : ""}" data-obj="${o.id}" style="--s:${o.size}px;--r:${rot}deg;--y:${dy}px;--mx:${mx}px"
+      aria-label="${inTray ? "Found: " + esc(o.name) + ". Tap to put it back" : esc(o.name)}" title="${esc(o.name)}"><img src="${OBJ_ART(o.id)}" alt="" draggable="false"></button>`;
+  }
+  const trayHint = n => n ? "Tapped one by mistake? Tap it here to put it back." : "Objects you find will collect here.";
+  function pageMural() {
+    const got = getObj(), n = objCount(), done = OBJ_TOTAL && n === OBJ_TOTAL;
+    const left = OBJS.filter(o => !got[o.id]);
+    const found = OBJS.filter(o => got[o.id]).sort((a, b) => got[a.id] - got[b.id]);
+    app.innerHTML = huntTabs("mural") + `
+      <section class="hunt-head mural-head">
+        <div>
+          <div class="eyebrow">Hidden in the Mural</div>
+          <h2>${OBJ_TOTAL} objects are hiding in the mural</h2>
+          <p class="muted">Visit the mural at 384 Post in Union Square and look closely: ${esc(S.artist)} tucked these objects in among the Colorful Characters. Each time you spot one on the wall, tap it here.</p>
+        </div>
+        <div>
+          <div class="counter" id="objCounter">${n}<small> / ${OBJ_TOTAL} found</small></div>
+          <div class="meter"><i id="objMeter" style="width:${OBJ_TOTAL ? (n / OBJ_TOTAL) * 100 : 0}%"></i></div>
+        </div>
+        ${done ? doneSticker() : ""}
+      </section>
+      ${isTest() ? `<div class="test-tools"><b>Test tools</b> <span class="muted">(test progress is separate and isn't sent to analytics)</span>
+        <div class="btn-row" style="margin-top:10px"><button class="btn small" id="tObjAlmost">Find all but one</button><button class="btn small ghost" id="tObjReset">Reset objects</button></div></div>` : ""}
+      <div class="obj-cloud" id="objCloud">${left.map(o => objBtn(o)).join("")}</div>
+      <a class="obj-bar" href="#foundTray" id="objBar">${n} / ${OBJ_TOTAL} found ↓</a>
+      <p class="center muted obj-empty" id="cloudEmpty" ${left.length ? "hidden" : ""}>You've spotted everything. Nicely done.</p>
+      <section class="found-tray" id="foundTray">
+        <h3>Found <span id="trayCount">${n}</span></h3>
+        <div class="obj-tray" id="objTray">${found.map(o => objBtn(o, true)).join("")}</div>
+        <p class="muted tray-hint" id="trayHint">${trayHint(n)}</p>
+      </section>
+      <p class="center" style="margin-top:26px">
+        <button class="btn ghost small" id="saveBtn">Save my progress</button><br>
+        <span class="muted" style="font-size:14px">One link saves everything: your character, the giant hunt and the mural.</span>
+      </p>
+`;
+    app.querySelector("#objCloud").addEventListener("click", e => { const b = e.target.closest(".obj"); if (b) findObject(b); });
+    app.querySelector("#objTray").addEventListener("click", e => { const b = e.target.closest(".obj"); if (b) unfindObject(b); });
+    app.querySelector("#objBar").addEventListener("click", e => { e.preventDefault(); document.getElementById("foundTray").scrollIntoView({ behavior: "smooth" }); });
+    document.getElementById("saveBtn").addEventListener("click", saveProgress);
+    if (isTest()) {
+      document.getElementById("tObjAlmost").onclick = () => { const f = {}; OBJS.slice(1).forEach((o, i) => (f[o.id] = Date.now() + i)); store.set("testObjFound", f); route(); };
+      document.getElementById("tObjReset").onclick = () => { store.set("testObjFound", {}); route(); toast("Test objects reset"); };
+    }
+  }
+  function doneSticker() {
+    return `<div class="done-sticker" role="img" aria-label="All ${OBJ_TOTAL} found"><img src="favicon.svg" alt=""><span>All ${OBJ_TOTAL}<br>found!</span></div>`;
+  }
+  function updateObjUI() {
+    const n = objCount();
+    const set = (id, h) => { const el = document.getElementById(id); if (el) el.innerHTML = h; };
+    set("objCounter", `${n}<small> / ${OBJ_TOTAL} found</small>`);
+    set("trayCount", n);
+    set("objBar", `${n} / ${OBJ_TOTAL} found ↓`);
+    set("trayHint", trayHint(n));
+    const m = document.getElementById("objMeter"); if (m) m.style.width = (n / OBJ_TOTAL) * 100 + "%";
+    const tab = app.querySelector('.hunt-tabs a[href="#/mural"] small'); if (tab) tab.textContent = `${n}/${OBJ_TOTAL}`;
+    const ce = document.getElementById("cloudEmpty"); if (ce) ce.hidden = n < OBJ_TOTAL;
+  }
+  const reduceMotion = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  // take an element out of its row and slide its neighbors smoothly into the gap
+  function flipOut(btn) {
+    const sibs = [...btn.parentNode.children].filter(x => x !== btn);
+    const before = sibs.map(x => x.getBoundingClientRect());
+    btn.remove();
+    if (reduceMotion()) return;
+    sibs.forEach((x, k) => {
+      const a = before[k], b = x.getBoundingClientRect();
+      const dx = a.left - b.left, dy = a.top - b.top;
+      if (!dx && !dy) return;
+      const tray = x.classList.contains("in-tray");
+      const y = tray ? "0px" : x.style.getPropertyValue("--y") || "0px", r = tray ? "0deg" : x.style.getPropertyValue("--r") || "0deg";
+      x.animate([{ transform: `translate(${dx}px, calc(${dy}px + ${y})) rotate(${r})` }, { transform: `translate(0px, ${y}) rotate(${r})` }],
+        { duration: 380, easing: "cubic-bezier(.2,.8,.3,1)" });
+    });
+  }
+  // three little confetti bits pop out of the tapped object
+  function burst(btn) {
+    if (reduceMotion()) return;
+    const r = btn.getBoundingClientRect(), cols = ["#DC4A4E", "#4D7FC1", "#F6E54E", "#3F9150", "#E3923B"];
+    const base = Math.random() * 360, c0 = Math.floor(Math.random() * cols.length);
+    for (let k = 0; k < 3; k++) {
+      const p = document.createElement("i"); p.className = "pop-bit";
+      const ang = (base + k * 120 + (Math.random() - .5) * 40) * Math.PI / 180, dist = 48 + Math.random() * 22;
+      p.style.left = r.left + r.width / 2 + "px"; p.style.top = r.top + r.height / 2 + "px";
+      p.style.background = cols[(c0 + k) % cols.length];
+      p.style.setProperty("--dx", Math.cos(ang) * dist + "px"); p.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+      p.style.setProperty("--rot", (Math.random() * 300 - 150) + "deg");
+      document.body.appendChild(p); setTimeout(() => p.remove(), 900);
+    }
+  }
+  function findObject(btn) {
+    const o = objById[btn.dataset.obj]; if (!o || btn.classList.contains("got")) return;
+    const f = getObj(); f[o.id] = Date.now(); store.set(objKey(), f);
+    track("mural_object_found", { object: o.id });
+    burst(btn);
+    btn.classList.add("got");
+    setTimeout(() => {
+      if (!btn.isConnected) return;
+      flipOut(btn);
+      btn.classList.remove("got"); btn.classList.add("in-tray", "arrive");
+      btn.setAttribute("aria-label", `Found: ${o.name}. Tap to put it back`);
+      document.getElementById("objTray").appendChild(btn);
+      setTimeout(() => btn.classList.remove("arrive"), 600);
+      updateObjUI();
+      if (objCount() === OBJ_TOTAL) muralComplete();
+    }, reduceMotion() ? 0 : 300);
+  }
+  function unfindObject(btn) {
+    const o = objById[btn.dataset.obj]; if (!o) return;
+    const f = getObj(); delete f[o.id]; store.set(objKey(), f);
+    flipOut(btn);
+    btn.classList.remove("in-tray"); btn.setAttribute("aria-label", o.name);
+    // back to its original place in the cloud
+    const cloud = document.getElementById("objCloud"), idx = OBJS.indexOf(o);
+    const next = [...cloud.children].find(x => OBJS.indexOf(objById[x.dataset.obj]) > idx);
+    cloud.insertBefore(btn, next || null);
+    btn.classList.add("arrive"); setTimeout(() => btn.classList.remove("arrive"), 600);
+    const st = app.querySelector(".done-sticker"); if (st) st.remove();
+    updateObjUI();
+    toast(`${o.name} went back to the cloud. Tap it again when you spot it.`);
+  }
+  function muralComplete() {
+    track("mural_complete", {});
+    const head = app.querySelector(".mural-head");
+    if (head && !head.querySelector(".done-sticker")) head.insertAdjacentHTML("beforeend", doneSticker());
+    const bloom = document.createElement("div"); bloom.className = "bloom";
+    bloom.innerHTML = `<img src="favicon.svg" alt="">`;
+    document.body.appendChild(bloom);
+    confetti();
+    setTimeout(() => {
+      bloom.remove();
+      openModal(`<div class="eyebrow">Hidden in the Mural</div>
+        <div class="done-flower"><img src="favicon.svg" alt=""></div>
+        <h2>You did it!</h2>
+        <p>You spotted all ${OBJ_TOTAL} objects ${esc(S.artist)} hid in the mural. Sharp eyes.</p>
+        <div class="btn-row center"><a class="btn green" href="#/hunt">Now hunt the giants</a><button class="btn ghost" data-close>See my collection</button></div>`);
+    }, reduceMotion() ? 0 : 2100);
+  }
+
   /* ---------------- Save / restore progress ---------------- */
   function progressCode() {
     let bits = 0;
     chars.forEach((c, i) => { if (store.get("found", {})[c.id]) bits |= 1 << i; });
     const r = myResult();
-    return bits.toString(36) + "-" + (r ? String.fromCharCode(97 + byId[r].index) : "x");
+    // mural objects as one big number (BigInt: there are more than 32 of them)
+    const got = store.get("objFound", {});
+    let ob = 0n;
+    OBJ_CODE_ORDER.forEach((id, i) => { if (got[id]) ob |= 1n << BigInt(i); });
+    return bits.toString(36) + "-" + (r ? String.fromCharCode(97 + byId[r].index) : "x") + (ob ? "-" + ob.toString(36) : "");
   }
   async function saveProgress() {
     if (isTest()) { toast("Turn off test mode to save real progress."); return; }
     const url = location.href.split("#")[0] + "#/restore/" + progressCode();
     try {
-      if (navigator.share) { await navigator.share({ title: "My 384 Post character hunt", text: "My Colorful Character hunt progress:", url }); return; }
+      if (navigator.share) { await navigator.share({ title: "My 384 Post hunt", text: "My Colorful Characters hunt progress:", url }); return; }
     } catch (e) { if (e.name === "AbortError") return; }
     try { await navigator.clipboard.writeText(url); toast("Link copied — text it to yourself!"); }
     catch (e) { openModal(`<h3>Your progress link</h3><p style="word-break:break-all">${esc(url)}</p><button class="btn small" data-close>Done</button>`); }
   }
   function pageRestore(code) {
-    const [b, r] = code.split("-");
+    const [b, r, o] = code.split("-");
     const bits = parseInt(b, 36) || 0;
     const f = store.get("found", {});
     let added = 0;
     chars.forEach((c, i) => { if ((bits & (1 << i)) && !f[c.id]) { f[c.id] = Date.now(); added++; } });
     store.set("found", f);
     if (r && r !== "x") { const c = chars[r.charCodeAt(0) - 97]; if (c && !myResult()) store.set("result", c.id); }
-    toast(added ? `Restored ${added} character${added > 1 ? "s" : ""}!` : "Progress is up to date.");
-    location.replace("#/hunt");
+    let objAdded = 0;
+    if (o) {
+      let ob = 0n;
+      try { for (const ch of o.toLowerCase()) ob = ob * 36n + BigInt(parseInt(ch, 36)); } catch (e) { ob = 0n; }
+      const got = store.get("objFound", {});
+      OBJ_CODE_ORDER.forEach((id, i) => { if ((ob >> BigInt(i)) & 1n && !got[id]) { got[id] = Date.now() + i; objAdded++; } });
+      store.set("objFound", got);
+    }
+    const parts = [];
+    if (added) parts.push(`${added} character${added > 1 ? "s" : ""}`);
+    if (objAdded) parts.push(`${objAdded} mural object${objAdded > 1 ? "s" : ""}`);
+    toast(parts.length ? `Restored ${parts.join(" and ")}!` : "Progress is up to date.");
+    location.replace(objAdded && !added ? "#/mural" : "#/hunt");
   }
 
   /* ---------------- Test mode ---------------- */
@@ -815,8 +1019,8 @@
       <div class="eyebrow">${esc(c.archetype)} · ${esc(c.spot.name)}</div>
       <h2>${esc(c.name)}, ${giant ? "giant" : "life-size"}</h2>
       <div class="size-toggle" role="group" aria-label="Size">
-        <a href="#/ar/${c.id}" class="${giant ? "" : "on"}">Life-size <small>~6 ft</small></a>
-        <a href="#/ar/${c.id}/giant" class="${giant ? "on" : ""}">Giant <small>~${c.spot.giantFeet} ft</small></a>
+        <a href="#/ar/${c.id}" class="${giant ? "" : "on"}">Life-size <small>~${len(6)}</small></a>
+        <a href="#/ar/${c.id}/giant" class="${giant ? "on" : ""}">Giant <small>~${len(c.spot.giantFeet)}</small></a>
       </div>
       <div style="position:relative">
         <model-viewer id="mv" src="${MODEL(c.id, giant)}" alt="${esc(c.name)} by ${esc(S.artist)}"
@@ -828,7 +1032,7 @@
         </model-viewer>
         <button class="btn red ar-btn" id="arGo" hidden>See ${esc(c.name)} in your space</button>
       </div>
-      <p class="muted" style="margin-top:14px">${giant ? `Giant-size, about ${c.spot.giantFeet} feet tall here: after you tap the button, aim at the ground, then walk back about ${c.spot.giantFeet} feet to fit them on screen.` : "Life-size, about as tall as you: after you tap the button, aim at the ground and stand next to them for a photo."} Snap a photo and tag <b>${esc(S.hashtag)}</b>! On a computer, drag to spin them around.</p>
+      <p class="muted" style="margin-top:14px">${giant ? `Giant-size, about ${len(c.spot.giantFeet, true)} tall here: after you tap the button, aim at the ground, then walk back about ${len(c.spot.giantFeet, true)} to fit them on screen.` : "Life-size, about as tall as you: after you tap the button, aim at the ground and stand next to them for a photo."} Snap a photo and tag <b>${esc(S.hashtag)}</b>! On a computer, drag to spin them around.</p>
       <div class="btn-row"><a class="btn ghost small" href="#/c/${c.id}">Read ${esc(c.name)}'s story</a><a class="btn ghost small" href="#/hunt">Back to the hunt</a></div>
     </section>`;
     loadModelViewer().then(ok => {
@@ -851,7 +1055,7 @@
   // Native AR viewers (iPhone Quick Look, Android Scene Viewer) give almost no guidance,
   // so explain the three moves right before the camera opens.
   function arTip(c, giant, mv) {
-    const back = giant ? `walk back about ${c.spot.giantFeet} feet and look up` : "step back for a photo";
+    const back = giant ? `walk back about ${len(c.spot.giantFeet, true)} and look up` : "step back for a photo";
     openModal(`<div class="ar-tip">
       <div class="eyebrow">Before the camera opens</div>
       <h3>Placing ${esc(c.name)}</h3>
@@ -872,7 +1076,7 @@
   }
 
   /* ---------------- Results (popularity cloud) ---------------- */
-  const SAMPLE = { source: "sample", counts: { sol: 412, rebel: 287, captain: 198, sequoia: 164, rascal: 356, ocean: 241, atlas: 133, compass: 97, flora: 221, lorey: 309, pixie: 176, flow: 268, ash: 118 } };
+  const SAMPLE = { source: "none", counts: {} }; // if results can't load, show the starting seed only
   let cloudItems = null, resizeTimer;
   async function pageResults() {
     app.innerHTML = `<section style="padding-top:28px" class="center">
@@ -883,21 +1087,28 @@
     </section>
     <section style="max-width:640px;margin:0 auto"><ol class="rank" id="rank"></ol></section>
     <p class="center" style="margin-top:28px"><a class="btn red" href="#/quiz">${myResult() ? "Retake the quiz" : "Add yourself — take the quiz"}</a></p>`;
-    let data;
-    try {
-      const r = await fetch(S.resultsDataUrl + "?t=" + Date.now(), { cache: "no-store" });
-      if (!r.ok) throw new Error(r.status);
-      data = await r.json();
-    } catch (e) { data = SAMPLE; }
-    const counts = data.counts || {};
+    let data = null;
+    for (const url of (S.resultsDataUrls || [S.resultsDataUrl || "data/results.json"])) {
+      try {
+        const r = await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+        if (!r.ok) throw new Error(r.status);
+        const d = await r.json();
+        if (d && d.counts) { data = d; break; }
+      } catch (e) { /* try the next address */ }
+    }
+    if (!data) data = SAMPLE;
+    // Starting seed (settings.resultsSeed) is added on screen only, so the page never
+    // shows all zeros at launch. Google Analytics data stays real and unseeded.
+    const seed = S.resultsSeed || {}, raw = data.counts || {}, counts = {};
+    chars.forEach(c => { counts[c.id] = (raw[c.id] || 0) + (seed[c.id] || 0); });
     const total = chars.reduce((s, c) => s + (counts[c.id] || 0), 0) || 1;
     const imgs = await Promise.all(chars.map(c => loadImg(ART_PNG(c.id)).catch(() => null)));
     cloudItems = chars.map((c, i) => ({ c, count: counts[c.id] || 0, pct: (counts[c.id] || 0) / total, aspect: imgs[i] ? imgs[i].naturalWidth / imgs[i].naturalHeight : .7 }))
       .sort((a, b) => b.count - a.count);
     const meta = document.getElementById("resMeta"); if (!meta) return;
-    meta.innerHTML = data.source === "sample"
-      ? ""
-      : `${total.toLocaleString()} people have found their character${data.updated ? ` · updated ${new Date(data.updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}` : ""}`;
+    meta.innerHTML = data.source === "google-analytics" && data.updated
+      ? `Updated ${new Date(data.updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}`
+      : "";
     drawCloud();
     const me = myResult();
     document.getElementById("rank").innerHTML = cloudItems.map((it, i) => `
@@ -905,39 +1116,36 @@
       <span class="bar" style="--c:${esc(it.c.colorHex)}"><i style="width:${(it.count / cloudItems[0].count) * 100}%"></i></span>
       <span class="muted">${Math.round(it.pct * 100)}%</span></li>`).join("");
   }
+  // Ranked layout: the most-picked character gets the top row to itself, and each row
+  // below holds more (and smaller) characters. Size still scales with popularity.
+  const RANK_ROWS = [1, 2, 3, 3, 4];
   function drawCloud(redraw) {
     const el = document.getElementById("cloud"); if (!el || !cloudItems) return;
-    const W = el.clientWidth || 360, base = Math.min(W, 760);
+    const W = el.clientWidth || 360;
     cloudWidth = el.clientWidth;
     el.classList.toggle("no-anim", !!redraw);
     const maxCount = Math.max(1, cloudItems[0].count);
-    const maxH = base * .46, minH = base * .15, LBL = 22, pad = 6;
-    const boxes = cloudItems.map(it => {
-      const ih = minH + (maxH - minH) * Math.sqrt(it.count / maxCount);
-      return { it, ih, w: Math.max(ih * it.aspect, 70), h: ih + LBL };
-    });
-    const placed = [];
-    const hit = (b, x, y) => placed.some(p => x < p.x + p.w + pad && x + b.w + pad > p.x && y < p.y + p.h + pad && y + b.h + pad > p.y);
-    const stretch = W > 600 ? 1.5 : 1.05;
-    boxes.forEach((b, i) => {
-      if (!i) { b.x = -b.w / 2; b.y = -b.h / 2; placed.push(b); return; }
-      for (let t = 0; t < 900; t += .12) {
-        const r = 3 * t, x = r * Math.cos(t) * stretch - b.w / 2, y = r * Math.sin(t) - b.h / 2;
-        if (!hit(b, x, y)) { b.x = x; b.y = y; placed.push(b); return; }
-      }
-      b.x = 0; b.y = 0; placed.push(b);
-    });
-    const minX = Math.min(...placed.map(p => p.x)), maxX = Math.max(...placed.map(p => p.x + p.w));
-    const minY = Math.min(...placed.map(p => p.y)), maxY = Math.max(...placed.map(p => p.y + p.h));
-    const sc = Math.min(1, W / (maxX - minX));
-    const offX = (W - (maxX - minX) * sc) / 2;
-    el.style.height = (maxY - minY) * sc + "px";
+    const maxH = Math.min(W * 0.62, 320), minH = Math.min(W * 0.17, 95);
     const me = myResult();
-    el.innerHTML = placed.map((b, i) => `
-      <a href="#/c/${b.it.c.id}" class="${b.it.c.id === me ? "you" : ""}" style="left:${offX + (b.x - minX) * sc}px;top:${(b.y - minY) * sc}px;width:${b.w * sc}px">
-        <img src="${ART(b.it.c.id)}" alt="" style="--d:${(i * .06).toFixed(2)}s;height:${b.ih * sc}px;width:auto;margin:0 auto">
-        <div class="lbl" style="font-size:${Math.max(11, Math.min(18, 10 + b.ih * sc / 22))}px">${esc(b.it.c.name)} <span>${Math.round(b.it.pct * 100)}%</span></div>
-      </a>`).join("");
+    let k = 0, html = "";
+    RANK_ROWS.forEach(n => {
+      const row = cloudItems.slice(k, k + n); if (!row.length) return;
+      const slotW = W / n;
+      html += `<div class="rank-row">` + row.map((it, r) => {
+        const i = k + r;
+        let h = minH + (maxH - minH) * Math.sqrt(it.count / maxCount);
+        h = Math.min(h, (slotW - 10) / it.aspect);          // keep wide characters inside their slot
+        const fs = Math.max(12, Math.min(20, 10 + h / 18));
+        return `<a href="#/c/${it.c.id}" class="${it.c.id === me ? "you" : ""}" style="width:${slotW}px">
+          <span class="rk">${i + 1}</span>
+          <img src="${ART(it.c.id)}" alt="" style="--d:${(i * .06).toFixed(2)}s;height:${h}px">
+          <div class="lbl${slotW < 120 ? " stack" : ""}" style="font-size:${fs}px">${esc(it.c.name)} <span>${Math.round(it.pct * 100)}%</span></div>
+        </a>`;
+      }).join("") + `</div>`;
+      k += n;
+    });
+    el.style.height = "";
+    el.innerHTML = html;
   }
   // Phones fire "resize" while scrolling (the address bar slides in and out), so only
   // redraw the cloud when the width actually changes, e.g. rotating the phone.
@@ -1001,10 +1209,12 @@
 
       <h3 id="privacy">Privacy</h3>
       <ul>
-        <li><b>We don't ask for or collect your name, email or contact details.</b></li>
+        ${S.contactFormUrl
+          ? `<li><b>Contact details only if you choose to share them.</b> The site itself doesn't collect your name or email. If you sign up through our "Stay in touch" form (Microsoft Forms), we receive what you enter there and use it only for the purposes you check on the form.</li>`
+          : `<li><b>We don't ask for or collect your name, email or contact details.</b></li>`}
         <li><b>Your location stays on your phone.</b> It's used only in your browser to unlock nearby characters and is never sent to us.</li>
-        <li><b>Your quiz result and hunt progress are saved only in your browser</b> on your device. Clearing your browser data deletes them.</li>
-        <li><b>Anonymous usage statistics.</b> We use Google Analytics, which sets cookies, to count visits and actions such as quiz results, characters found, shares and AR views. Advertising features are turned off. You can block analytics cookies in your browser settings or with Google's <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">opt-out add-on</a>.</li>
+        <li><b>Your quiz result, hunt progress and mural finds are saved only in your browser</b> on your device. Clearing your browser data deletes them.</li>
+        <li><b>Anonymous usage statistics.</b> We use Google Analytics, which sets cookies, to count visits and actions such as quiz results, characters and mural objects found, shares and AR views. Advertising features are turned off. You can block analytics cookies in your browser settings or with Google's <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">opt-out add-on</a>.</li>
         <li><b>Maps.</b> Mapbox provides the hunt map and receives standard technical information (such as your IP address and device type) needed to load it.</li>
       </ul>
       <p>For more about how CBRE handles personal information, see the ${S.privacyPolicyUrl ? `<a href="${esc(S.privacyPolicyUrl)}" target="_blank" rel="noopener">CBRE Global Web Privacy &amp; Cookie Policy</a>` : "CBRE privacy policy"}${S.californiaPrivacyUrl ? ` and the <a href="${esc(S.californiaPrivacyUrl)}" target="_blank" rel="noopener">CBRE California Privacy Policy</a>` : ""}.</p>
@@ -1029,6 +1239,7 @@
     [/^hunt$/, () => pageHunt()],
     [/^hunt\/(\w+)$/, pageHunt],
     [/^ar\/(\w+)(?:\/(giant))?$/, pageAR],
+    [/^mural$/, pageMural],
     [/^results$/, pageResults],
     [/^secret$/, pageSecret],
     [/^restore\/([\w-]+)$/, pageRestore],
@@ -1041,7 +1252,7 @@
     document.getElementById("testBanner").hidden = !isTest();
     const path = location.hash.replace(/^#\/?/, "");
     const section = path.split("/")[0];
-    const navMap = { result: "quiz", c: "characters", ar: "hunt", secret: "hunt" };
+    const navMap = { result: "quiz", c: "characters", ar: "hunt", secret: "hunt", mural: "hunt" };
     document.querySelectorAll("[data-nav]").forEach(a => a.classList.toggle("active", a.dataset.nav === (navMap[section] || section)));
     for (const [re, fn] of routes) {
       const m = path.match(re);

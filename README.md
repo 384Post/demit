@@ -7,6 +7,7 @@ A working concept for the 384 Post mural campaign with demit omphroy:
 - **Quiz** → "Which Colorful Character are you?" with a shareable result image
 - **Results** → the city's characters sized by popularity
 - **Hunt** → a map of 13 giant characters around SF; walk within ~100 m to unlock each
+- **Hidden in the Mural** → a second hunt tab: demit's objects hidden in the mural. People spot them at the building and tap them; found ones collect in a tray, with a flower celebration when all are found
 - **AR** → see each found character ~20 ft tall through the phone camera (iPhone & Android, no app)
 - **Secret** → a video from demit once all 13 are found
 - **Test mode** → try everything from your desk
@@ -40,6 +41,9 @@ Open `…/384post/#/test` (or add `?test=1` to the URL). A yellow "TEST MODE" ba
 | Hashtag, artist name | `settings` |
 | Footer contacts, artwork & CBRE notices, privacy links | `settings.contacts`, `artworkNotice`, `cbreNotice`, `privacyPolicyUrl` |
 | Where shared links and "Explore 384 Post" go | `settings.cerosUrl` |
+| demit's Instagram / website links | `settings.artistInstagram`, `artistWebsite` |
+| "Stay in touch" sign-up link (Microsoft Forms) | `settings.contactFormUrl` (empty = hidden) |
+| Hidden-in-the-mural objects, names, sizes, order | the `muralObjects` list (art in `assets/objects/<id>.svg`) |
 
 **Getting coordinates:** in Google Maps, right-click the exact spot → click the numbers at the top to copy `lat, lng`. The current coordinates are approximate — check each one on site.
 
@@ -89,7 +93,7 @@ The result page has share buttons for **X, Facebook, Instagram, TikTok, Bluesky 
 ## Real results with Google Analytics (optional, free)
 
 The site already sends these GA4 events (only when a measurement ID is set, never in test mode):
-`quiz_complete` (with `character`), `share_result` (with `character` and `platform`), `character_found` (with `character`), `hunt_complete`, `ar_open`, `secret_video_view`.
+`quiz_complete` (with `character`), `share_result` (with `character` and `platform`), `character_found` (with `character`), `hunt_complete`, `ar_open`, `secret_video_view`, `mural_object_found` (with `object`), `mural_complete`. A custom dimension `Object` (parameter `object`) is set up in GA, so you can see which objects people find most.
 
 **Step 1 — tracking**
 1. In GA4, create a property + web data stream for the site URL; copy the **Measurement ID** (`G-…`) into `settings.gaMeasurementId`.
@@ -107,7 +111,7 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 
 ## Good to know
 
-- **Progress is stored in the visitor's browser.** Switching phones or apps (e.g. Instagram's built-in browser → Safari) starts fresh, and iPhones can clear it after ~7 days without a visit. The **Save my progress** button makes a link people can text themselves to carry it over.
+- **Progress is stored in the visitor's browser.** Switching phones or apps (e.g. Instagram's built-in browser → Safari) starts fresh, and iPhones can clear it after ~7 days without a visit. The **Save my progress** button (on both hunt tabs) makes one link that carries the quiz result, giant-hunt finds and mural finds. Don't rename object ids once live: save links use them.
 - **GPS downtown is rough** (often ±10–30 m, worse between tall buildings). That's why the unlock radius is generous.
 - **AR**: iPhone uses Apple's built-in AR viewer (Quick Look), Android uses Google's Scene Viewer. Figures are placed in front of the person rather than pinned to exact coordinates, which keeps them steady.
 - **The secret video isn't truly secret** — someone determined could find the link in the page. Host it as *unlisted*.
@@ -127,3 +131,6 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 - [ ] Approve share text + hashtags (#384Post #ColorfulCharacters #UnionSquare)
 - [ ] CBRE legal/marketing review of the Terms & privacy page (`#/terms`) and footer notices
 - [ ] Social wall approach (curated vs. share-only)
+- [ ] Confirm the hidden-object count and names with demit (68; "Mace" is a guess)
+- [ ] demit's reward for finding all mural objects (placeholder: flower + "You did it")
+- [ ] Microsoft Forms link for "Stay in touch" + legal review of the form wording

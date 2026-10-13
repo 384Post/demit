@@ -56,15 +56,110 @@ window.CONFIG = {
     // ("mapbox://styles/your-account/your-style-id").
     mapboxStyle: "mapbox://styles/mapbox/light-v11",
 
-    // Where the results page reads popularity counts from. The GitHub
-    // Action in /.github/workflows refreshes this file from GA hourly.
-    resultsDataUrl: "data/results.json",
+    // ---- demit's links (footer + Characters page) ----
+    artistInstagram: "https://www.instagram.com/demit/",
+    artistWebsite: "https://www.demitomphroy.com/",
+    // ---- "Stay in touch" sign-up (Microsoft Forms) ----
+    // Paste the form's share link here. Leave empty to hide the "Stay in touch" links.
+    contactFormUrl: "",
+    // Where the results page reads popularity counts from. The GitHub Action in
+    // .github/workflows refreshes data/results.json from Google Analytics hourly.
+    // The first address reads it straight from the repo (updates within minutes);
+    // the second is the copy published with the site, used as a backup.
+    // A starting "seed" of 100 picks added to the counts shown on the Results page, so it
+    // isn't empty at launch. It's display-only: Google Analytics numbers are never seeded.
+    // Set all to 0 (or delete this) to show real numbers only.
+    resultsSeed: { sol: 14, rebel: 10, captain: 7, sequoia: 6, rascal: 12, ocean: 8, atlas: 4,
+                   compass: 3, flora: 7, lorey: 10, pixie: 6, flow: 9, ash: 4 },
+
+    resultsDataUrls: [
+      "https://raw.githubusercontent.com/384post/demit/main/data/results.json",
+      "data/results.json"
+    ],
 
     // Scoring: an answer gives 3 points to its main character and
     // 1 point to its secondary character.
     primaryPoints: 3,
     secondaryPoints: 1
   },
+
+  /* ---------- Hidden in the Mural ----------
+     demit's objects hidden in the mural at 384 Post. People spot them at the building
+     and tap them here. Art: assets/objects/<id>.svg (keep the id = the file name).
+     name – shown to screen readers and on the "found" pop-up
+     size – icon size in pixels on a computer (phones scale it down); roughly
+            matches how big each one is in the mural
+     The order here is the order of the cloud on the page. */
+  muralObjects: [
+    { id: "shield", name: "Shield", size: 89 },
+    { id: "leaf", name: "Leaf", size: 54 },
+    { id: "basket", name: "Basket", size: 97 },
+    { id: "skull", name: "Skull", size: 68 },
+    { id: "flame", name: "Flame", size: 69 },
+    { id: "waves", name: "Wavy Lines", size: 76 },
+    { id: "sage", name: "Sage", size: 69 },
+    { id: "sword", name: "Sword", size: 93 },
+    { id: "ducky", name: "Rubber Ducky", size: 57 },
+    { id: "helmet", name: "Knight's Helmet", size: 97 },
+    { id: "architectTool", name: "Architect's Tool", size: 79 },
+    { id: "ruler", name: "Ruler", size: 74 },
+    { id: "cigarette", name: "Cigarette", size: 64 },
+    { id: "key", name: "Key", size: 61 },
+    { id: "binoculars", name: "Binoculars", size: 105 },
+    { id: "balloon", name: "Balloon", size: 72 },
+    { id: "calendar", name: "Calendar", size: 75 },
+    { id: "saw", name: "Saw", size: 70 },
+    { id: "mushroom", name: "Mushroom", size: 71 },
+    { id: "house", name: "House", size: 105 },
+    { id: "sneaker", name: "Sneaker", size: 77 },
+    { id: "doubleWave", name: "Double Wave", size: 60 },
+    { id: "candle", name: "Candle", size: 64 },
+    { id: "sword_1", name: "Dagger", size: 84 },
+    { id: "flashlight", name: "Flashlight", size: 68 },
+    { id: "glasses", name: "Glasses", size: 65 },
+    { id: "snails", name: "Snails", size: 115 },
+    { id: "hammer", name: "Hammer", size: 84 },
+    { id: "throne", name: "Throne", size: 129 },
+    { id: "boat", name: "Boat", size: 105 },
+    { id: "flowerpot", name: "Flower Pot", size: 67 },
+    { id: "rose", name: "Rose in a Dome", size: 66 },
+    { id: "caterpillar", name: "Caterpillar", size: 102 },
+    { id: "cutlery", name: "Spoon, Fork & Knife", size: 103 },
+    { id: "dancingCouple", name: "Dancing Couple", size: 98 },
+    { id: "mirror", name: "Hand Mirror", size: 79 },
+    { id: "lotus", name: "Lotus", size: 68 },
+    { id: "notebook", name: "Spiral Notebook", size: 80 },
+    { id: "nails", name: "Nails", size: 61 },
+    { id: "yinYang", name: "Yin-Yang", size: 66 },
+    { id: "tripleWaves", name: "Triple Waves", size: 60 },
+    { id: "sailboat", name: "Sailboat", size: 102 },
+    { id: "globe", name: "Globe", size: 92 },
+    { id: "musicNote", name: "Music Notes", size: 64 },
+    { id: "typewriter", name: "Typewriter", size: 93 },
+    { id: "paddle", name: "Paddle", size: 75 },
+    { id: "puzzle", name: "Puzzle Piece", size: 68 },
+    { id: "mase", name: "Mace", size: 97 },
+    { id: "notebook_1", name: "Notebook", size: 82 },
+    { id: "tombstone", name: "Tombstone", size: 102 },
+    { id: "carrot", name: "Carrot", size: 76 },
+    { id: "goldfish", name: "Goldfish", size: 53 },
+    { id: "genieLamp", name: "Genie Lamp", size: 86 },
+    { id: "calculator", name: "Calculator", size: 82 },
+    { id: "wateringCan", name: "Watering Can", size: 118 },
+    { id: "dog", name: "Dog", size: 133 },
+    { id: "gem", name: "Gem", size: 70 },
+    { id: "compass", name: "Compass", size: 78 },
+    { id: "lighteningBolt", name: "Lightning Bolt", size: 80 },
+    { id: "octobus", name: "Octopus", size: 105 },
+    { id: "butterfly", name: "Butterfly", size: 81 },
+    { id: "crown", name: "Crown", size: 68 },
+    { id: "siren", name: "Siren", size: 72 },
+    { id: "horse", name: "Horse", size: 140 },
+    { id: "pencil2", name: "Pencil", size: 61 },
+    { id: "baton", name: "Baton", size: 80 },
+    { id: "bunny", name: "Bunny", size: 91 },
+    { id: "rainbow", name: "Rainbow", size: 91 }
+  ],
 
   /* ---------- The 13 characters ----------
      id      – short code used everywhere (don't change once live)
