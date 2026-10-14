@@ -324,13 +324,33 @@ html, body { overflow-x: hidden; }
 .cloud a.you .lbl { color: var(--red); }
 
 /* ---------- Hunt tabs (Giant SF Hunt / Hidden in the Mural) ---------- */
-.hunt-tabs { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
-.hunt-tabs a { flex: 1 1 0; min-width: 0; text-align: center; text-decoration: none; color: var(--ink);
-  font: 700 16px/1.15 var(--body); padding: 12px 10px; border: var(--line); border-radius: 14px; background: #fff;
-  box-shadow: 3px 3px 0 var(--ink); }
-.hunt-tabs a small { display: block; font-weight: 600; font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+.hunt-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+.hunt-tabs a { position: relative; display: flex; flex-direction: column; text-decoration: none; color: var(--ink);
+  border: var(--line); border-radius: 18px; background: #fff; box-shadow: 3px 3px 0 var(--ink); overflow: hidden; transition: transform .12s; }
+.hunt-tabs a:hover { transform: translate(-1px, -1px); }
+.tab-thumb { position: relative; display: flex; align-items: flex-end; justify-content: center; height: 92px; border-bottom: var(--line); overflow: hidden; }
+.map-thumb { background-color: #EDE8D6;
+  background-image: linear-gradient(28deg, transparent 46%, #fff 46%, #fff 54%, transparent 54%),
+    linear-gradient(118deg, transparent 47%, #fff 47%, #fff 52%, transparent 52%),
+    linear-gradient(0deg, transparent 70%, #D9E7C9 70%, #D9E7C9 88%, transparent 88%); }
+.map-thumb { align-items: center; }
+.map-thumb img { height: 70px; width: auto; margin: 0 -8px; filter: drop-shadow(1px 1px 0 rgba(27,26,23,.2)); }
+.map-thumb img:nth-child(2) { height: 80px; z-index: 1; }
+.tab-pin { position: absolute; top: 10px; right: 12px; width: 16px; height: 16px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+  background: var(--red); border: 2px solid var(--ink); }
+.obj-thumb { background: var(--paper); align-items: center; gap: 2px; padding: 8px; flex-wrap: nowrap; }
+.obj-thumb img { height: 34px; width: 38px; object-fit: contain; }
+.obj-thumb img:nth-child(odd) { transform: rotate(-8deg) translateY(-4px); }
+.obj-thumb img:nth-child(even) { transform: rotate(7deg) translateY(4px); }
+.tab-label { display: block; padding: 10px 12px 12px; font: 800 18px/1.1 var(--display); }
+.tab-label small { display: block; font: 600 13px/1.25 var(--body); color: var(--ink-soft); margin-top: 3px; }
 .hunt-tabs a.on { background: var(--ink); color: var(--paper); }
-.hunt-tabs a.on small { color: var(--paper-2); }
+.hunt-tabs a.on .tab-label small { color: var(--paper-2); }
+.hunt-tabs a:not(.on) .tab-thumb { opacity: .92; }
+@media (min-width: 700px) { .obj-thumb img { height: 46px; width: 50px; } .tab-thumb { height: 104px; } }
+@media (max-width: 699px) { .map-thumb img:nth-of-type(1), .map-thumb img:nth-of-type(5) { display: none; } .obj-thumb img:nth-of-type(n+5) { display: none; } }
+@media (max-width: 420px) { .tab-thumb { height: 76px; } .map-thumb img { height: 54px; margin: 0 -6px; } .map-thumb img:nth-child(2) { height: 62px; }
+  .obj-thumb img { height: 26px; width: 26px; } .tab-label { font-size: 16px; padding: 8px 10px 10px; } }
 
 /* ---------- Hidden in the Mural ---------- */
 .mural-head { position: relative; }
@@ -344,8 +364,23 @@ html, body { overflow-x: hidden; }
 .obj img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
 .obj:hover { transform: translate(0, var(--y, 0)) rotate(var(--r, 0deg)) scale(1.08); }
 .obj:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
-.obj.got { animation: got .3s ease-in forwards; }
-@keyframes got { 30% { transform: scale(1.25) rotate(var(--r)); } 100% { transform: scale(.2) rotate(var(--r)); opacity: 0; } }
+.obj.got { animation: got .48s ease-in-out forwards; pointer-events: none; }
+/* a happy hop: squash, jump, land, then shrink away to the tray */
+@keyframes got {
+  0%   { transform: translate(0, var(--y)) rotate(var(--r)) scale(1, 1); }
+  15%  { transform: translate(0, calc(var(--y) + 4px)) rotate(var(--r)) scale(1.18, .8); }
+  40%  { transform: translate(0, calc(var(--y) - 16px)) rotate(calc(var(--r) * -1)) scale(.92, 1.14); }
+  60%  { transform: translate(0, var(--y)) rotate(var(--r)) scale(1.1, .92); opacity: 1; }
+  100% { transform: translate(0, var(--y)) rotate(var(--r)) scale(.15); opacity: 0; } }
+.spark-tick { position: fixed; width: 3px; height: var(--len); margin-left: -1.5px; background: var(--ink); border-radius: 3px;
+  z-index: 2000; pointer-events: none; transform-origin: 50% 0;
+  animation: tick .55s cubic-bezier(.2,.7,.3,1) forwards; }
+@keyframes tick {
+  0%   { transform: rotate(var(--a)) translateY(var(--from)) scaleY(.2); opacity: 0; }
+  25%  { opacity: 1; }
+  100% { transform: rotate(var(--a)) translateY(var(--to)) scaleY(1); opacity: 0; } }
+.bump { animation: bump .4s cubic-bezier(.2,1.8,.4,1); }
+@keyframes bump { 40% { transform: scale(1.14); } }
 .obj.arrive { animation: arrive .5s cubic-bezier(.2,1.6,.4,1); }
 @keyframes arrive { from { transform: scale(.2); opacity: 0; } }
 .pop-bit { position: fixed; width: 11px; height: 14px; margin: -7px 0 0 -5px; border: 1.5px solid var(--ink); border-radius: 40% 60% 50% 50%;

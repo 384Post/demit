@@ -766,10 +766,19 @@
   }
 
   /* ---------------- Hidden in the Mural ---------------- */
+  // Two big illustrated tabs so nobody misses the second hunt
   function huntTabs(active) {
-    return `<nav class="hunt-tabs" aria-label="Hunts">
-      <a href="#/hunt" class="${active === "giants" ? "on" : ""}">Giant SF Hunt <small>${foundCount()}/${TOTAL}</small></a>
-      <a href="#/mural" class="${active === "mural" ? "on" : ""}">Hidden in the Mural <small>${objCount()}/${OBJ_TOTAL}</small></a>
+    const giants = ["ocean", "flora", "sol", "rascal", "pixie"].filter(id => byId[id]);
+    const objs = ["rose", "octobus", "key", "crown", "musicNote", "sailboat", "goldfish", "lotus"].filter(id => objById[id]);
+    return `<nav class="hunt-tabs" aria-label="Choose a hunt">
+      <a href="#/hunt" class="${active === "giants" ? "on" : ""}">
+        <span class="tab-thumb map-thumb" aria-hidden="true">${giants.map(id => `<img src="${ART(id)}" alt="">`).join("")}<i class="tab-pin"></i></span>
+        <span class="tab-label">Giant SF Hunt<small>${foundCount()} / ${TOTAL} giants around the city</small></span>
+      </a>
+      <a href="#/mural" class="${active === "mural" ? "on" : ""}">
+        <span class="tab-thumb obj-thumb" aria-hidden="true">${objs.map(id => `<img src="${OBJ_ART(id)}" alt="">`).join("")}</span>
+        <span class="tab-label">Hidden in the Mural<small>${objCount()} / ${OBJ_TOTAL} objects to spot</small></span>
+      </a>
     </nav>`;
   }
   // small fixed wobble so the cloud looks hand-placed (the same for everyone)
@@ -833,7 +842,7 @@
     set("objBar", `${n} / ${OBJ_TOTAL} found ↓`);
     set("trayHint", trayHint(n));
     const m = document.getElementById("objMeter"); if (m) m.style.width = (n / OBJ_TOTAL) * 100 + "%";
-    const tab = app.querySelector('.hunt-tabs a[href="#/mural"] small'); if (tab) tab.textContent = `${n}/${OBJ_TOTAL}`;
+    const tab = app.querySelector('.hunt-tabs a[href="#/mural"] small'); if (tab) tab.textContent = `${n} / ${OBJ_TOTAL} objects to spot`;
     const ce = document.getElementById("cloudEmpty"); if (ce) ce.hidden = n < OBJ_TOTAL;
   }
   const reduceMotion = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -853,27 +862,56 @@
         { duration: 380, easing: "cubic-bezier(.2,.8,.3,1)" });
     });
   }
-  // three little confetti bits pop out of the tapped object
-  function burst(btn) {
+  // a little burst of demit-style ink sparkle marks plus a few confetti bits around the tapped object
+  function burst(btn, big) {
     if (reduceMotion()) return;
-    const r = btn.getBoundingClientRect(), cols = ["#DC4A4E", "#4D7FC1", "#F6E54E", "#3F9150", "#E3923B"];
-    const base = Math.random() * 360, c0 = Math.floor(Math.random() * cols.length);
-    for (let k = 0; k < 3; k++) {
+    const r = btn.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const reach = Math.max(r.width, r.height) / 2;
+    const cols = ["#DC4A4E", "#4D7FC1", "#F6E54E", "#3F9150", "#E3923B"];
+    const ticks = big ? 12 : 8, bits = big ? 12 : 5, base = Math.random() * 360;
+    for (let k = 0; k < ticks; k++) {           // ink ticks radiating out
+      const t = document.createElement("i"); t.className = "spark-tick";
+      const ang = base + k * (360 / ticks) + (Math.random() - .5) * 12;
+      t.style.left = cx + "px"; t.style.top = cy + "px";
+      t.style.setProperty("--a", ang + "deg");
+      t.style.setProperty("--from", reach * .55 + "px");
+      t.style.setProperty("--to", reach + (big ? 34 : 22) + Math.random() * 8 + "px");
+      t.style.setProperty("--len", (big ? 14 : 11) + Math.random() * 5 + "px");
+      document.body.appendChild(t); setTimeout(() => t.remove(), 700);
+    }
+    const c0 = Math.floor(Math.random() * cols.length);
+    for (let k = 0; k < bits; k++) {            // a few confetti bits
       const p = document.createElement("i"); p.className = "pop-bit";
-      const ang = (base + k * 120 + (Math.random() - .5) * 40) * Math.PI / 180, dist = 48 + Math.random() * 22;
-      p.style.left = r.left + r.width / 2 + "px"; p.style.top = r.top + r.height / 2 + "px";
+      const ang = (base + 20 + k * (360 / bits) + (Math.random() - .5) * 30) * Math.PI / 180;
+      const dist = reach + (big ? 50 : 30) + Math.random() * 24;
+      p.style.left = cx + "px"; p.style.top = cy + "px";
       p.style.background = cols[(c0 + k) % cols.length];
       p.style.setProperty("--dx", Math.cos(ang) * dist + "px"); p.style.setProperty("--dy", Math.sin(ang) * dist + "px");
       p.style.setProperty("--rot", (Math.random() * 300 - 150) + "deg");
       document.body.appendChild(p); setTimeout(() => p.remove(), 900);
     }
   }
+  const buzz = pattern => { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} }; // Android only; iPhones ignore it
+  function bump(id) {
+    const el = document.getElementById(id); if (!el || reduceMotion()) return;
+    el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+  }
+  // small milestones along the way: 10 found, halfway, and 8 to go
+  function milestone(n) {
+    const half = Math.ceil(OBJ_TOTAL / 2), near = OBJ_TOTAL - 8;
+    if (n === 10 && n < OBJ_TOTAL) return "10 found! You've got an eye for this.";
+    if (n === half) return "Halfway there!";
+    if (n === near && near > half) return "Only 8 left!";
+    return "";
+  }
   function findObject(btn) {
     const o = objById[btn.dataset.obj]; if (!o || btn.classList.contains("got")) return;
     const f = getObj(); f[o.id] = Date.now(); store.set(objKey(), f);
     track("mural_object_found", { object: o.id });
-    burst(btn);
+    const n = objCount(), note = n < OBJ_TOTAL ? milestone(n) : "";
     btn.classList.add("got");
+    buzz(note ? [20, 50, 20] : 15);
+    setTimeout(() => burst(btn, !!note), reduceMotion() ? 0 : 140); // pop at the top of the hop
     setTimeout(() => {
       if (!btn.isConnected) return;
       flipOut(btn);
@@ -882,8 +920,10 @@
       document.getElementById("objTray").appendChild(btn);
       setTimeout(() => btn.classList.remove("arrive"), 600);
       updateObjUI();
+      bump("objBar"); bump("objCounter"); bump("trayCount");
+      if (note) toast(note);
       if (objCount() === OBJ_TOTAL) muralComplete();
-    }, reduceMotion() ? 0 : 300);
+    }, reduceMotion() ? 0 : 480);
   }
   function unfindObject(btn) {
     const o = objById[btn.dataset.obj]; if (!o) return;
