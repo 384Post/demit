@@ -450,7 +450,7 @@
       case "instagram":
       case "tiktok":
       case "download":
-        return shareImageToApp(platform, c, long + " " + tags + " " + (S.cerosUrl || S.siteUrl || ""));
+        return shareImageToApp(platform, c, long + " " + tags + " " + (S.shareLandingUrl || S.cerosUrl || S.siteUrl || ""));
     }
   }
   function shareImageToApp(platform, c, caption) {

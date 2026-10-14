@@ -40,7 +40,8 @@ Open `…/384post/#/test` (or add `?test=1` to the URL). A yellow "TEST MODE" ba
 | Secret video | `settings.secretVideoUrl` |
 | Hashtag, artist name | `settings` |
 | Footer contacts, artwork & CBRE notices, privacy links | `settings.contacts`, `artworkNotice`, `cbreNotice`, `privacyPolicyUrl` |
-| Where shared links and "Explore 384 Post" go | `settings.cerosUrl` |
+| Where the footer's "Explore 384 Post" goes | `settings.cerosUrl` |
+| Where shared social links land | `settings.shareLandingUrl` (then run `python3 tools/make_share_pages.py`) |
 | demit's Instagram / website links | `settings.artistInstagram`, `artistWebsite` |
 | "Stay in touch" sign-up link (Microsoft Forms) | `settings.contactFormUrl` (empty = hidden) |
 | Hidden-in-the-mural objects, names, sizes, order | the `muralObjects` list (art in `assets/objects/<id>.svg`) |

@@ -9,7 +9,7 @@ Run it from the project folder whenever you change:
 It creates:
   assets/share/<id>.png      1200x630 preview image per character (shows on X, Facebook, LinkedIn, Bluesky)
   assets/share/og-default.png preview image for the main site link
-  share/<id>.html            tiny page with the preview tags; visitors are forwarded to the 384 Post Ceros page
+  share/<id>.html            tiny page with the preview tags; visitors are forwarded to shareLandingUrl (or cerosUrl)
 and updates the preview tags in index.html.
 
 Needs Python 3 + Pillow (pip install pillow).
@@ -30,6 +30,10 @@ def read_config():
     src = open(os.path.join(ROOT, "data", "config.js"), encoding="utf-8").read()
     get = lambda key: re.search(key + r':\s*"([^"]*)"', src).group(1)
     settings = {k: get(k) for k in ("siteUrl", "cerosUrl", "artist", "imageHashtag")}
+    m = re.search(r'shareLandingUrl:\s*"([^"]*)"', src)
+    settings["shareLandingUrl"] = m.group(1) if m else ""
+    m = re.search(r'shareLandingUrl:\s*"([^"]*)"', src)
+    settings["shareLandingUrl"] = m.group(1) if m else ""
     chars = []
     for block in re.split(r"\n\s*\{\s*\n\s*id:", src)[1:]:
         block = "id:" + block
@@ -151,7 +155,7 @@ def main():
             title=html.escape(f"I'm {c['name']}, {c['archetype']}"), desc=html.escape(desc),
             url=f"{site}share/{c['id']}.html", img=f"{site}assets/share/{c['id']}.png",
             alt=html.escape(f"{c['name']}, {c['archetype']}, a character by {s['artist']}"),
-            id=c["id"], name=html.escape(c["name"]), dest=html.escape(s["cerosUrl"] or f"../#/c/{c['id']}"))
+            id=c["id"], name=html.escape(c["name"]), dest=html.escape(s["shareLandingUrl"] or s["cerosUrl"] or f"../#/c/{c['id']}"))
         open(os.path.join(ROOT, "share", c["id"] + ".html"), "w", encoding="utf-8").write(page)
     default_card(chars, s).save(os.path.join(ROOT, "assets", "share", "og-default.png"), optimize=True)
 

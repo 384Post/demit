@@ -25,8 +25,11 @@ window.CONFIG = {
       imageHashtag: "#384Post"   // printed on the share image
     },
     siteUrl: "https://384post.github.io/demit/",
-    // The main 384 Post page (Ceros). Shared links land here; the site links back to it.
-    cerosUrl: "https://view.ceros.com/cbre-strike-team/384-post",
+    // The 384 Post leasing page (Ceros). The footer's "Explore 384 Post" button goes here.
+    cerosUrl: "https://cbre-strike-team.ceros.site/384-post-demit/page-1",
+    // Where links shared on social land (share/<id>.html forwards here, and it's in the
+    // Instagram/TikTok caption). Leave empty to use cerosUrl.
+    shareLandingUrl: "https://cbre-strike-team.ceros.site/384-post-demit",
 
     // ---- Footer ----
     contacts: [
