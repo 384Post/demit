@@ -1,4 +1,4 @@
-/* 384 Post · Colorful Characters — app logic
+/* 384 Post · Characters of San Francisco — app logic
    Content lives in data/config.js. This file shouldn't need edits for copy changes. */
 (function () {
   "use strict";
@@ -33,7 +33,7 @@
         <div class="foot-top">
           <div>
             <img class="foot-lettering" src="assets/brand/384-post-lettering.svg" alt="384 Post St">
-            <p class="foot-tag">Colorful Characters of San Francisco · a mural by ${esc(S.artist)}<br>384 Post Street · Union Square · San Francisco</p>
+            <p class="foot-tag">Characters of San Francisco · a mural by ${esc(S.artist)}<br>384 Post Street · Union Square · San Francisco</p>
             ${artistLinks("foot-artist")}
             ${S.cerosUrl ? `<a class="btn small orange" href="${esc(S.cerosUrl)}">Explore 384 Post →</a>` : ""}
           </div>
@@ -198,7 +198,7 @@
     </div>`;
   }
   function pairingsHTML(c) {
-    return `<h3>Colorful Pairings</h3><div class="pair-grid">${c.pairings.filter(id => byId[id]).map(id => {
+    return `<h3>Pairings</h3><div class="pair-grid">${c.pairings.filter(id => byId[id]).map(id => {
       const p = byId[id];
       return `<a class="mini" href="#/c/${p.id}"><img src="${ART(p.id)}" alt=""><span><strong>${esc(p.name)}</strong><small>${esc(p.archetype)}</small></span></a>`;
     }).join("")}</div>`;
@@ -236,7 +236,7 @@
             <a class="btn red" href="#/ar/${c.id}">See ${esc(c.name)} in AR</a>
             <a class="btn" href="#/hunt">Start the hunt</a>
             <a class="btn ghost" href="#/quiz">Retake quiz</a>
-          </div>` : `<div class="callout"><b>Which Colorful Character are you?</b> Nine quick questions to find out.<div class="btn-row" style="margin-top:10px"><a class="btn red small" href="#/quiz">Take the quiz</a></div></div>`}
+          </div>` : `<div class="callout"><b>Which character are you?</b> Nine quick questions to find out.<div class="btn-row" style="margin-top:10px"><a class="btn red small" href="#/quiz">Take the quiz</a></div></div>`}
       </div>
     </section>`;
   }
@@ -255,12 +255,12 @@
     app.innerHTML = `
       <section class="hero">
         <div class="eyebrow">Union Square · a mural by ${esc(S.artist)}</div>
-        <h1>Which <em>Colorful Character</em> are you?</h1>
+        <h1>Which <em>character</em> are you?</h1>
         <p>Every one of us arrives in San Francisco with a distinct story. Find the character who shares yours.</p>
         <div class="btn-row center">
           <a class="btn red" href="#/quiz">${r ? "Retake the quiz" : "Take the quiz"}</a>
           ${r ? `<a class="btn ghost" href="#/result/${r}">I'm ${esc(byId[r].name)} →</a>` : ""}
-          ${S.cerosUrl ? `<a class="btn ghost" href="${esc(S.cerosUrl)}">Explore 384 Post</a>` : ""}
+          <a class="btn green" href="#/hunt">Start the hunt</a>
         </div>
       </section>
       <div class="parade" aria-hidden="true">${parade}</div>
@@ -313,7 +313,7 @@
     const c = byId[id]; if (!c) return notFound();
     app.innerHTML = profileHTML(c, true) + shareHTML(c) + `
       <div class="callout blue">
-        <b>${esc(c.name)}'s hunt spot: ${esc(c.spot.name)}.</b> ${TOTAL - 1} more Colorful Characters are waiting around the city. Find them in any order. <a href="#/hunt">Start the hunt →</a>
+        <b>${esc(c.name)}'s hunt spot: ${esc(c.spot.name)}.</b> ${TOTAL - 1} more characters are waiting around the city. Find them in any order. <a href="#/hunt">Start the hunt →</a>
       </div>`;
     bindShare(c);
   }
@@ -327,7 +327,7 @@
     const r = myResult();
     app.innerHTML = `<section style="padding-top:28px">
       <div class="eyebrow">The cast</div>
-      <h2>Meet all ${TOTAL} Colorful Characters</h2>
+      <h2>Meet all ${TOTAL} characters</h2>
       <p class="muted">Each embodies the elemental forces and personalities that shape us. Art by ${esc(S.artist)}.</p>
       ${artistLinks()}
       <div class="gallery">${chars.map(c => `
@@ -397,7 +397,7 @@
     g.fillStyle = "#FBF7EA"; g.fillRect(0, 0, W, H);
     g.fillStyle = "#1B1A17"; g.textAlign = "center";
     g.font = "700 34px 'Source Sans 3', sans-serif";
-    g.fillText("WHICH COLORFUL CHARACTER ARE YOU?", W / 2, 150);
+    g.fillText("WHICH CHARACTER ARE YOU?", W / 2, 150);
     g.fillStyle = c.colorHex; g.strokeStyle = "#1B1A17"; g.lineWidth = 9;
     g.beginPath(); (g.roundRect ? g.roundRect(80, 210, W - 160, 1000, 70) : g.rect(80, 210, W - 160, 1000)); g.fill(); g.stroke();
     g.fillStyle = "rgba(251,247,234,.55)"; g.beginPath(); g.ellipse(W / 2, 710, 360, 360, 0, 0, Math.PI * 2); g.fill();
@@ -590,7 +590,7 @@
     app.innerHTML = huntTabs("giants") + `
       <section class="hunt-head">
         <div>
-          <div class="eyebrow">The Colorful Character Hunt</div>
+          <div class="eyebrow">The Character Hunt</div>
           <h2>Giants are hiding around San Francisco</h2>
           <p class="muted">Walk within about ${len(Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10, true)} of a spot to unlock its character — then see them towering up to ${len(30, true)} tall in AR. Find all ${TOTAL} for a secret message from ${esc(S.artist)}.</p>
           <p style="margin:0"><button class="linkish strong" id="howBtn">How the hunt works</button></p>
@@ -632,7 +632,7 @@
   function showHowTo() {
     const ft = len(Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10, true);
     openModal(`<div class="howto">
-      <div class="eyebrow">The Colorful Character Hunt</div>
+      <div class="eyebrow">The Character Hunt</div>
       <h2>How the hunt works</h2>
       <ol>
         <li><b>Keep this page open while you explore.</b> The site can only spot you while it's open on your screen. It can't alert you when your phone is locked or the browser is closed, so open the Hunt page when you get to a spot.</li>
@@ -744,7 +744,7 @@
     refreshPins(); updateCounter();
     const n = foundCount();
     openModal(`
-      <div class="eyebrow">You found a Colorful Character!</div>
+      <div class="eyebrow">You found a character!</div>
       <div class="art-stage" style="--c:${esc(c.colorHex)}"><img src="${ART(c.id)}" alt=""></div>
       <h2>${esc(c.name)}</h2>
       <p><b>${esc(c.archetype)}</b> · ${esc(c.spot.name)}</p>
@@ -759,7 +759,7 @@
       track("hunt_complete", {});
       openModal(`
         <div class="eyebrow">All ${TOTAL} found</div>
-        <h2>You collected every Colorful Character!</h2>
+        <h2>You collected every character!</h2>
         <p>${esc(S.artist)} left something for you.</p>
         <div class="btn-row center"><a class="btn red" href="#/secret">Open the secret ✦</a></div>`);
     }
@@ -799,7 +799,7 @@
         <div>
           <div class="eyebrow">Hidden in the Mural</div>
           <h2>${OBJ_TOTAL} objects are hiding in the mural</h2>
-          <p class="muted">Visit the mural at 384 Post in Union Square and look closely: ${esc(S.artist)} tucked these objects in among the Colorful Characters. Each time you spot one on the wall, tap it here.</p>
+          <p class="muted">Visit the mural at 384 Post in Union Square and look closely: ${esc(S.artist)} tucked these objects in among the characters. Each time you spot one on the wall, tap it here.</p>
         </div>
         <div>
           <div class="counter" id="objCounter">${n}<small> / ${OBJ_TOTAL} found</small></div>
@@ -972,7 +972,7 @@
     if (isTest()) { toast("Turn off test mode to save real progress."); return; }
     const url = location.href.split("#")[0] + "#/restore/" + progressCode();
     try {
-      if (navigator.share) { await navigator.share({ title: "My 384 Post hunt", text: "My Colorful Characters hunt progress:", url }); return; }
+      if (navigator.share) { await navigator.share({ title: "My 384 Post hunt", text: "My 384 Post hunt progress:", url }); return; }
     } catch (e) { if (e.name === "AbortError") return; }
     try { await navigator.clipboard.writeText(url); toast("Link copied — text it to yourself!"); }
     catch (e) { openModal(`<h3>Your progress link</h3><p style="word-break:break-all">${esc(url)}</p><button class="btn small" data-close>Done</button>`); }
@@ -1125,7 +1125,7 @@
       <p class="muted" id="resMeta">Loading…</p>
       <div class="cloud" id="cloud"></div>
     </section>
-    <section style="max-width:640px;margin:0 auto"><ol class="rank" id="rank"></ol></section>
+    <section style="max-width:640px;margin:0 auto"><ul class="rank" id="rank"></ul></section>
     <p class="center" style="margin-top:28px"><a class="btn red" href="#/quiz">${myResult() ? "Retake the quiz" : "Add yourself — take the quiz"}</a></p>`;
     let data = null;
     for (const url of (S.resultsDataUrls || [S.resultsDataUrl || "data/results.json"])) {
@@ -1151,41 +1151,39 @@
       : "";
     drawCloud();
     const me = myResult();
-    document.getElementById("rank").innerHTML = cloudItems.map((it, i) => `
-      <li><span>${i + 1}</span><a href="#/c/${it.c.id}">${esc(it.c.name)}${it.c.id === me ? ' <span class="badge mine">You</span>' : ""}</a>
-      <span class="bar" style="--c:${esc(it.c.colorHex)}"><i style="width:${(it.count / cloudItems[0].count) * 100}%"></i></span>
+    const maxC = Math.max(1, ...cloudItems.map(it => it.count));
+    // listed in character order (not by popularity), so it isn't a ranking
+    document.getElementById("rank").innerHTML = cloudItems.slice().sort((a, b) => a.c.index - b.c.index).map(it => `
+      <li><span class="dot" style="--c:${esc(it.c.colorHex)}"></span><a href="#/c/${it.c.id}">${esc(it.c.name)}${it.c.id === me ? ' <span class="badge mine">You</span>' : ""}</a>
+      <span class="bar" style="--c:${esc(it.c.colorHex)}"><i style="width:${(it.count / maxC) * 100}%"></i></span>
       <span class="muted">${Math.round(it.pct * 100)}%</span></li>`).join("");
   }
-  // Ranked layout: the most-picked character gets the top row to itself, and each row
-  // below holds more (and smaller) characters. Size still scales with popularity.
-  const RANK_ROWS = [1, 2, 3, 3, 4];
+  // Cloud layout: everyone together in one loose crowd, sized by popularity but placed
+  // in a fixed mixed-up order, so it reads as a crowd, not a leaderboard.
+  // Sizing evens out demit's art: wide or seated characters (like Ash) aren't drawn
+  // smaller just because of their shape.
   function drawCloud(redraw) {
     const el = document.getElementById("cloud"); if (!el || !cloudItems) return;
     const W = el.clientWidth || 360;
     cloudWidth = el.clientWidth;
     el.classList.toggle("no-anim", !!redraw);
-    const maxCount = Math.max(1, cloudItems[0].count);
-    const maxH = Math.min(W * 0.62, 320), minH = Math.min(W * 0.17, 95);
+    const maxCount = Math.max(1, ...cloudItems.map(it => it.count));
+    const maxH = Math.min(W * 0.42, 250), minH = Math.min(W * 0.21, 112);
     const me = myResult();
-    let k = 0, html = "";
-    RANK_ROWS.forEach(n => {
-      const row = cloudItems.slice(k, k + n); if (!row.length) return;
-      const slotW = W / n;
-      html += `<div class="rank-row">` + row.map((it, r) => {
-        const i = k + r;
-        let h = minH + (maxH - minH) * Math.sqrt(it.count / maxCount);
-        h = Math.min(h, (slotW - 10) / it.aspect);          // keep wide characters inside their slot
-        const fs = Math.max(12, Math.min(20, 10 + h / 18));
-        return `<a href="#/c/${it.c.id}" class="${it.c.id === me ? "you" : ""}" style="width:${slotW}px">
-          <span class="rk">${i + 1}</span>
-          <img src="${ART(it.c.id)}" alt="" style="--d:${(i * .06).toFixed(2)}s;height:${h}px">
-          <div class="lbl${slotW < 120 ? " stack" : ""}" style="font-size:${fs}px">${esc(it.c.name)} <span>${Math.round(it.pct * 100)}%</span></div>
-        </a>`;
-      }).join("") + `</div>`;
-      k += n;
-    });
-    el.style.height = "";
-    el.innerHTML = html;
+    // a fixed, mixed-up order (the same as the home page parade), never sorted by popularity
+    const MIX = ["rebel", "flora", "captain", "lorey", "sol", "ocean", "compass", "pixie", "sequoia", "flow", "atlas", "ash", "rascal"];
+    const order = cloudItems.slice().sort((a, b) => (MIX.indexOf(a.c.id) + 99) % 99 - (MIX.indexOf(b.c.id) + 99) % 99);
+    el.innerHTML = order.map((it, i) => {
+      const t = Math.sqrt(it.count / maxCount);
+      let h = (minH + (maxH - minH) * t) * Math.pow(.72 / it.aspect, .35); // even out tall vs. wide art
+      h = Math.min(h, (W * .46) / it.aspect);
+      const rot = Math.round((wob(it.c.index, 4) - .5) * 10), dy = Math.round((wob(it.c.index, 5) - .5) * 24);
+      const fs = Math.max(13, Math.min(18, 9 + h / 16));
+      return `<a href="#/c/${it.c.id}" class="${it.c.id === me ? "you" : ""}" style="--r:${rot}deg;--y:${dy}px">
+        <img src="${ART(it.c.id)}" alt="" style="--d:${(i * .06).toFixed(2)}s;height:${Math.round(h)}px">
+        <div class="lbl" style="font-size:${fs}px">${esc(it.c.name)} <span>${Math.round(it.pct * 100)}%</span></div>
+      </a>`;
+    }).join("");
   }
   // Phones fire "resize" while scrolling (the address bar slides in and out), so only
   // redraw the cloud when the width actually changes, e.g. rotating the phone.
@@ -1211,7 +1209,7 @@
     const v = S.secretVideoUrl;
     app.innerHTML = `<section class="secret">
       <div class="eyebrow">All ${TOTAL} found</div>
-      <h1>You found every Colorful Character</h1>
+      <h1>You found every character</h1>
       <p>A thank-you from ${esc(S.artist)}.</p>
       <div class="video">${v
         ? `<iframe src="${esc(v)}" title="A message from ${esc(S.artist)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
@@ -1227,7 +1225,7 @@
     app.innerHTML = `<section class="legal">
       <div class="eyebrow">Last updated October 2026</div>
       <h2>Terms of use &amp; privacy</h2>
-      <p>This site is an interactive art experience featuring the Colorful Characters of San Francisco, a mural by ${esc(S.artist)} at 384 Post Street, presented by CBRE, Inc. By using it, you agree to these terms.</p>
+      <p>This site is an interactive art experience featuring the Characters of San Francisco, a mural by ${esc(S.artist)} at 384 Post Street, presented by CBRE, Inc. By using it, you agree to these terms.</p>
 
       <h3>Just for fun</h3>
       <p>The quiz, character results and popularity counts are for entertainment only. They aren't a personality assessment or advice of any kind, and the results page shows approximate, anonymous totals.</p>

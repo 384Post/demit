@@ -66,7 +66,7 @@ def character_card(c, s):
     im.paste(art, (300 - art.width // 2, 315 - art.height // 2), art)
     # text
     x = 610
-    d.text((x, 92), "WHICH COLORFUL CHARACTER ARE YOU?", font=font("SourceSans3-700.woff", 24), fill=SOFT)
+    d.text((x, 92), "WHICH CHARACTER ARE YOU?", font=font("SourceSans3-700.woff", 24), fill=SOFT)
     d.text((x, 150), "I'm", font=font("Bricolage-700.woff", 50), fill=INK)
     nf = fit_font(d, c["name"], "Bricolage-800.woff", 150, W - x - 40)
     d.text((x - 6, 195), c["name"], font=nf, fill=INK)
@@ -94,7 +94,7 @@ def default_card(chars, s):
     d = ImageDraw.Draw(im)
     lw = paste_lettering(im, None, 34, 560, 56, center_w=W)
     tf = font("Bricolage-800.woff", 64)
-    d.text((W / 2, 118), "Which Colorful Character", font=tf, fill=INK, anchor="mt")
+    d.text((W / 2, 118), "Which character", font=tf, fill=INK, anchor="mt")
     d.text((W / 2, 186), "are you?", font=tf, fill=(220, 74, 78), anchor="mt")
     order = ["rascal", "flora", "captain", "lorey", "sol", "ocean", "pixie", "sequoia", "flow", "atlas", "rebel", "ash", "compass"]
     heights = [200, 215, 240, 205, 255, 225, 210, 200, 230, 205, 245, 200, 190]
@@ -115,7 +115,7 @@ PAGE = """<!doctype html>
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Colorful Characters · 384 Post">
+<meta property="og:site_name" content="Characters of San Francisco · 384 Post">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{url}">
@@ -144,13 +144,13 @@ def main():
     site = s["siteUrl"]
     os.makedirs(os.path.join(ROOT, "assets", "share"), exist_ok=True)
     os.makedirs(os.path.join(ROOT, "share"), exist_ok=True)
-    desc = f"Which of {s['artist']}'s Colorful Characters of San Francisco are you? Take the quiz at 384 Post in Union Square. {s['imageHashtag']}"
+    desc = f"Which of {s['artist']}'s Characters of San Francisco are you? Take the quiz at 384 Post in Union Square. {s['imageHashtag']}"
     for c in chars:
         character_card(c, s).save(os.path.join(ROOT, "assets", "share", c["id"] + ".png"), optimize=True)
         page = PAGE.format(
             title=html.escape(f"I'm {c['name']}, {c['archetype']}"), desc=html.escape(desc),
             url=f"{site}share/{c['id']}.html", img=f"{site}assets/share/{c['id']}.png",
-            alt=html.escape(f"{c['name']}, {c['archetype']}, a Colorful Character by {s['artist']}"),
+            alt=html.escape(f"{c['name']}, {c['archetype']}, a character by {s['artist']}"),
             id=c["id"], name=html.escape(c["name"]), dest=html.escape(s["cerosUrl"] or f"../#/c/{c['id']}"))
         open(os.path.join(ROOT, "share", c["id"] + ".html"), "w", encoding="utf-8").write(page)
     default_card(chars, s).save(os.path.join(ROOT, "assets", "share", "og-default.png"), optimize=True)

@@ -1,4 +1,4 @@
-/* 384 Post · Colorful Characters — styles
+/* 384 Post · Characters of San Francisco — styles
    Palette pulled from demit's mural: cream paper, ink outline, and his five paint colors. */
 :root {
   --paper: #FBF7EA;
@@ -191,12 +191,10 @@ p { margin: 0 0 1em; }
 .test-tools { border: 2.5px dashed var(--ink); border-radius: 18px; padding: 14px; margin: 18px 0; background: #FFFBE0; }
 
 /* ---------- Results cloud ---------- */
-.cloud { position: relative; margin: 24px auto 10px; }
-.rank-row { display: flex; justify-content: center; align-items: flex-end; margin-bottom: 18px; }
-.cloud a { position: relative; display: flex; flex-direction: column; align-items: center; text-decoration: none; text-align: center; transition: transform .2s; }
-.cloud .rk { position: absolute; top: 0; left: 50%; transform: translate(-50%, -40%); font: 800 12px/1 var(--display); background: var(--ink); color: var(--paper); border-radius: 999px; padding: 3px 7px; z-index: 1; display: none; }
-.rank-row:first-child .rk { display: block; font-size: 14px; background: var(--yellow); color: var(--ink); border: 2px solid var(--ink); }
-.cloud a:hover { transform: scale(1.06) rotate(-2deg); z-index: 2; }
+.cloud { position: relative; margin: 24px auto 10px; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 14px 4px; }
+.cloud a { position: relative; display: flex; flex-direction: column; align-items: center; text-decoration: none; text-align: center; transition: transform .2s;
+  margin: 0 -2px; transform: translateY(var(--y, 0)) rotate(var(--r, 0deg)); }
+.cloud a:hover { transform: translateY(var(--y, 0)) scale(1.06) rotate(-2deg); z-index: 2; }
 .cloud img { width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(3px 4px 0 rgba(0,0,0,.14)); animation: pop .7s cubic-bezier(.2,1.6,.4,1) both; animation-delay: var(--d); }
 .cloud .lbl { font: 700 14px/1.1 var(--display); white-space: nowrap; margin-top: 6px; }
 .cloud .lbl span { color: var(--ink-soft); font-weight: 500; }
@@ -320,7 +318,6 @@ html, body { overflow-x: hidden; }
 .units { display: inline-flex; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; margin-top: 10px; }
 .units button { font: 700 13px/1 var(--body); padding: 6px 12px; border: 0; background: #fff; color: var(--ink); cursor: pointer; }
 .units button.on { background: var(--ink); color: var(--paper); }
-.cloud .lbl.stack span { display: block; margin-top: 2px; }
 .cloud a.you .lbl { color: var(--red); }
 
 /* ---------- Hunt tabs (Giant SF Hunt / Hidden in the Mural) ---------- */
@@ -424,3 +421,6 @@ html, body { overflow-x: hidden; }
 .artist-links span { color: var(--ink-soft); }
 .artist-links a { color: var(--ink); font-weight: 700; }
 .foot-artist { margin: 0 0 12px; font-size: 14px; }
+
+.rank .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--c); border: 2px solid var(--ink); }
+@media (max-width: 600px) { .cloud { gap: 12px 2px; } .cloud a { margin: 0; } .cloud .lbl span { display: block; margin-top: 1px; } }

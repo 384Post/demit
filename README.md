@@ -1,10 +1,10 @@
-# Colorful Characters · 384 Post
+# Characters of San Francisco · 384 Post
 
 **All character artwork © demit omphroy. All rights reserved. Not for reuse.** The artwork, character names and descriptions in this repository are not open source and may not be copied or reused without permission.
 
 A working concept for the 384 Post mural campaign with demit omphroy:
 
-- **Quiz** → "Which Colorful Character are you?" with a shareable result image
+- **Quiz** → "Which character are you?" with a shareable result image
 - **Results** → the city's characters sized by popularity
 - **Hunt** → a map of 13 giant characters around SF; walk within ~100 m to unlock each
 - **Hidden in the Mural** → a second hunt tab: demit's objects hidden in the mural. People spot them at the building and tap them; found ones collect in a tray, with a flower celebration when all are found
@@ -128,7 +128,7 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 - [ ] Proofread character copy (e.g. "Septor" → set to "Scepter"; Sequoia's "turn things imaginations")
 - [ ] demit's secret video (unlisted link)
 - [ ] GA property + IT sign-off on the service account
-- [ ] Approve share text + hashtags (#384Post #ColorfulCharacters #UnionSquare)
+- [ ] Approve share text + hashtags (#384Post #UnionSquare)
 - [ ] CBRE legal/marketing review of the Terms & privacy page (`#/terms`) and footer notices
 - [ ] Social wall approach (curated vs. share-only)
 - [ ] Confirm the hidden-object count and names with demit (68; "Mace" is a guess)

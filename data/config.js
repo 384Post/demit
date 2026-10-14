@@ -1,5 +1,5 @@
 /* =====================================================================
-   384 POST · COLORFUL CHARACTERS — EVERYTHING EDITABLE LIVES HERE
+   384 POST · CHARACTERS OF SAN FRANCISCO — EVERYTHING EDITABLE LIVES HERE
    ---------------------------------------------------------------------
    Change text, pairings, hunt spots, quiz questions or settings in
    this one file. Save, push to GitHub, done. No other file needs to
@@ -10,18 +10,18 @@ window.CONFIG = {
 
   /* ---------- General settings ---------- */
   settings: {
-    title: "Colorful Characters of San Francisco",
+    title: "Characters of San Francisco",
     artist: "demit omphroy",                 // ← confirm exact spelling/casing with demit
     hashtag: "#384Post",
 
     // ---- Social sharing (result page) ----
     // In the text, {name} {archetype} {element} {trait} {artist} are filled in automatically.
     share: {
-      hashtags: ["384Post", "ColorfulCharacters", "UnionSquare"],   // no "#", no spaces
+      hashtags: ["384Post", "UnionSquare"],   // no "#", no spaces
       // Facebook (copied for pasting), LinkedIn, Instagram & TikTok captions:
-      text: "I'm {name}, {archetype}! ✨ {artist}'s new mural at 384 Post in Union Square brings 13 Colorful Characters of San Francisco to life. Take the quiz to find yours, then hunt for the giants around the city.",
+      text: "I'm {name}, {archetype}! ✨ {artist}'s new mural at 384 Post in Union Square brings 13 Characters of San Francisco to life. Take the quiz to find yours, then hunt for the giants around the city.",
       // X and Bluesky (short posts):
-      shortText: "I'm {name}, {archetype}! ✨ Which of {artist}'s Colorful Characters of San Francisco are you? Find yours at 384 Post in Union Square.",
+      shortText: "I'm {name}, {archetype}! ✨ Which of {artist}'s Characters of San Francisco are you? Find yours at 384 Post in Union Square.",
       imageHashtag: "#384Post"   // printed on the share image
     },
     siteUrl: "https://384post.github.io/demit/",
@@ -33,7 +33,7 @@ window.CONFIG = {
       { name: "Alex Sagues", license: "Lic. 02055525", phone: "+1 415 772 0306", email: "Alex.Sagues@cbre.com" },
       { name: "Madeline Redmond", license: "Lic. 02186119", phone: "+1 703 732 8553", email: "Madeline.Redmond@cbre.com" }
     ],
-    artworkNotice: "All Colorful Characters artwork, characters, names and descriptions © 2026 demit omphroy. All rights reserved. Used with permission; may not be copied or reused without the artist's written consent.",
+    artworkNotice: "All Characters of San Francisco artwork, characters, names and descriptions © 2026 demit omphroy. All rights reserved. Used with permission; may not be copied or reused without the artist's written consent.",
     cbreNotice: "© 2026 CBRE, Inc. This information has been obtained from sources believed reliable. We have not verified it and make no guarantee, warranty or representation about it. Any projections, opinions, assumptions or estimates used are for example only and do not represent the current or future performance of the property. You and your advisors should conduct a careful, independent investigation of the property to determine to your satisfaction the suitability of the property for your needs.",
     privacyPolicyUrl: "https://www.cbre.com/about-us/global-web-privacy-and-cookie-policy",
     californiaPrivacyUrl: "https://www.cbre.com/about-us/california-consumer-privacy-policy",   // ← your GitHub Pages URL (used in share text)
@@ -172,7 +172,7 @@ window.CONFIG = {
     {
       id: "sol", number: 1, archetype: "The Catalyst / The Spark", name: "Sol",
       element: "Fire", trait: "Enthusiasm", color: "Orange", colorHex: "#E3923B", object: "Speaker",
-      description: "Considered to be a ray of light. The moment they arrive, the slow energy shifts. They ignite conversation and can get a room to start dancing. They are the character who gathers all the other Colorful Characters together when a new idea or adventure pops up.",
+      description: "Considered to be a ray of light. The moment they arrive, the slow energy shifts. They ignite conversation and can get a room to start dancing. They are the character who gathers all the other characters together when a new idea or adventure pops up.",
       signature: "A spontaneous dance break on the sidewalk.",
       power: "Confidence",
       struggles: "Impulsive, fast energy burner. Can overwhelm others who aren't as outgoing.",
