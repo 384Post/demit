@@ -862,34 +862,27 @@
         { duration: 380, easing: "cubic-bezier(.2,.8,.3,1)" });
     });
   }
-  // a little burst of demit-style ink sparkle marks plus a few confetti bits around the tapped object
+  // a little burst of demit-style ink sparkle marks around the tapped object (black ink only,
+  // to match the black-and-white objects; color confetti is saved for finishing the whole mural)
   function burst(btn, big) {
     if (reduceMotion()) return;
     const r = btn.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     const reach = Math.max(r.width, r.height) / 2;
-    const cols = ["#DC4A4E", "#4D7FC1", "#F6E54E", "#3F9150", "#E3923B"];
-    const ticks = big ? 12 : 8, bits = big ? 12 : 5, base = Math.random() * 360;
-    for (let k = 0; k < ticks; k++) {           // ink ticks radiating out
-      const t = document.createElement("i"); t.className = "spark-tick";
-      const ang = base + k * (360 / ticks) + (Math.random() - .5) * 12;
-      t.style.left = cx + "px"; t.style.top = cy + "px";
-      t.style.setProperty("--a", ang + "deg");
-      t.style.setProperty("--from", reach * .55 + "px");
-      t.style.setProperty("--to", reach + (big ? 34 : 22) + Math.random() * 8 + "px");
-      t.style.setProperty("--len", (big ? 14 : 11) + Math.random() * 5 + "px");
-      document.body.appendChild(t); setTimeout(() => t.remove(), 700);
-    }
-    const c0 = Math.floor(Math.random() * cols.length);
-    for (let k = 0; k < bits; k++) {            // a few confetti bits
-      const p = document.createElement("i"); p.className = "pop-bit";
-      const ang = (base + 20 + k * (360 / bits) + (Math.random() - .5) * 30) * Math.PI / 180;
-      const dist = reach + (big ? 50 : 30) + Math.random() * 24;
-      p.style.left = cx + "px"; p.style.top = cy + "px";
-      p.style.background = cols[(c0 + k) % cols.length];
-      p.style.setProperty("--dx", Math.cos(ang) * dist + "px"); p.style.setProperty("--dy", Math.sin(ang) * dist + "px");
-      p.style.setProperty("--rot", (Math.random() * 300 - 150) + "deg");
-      document.body.appendChild(p); setTimeout(() => p.remove(), 900);
-    }
+    const rings = big ? [{ n: 12, out: 34, len: 14 }, { n: 12, out: 62, len: 9, delay: 90 }] : [{ n: 8, out: 22, len: 11 }];
+    const base = Math.random() * 360;
+    rings.forEach((ring, ri) => {
+      for (let k = 0; k < ring.n; k++) {
+        const t = document.createElement("i"); t.className = "spark-tick";
+        const ang = base + (ri ? 180 / ring.n : 0) + k * (360 / ring.n) + (Math.random() - .5) * 12;
+        t.style.left = cx + "px"; t.style.top = cy + "px";
+        t.style.setProperty("--a", ang + "deg");
+        t.style.setProperty("--from", reach * .55 + (ri ? 18 : 0) + "px");
+        t.style.setProperty("--to", reach + ring.out + Math.random() * 8 + "px");
+        t.style.setProperty("--len", ring.len + Math.random() * 5 + "px");
+        if (ring.delay) t.style.animationDelay = ring.delay + "ms";
+        document.body.appendChild(t); setTimeout(() => t.remove(), 800);
+      }
+    });
   }
   const buzz = pattern => { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} }; // Android only; iPhones ignore it
   function bump(id) {
