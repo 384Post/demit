@@ -76,6 +76,10 @@ The AR page has a **Life-size / Giant** switch. When someone finds a character o
 
 (setup notes are at the top of that file; or send the export to Claude and get the converted model back). The exact scales (including Flora's and Flow's adjustments) are at the top of that file.
 
+### The finale: everyone together in AR
+
+People who find all 13 characters get the group scene (`assets/models/group/`): `everyone.glb` (life-size, ~17 ft tall and ~33 ft wide) and `everyone-tabletop.glb` (~2 ft tall). iPhones use the matching `.usdz` files, which are made ahead of time because converting a scene this big on the phone is too slow. If the Spline scene changes, send the new export to Claude to rebuild all four files.
+
 ## Social sharing
 
 The result page has share buttons for **X, Facebook, Instagram, TikTok, Bluesky and LinkedIn**. The wording and hashtags live in `data/config.js` → `settings.share`.

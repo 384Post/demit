@@ -1125,6 +1125,8 @@
     const small = size === "tabletop";
     if (foundCount() < TOTAL && !isTest()) { location.replace("#/secret"); return; }
     const src = small ? "assets/models/group/everyone-tabletop.glb" : "assets/models/group/everyone.glb";
+    // iPhones use a ready-made Apple (USDZ) version: converting a 13-character scene on the phone is too slow
+    const iosSrc = src.replace(/\.glb$/, ".usdz");
     const ig = ((C.settings.share || {}).instagramTags || []).map(h => "@" + h).join(" ");
     app.innerHTML = `<section class="ar-wrap">
       <div class="eyebrow">All ${TOTAL} found · the finale</div>
@@ -1134,7 +1136,7 @@
         <a href="#/everyone/tabletop" class="${small ? "on" : ""}">Tabletop <small>~${len(2)} tall</small></a>
       </div>
       <div style="position:relative">
-        <model-viewer id="mv" src="${src}" alt="All ${TOTAL} characters by ${esc(S.artist)}"
+        <model-viewer id="mv" src="${src}" ios-src="${iosSrc}" alt="All ${TOTAL} characters by ${esc(S.artist)}"
           ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
           camera-controls touch-action="pan-y" interaction-prompt="none"
           camera-orbit="0deg 85deg auto" field-of-view="30deg" shadow-intensity="0.6" shadow-softness="1" exposure="1.1" tone-mapping="neutral">

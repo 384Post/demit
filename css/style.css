@@ -469,3 +469,5 @@ html, body { overflow-x: hidden; }
 .finale-art { display: flex; justify-content: center; align-items: flex-end; height: 110px; }
 .finale-art img { height: 100px; width: auto; margin: 0 -10px; }
 .finale-art img:nth-child(3) { height: 110px; z-index: 1; }
+/* the AR button stays put when tapped (the usual press effect would knock it off-center) */
+.ar-btn:hover, .ar-btn:active, .ar-btn:focus { transform: translateX(-50%); box-shadow: var(--shadow); }
