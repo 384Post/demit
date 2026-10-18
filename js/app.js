@@ -162,39 +162,58 @@
 
   /* ---------------- Quiz scoring ---------------- */
   // Max points each character could earn, so characters in fewer answers aren't disadvantaged.
-  const maxPts = (() => {
-    const m = {}; chars.forEach(c => (m[c.id] = 0));
-    C.quiz.forEach(q => {
-      const best = {};
-      q.answers.forEach(a => {
-        best[a.main] = Math.max(best[a.main] || 0, S.primaryPoints);
-        best[a.also] = Math.max(best[a.also] || 0, S.secondaryPoints);
-      });
-      Object.keys(best).forEach(k => { if (k in m) m[k] += best[k]; });
-    });
-    return m;
-  })();
+  // Quiz scoring (see the notes above the quiz in data/config.js):
+  // 1) most-picked element wins (tie → most recently picked), 2) within it, most lean points wins.
+  const charElems = c => (c.elements && c.elements.length ? c.elements : [c.element]);
   function scoreQuiz(answerIdx) {
+    const picked = answerIdx.map((ai, qi) => C.quiz[qi] && C.quiz[qi].answers[ai]);
+    const cnt = {}, lastEl = {};
+    picked.forEach((a, qi) => { if (a) { cnt[a.element] = (cnt[a.element] || 0) + 1; lastEl[a.element] = qi; } });
+    const el = Object.keys(cnt).sort((x, y) => cnt[y] - cnt[x] || lastEl[y] - lastEl[x])[0];
+    // only that element's answers count toward which of its characters you are
     const pts = {}, last = {};
     chars.forEach(c => { pts[c.id] = 0; last[c.id] = -1; });
-    answerIdx.forEach((ai, qi) => {
-      const a = C.quiz[qi].answers[ai];
-      if (!a) return;
+    picked.forEach((a, qi) => {
+      if (!a || a.element !== el) return;
       if (a.main in pts) { pts[a.main] += S.primaryPoints; last[a.main] = qi * 2 + 1; }
       if (a.also in pts) { pts[a.also] += S.secondaryPoints; if (last[a.also] < qi * 2) last[a.also] = qi * 2; }
     });
-    const ratio = id => (maxPts[id] ? pts[id] / maxPts[id] : 0);
-    return chars.map(c => c.id).sort((a, b) => ratio(b) - ratio(a) || pts[b] - pts[a] || last[b] - last[a])[0];
+    const pool = chars.filter(c => charElems(c).includes(el)).map(c => c.id);
+    return (pool.length ? pool : chars.map(c => c.id)).sort((x, y) => pts[y] - pts[x] || last[y] - last[x])[0];
   }
   window.__scoreQuiz = scoreQuiz; // handy for testing in the console
 
   /* ---------------- Shared bits of markup ---------------- */
+  // Soft element shape behind a character on the big art panels (thumbnails use a plain circle)
+  const EL_SHAPES = {
+    fire: "M52 2C58 20 72 28 75 46C78 38 77 31 74 25C86 36 91 52 89 67C86 85 70 97 50 97C30 97 13 85 11 67C9 52 17 41 25 32C25 41 28 47 33 51C30 32 38 15 52 2Z",
+    water: "M50 4C65 28 82 46 82 66C82 84 68 96 50 96C32 96 18 84 18 66C18 46 35 28 50 4Z",
+    air: "M27 74C13 74 6 64 8 54C10 44 20 39 29 41C29 27 41 18 54 20C65 22 71 30 73 39C85 37 95 46 93 58C91 69 82 74 73 74Z",
+    earth: "M12 88C8 52 30 16 88 10C92 58 66 90 12 88Z"
+  };
+  const elKey = c => (c.id === "flow" ? "air" : String((c.elements || [c.element])[0] || "").toLowerCase());
+  function artStage(c, extraStyle) {
+    const d = EL_SHAPES[elKey(c)];
+    return `<div class="art-stage${d ? " has-shape" : ""}" style="--c:${esc(c.colorHex)};${extraStyle || ""}">
+      ${d ? `<svg class="el-shape" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="${d}"/></svg>` : ""}
+      <img src="${ART(c.id)}" alt="${esc(c.name)}, ${esc(c.archetype)}, by ${esc(S.artist)}"></div>`;
+  }
+  const paras = t => String(t || "").split(/\n+/).filter(Boolean).map(x => `<p>${esc(x)}</p>`).join("");
+  function challengeHTML(c, compact) {
+    if (!c.challenge) return "";
+    const ig = ((C.settings.share || {}).instagramTags || []).map(h => "@" + h).join(" ");
+    return `<div class="challenge${compact ? " compact" : ""}" style="--c:${esc(c.colorHex)}">
+      <div class="eyebrow">AR challenge</div>
+      <p class="challenge-text">${esc(c.challenge)}</p>
+      <p class="challenge-tag">Share it and tag ${ig ? `<b>${esc(ig)}</b> ` : ""}<b>${esc(S.hashtag)}</b></p>
+    </div>`;
+  }
   function chipsHTML(c) {
     return `<div class="chips">
       <span class="chip"><b>Element</b>${esc(c.element)}</span>
       <span class="chip"><b>Core trait</b>${esc(c.trait)}</span>
       <span class="chip"><span class="swatch" style="background:${esc(c.colorHex)}"></span>${esc(c.color)}</span>
-      <span class="chip"><b>Carries</b>${esc(c.object)}</span>
+      ${c.object ? `<span class="chip"><b>Carries</b>${esc(c.object)}</span>` : ""}
     </div>`;
   }
   function pairingsHTML(c) {
@@ -208,35 +227,46 @@
     return `<div class="spot-card">
       <div class="eyebrow">${c.spot.bonus ? "Bonus hunt spot" : "Hunt spot"} ${f ? '<span class="badge found">Found</span>' : ""}</div>
       <h3>${esc(c.spot.name)}</h3>
-      <p class="muted">${esc(c.spot.why)}</p>
+      ${c.spot.why ? `<p class="muted">${esc(c.spot.why)}</p>` : ""}
       <div class="btn-row">
         <a class="btn small" href="#/hunt/${c.id}">Show on map</a>
         ${canAR(c.id) ? `<a class="btn small red" href="#/ar/${c.id}">View in AR</a>` : `<a class="btn small ghost" href="${directions(c)}" target="_blank" rel="noopener">Walking directions</a>`}
       </div>
     </div>`;
   }
+  function muralHTML(c) {
+    const objs = (c.objects || []).filter(id => objById[id]);
+    if (!c.mural && !objs.length) return "";
+    return `<div class="mural-card">
+      <div class="eyebrow">On the mural at 384 Post</div>
+      ${c.mural ? `<h3>${esc(c.mural)}</h3>` : ""}
+      ${objs.length ? `<p class="muted" style="margin:0 0 8px">Look for ${esc(c.name)}'s hidden objects:</p>
+        <div class="mural-objs">${objs.map(id => `<a href="#/mural" title="${esc(objById[id].name)}"><img src="${OBJ_ART(id)}" alt="${esc(objById[id].name)}"><small>${esc(objById[id].name)}</small></a>`).join("")}</div>` : ""}
+    </div>`;
+  }
   function profileHTML(c, you) {
     return `<section class="profile">
-      <div class="art-stage" style="--c:${esc(c.colorHex)}"><img src="${ART(c.id)}" alt="${esc(c.name)}, ${esc(c.archetype)}, by ${esc(S.artist)}"></div>
+      ${artStage(c)}
       <div>
         ${you ? `<div class="youare">You're…</div>` : `<div class="eyebrow">Character ${c.number}</div>`}
         <h1 style="margin-bottom:.1em">${esc(c.name)}</h1>
         <div class="eyebrow" style="font-size:15px">${esc(c.archetype)}</div>
         ${chipsHTML(c)}
-        <p>${esc(c.description)}</p>
+        ${paras(c.description)}
         <div class="facts" style="--c:${esc(c.colorHex)}">
-          ${c.signature ? `<div class="fact"><b>Signature move</b>${esc(c.signature)}</div>` : ""}
-          <div class="fact"><b>Power</b>${esc(c.power)}</div>
+          <div class="fact"><b>Powers</b>${esc(c.powers || c.power)}</div>
           <div class="fact"><b>Struggles</b>${esc(c.struggles)}</div>
-          <div class="fact"><b>Antidote</b>${esc(c.antidote)}</div>
+          ${c.recharge && c.recharge.length ? `<div class="fact"><b>How to recharge</b><ul class="recharge">${c.recharge.map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>` : ""}
         </div>
+        ${you ? challengeHTML(c) : ""}
         ${pairingsHTML(c)}
+        ${muralHTML(c)}
         ${spotHTML(c)}
         ${you ? `<div class="btn-row">
             <a class="btn red" href="#/ar/${c.id}">See ${esc(c.name)} in AR</a>
             <a class="btn" href="#/hunt">Start the hunt</a>
             <a class="btn ghost" href="#/quiz">Retake quiz</a>
-          </div>` : `<div class="callout"><b>Which character are you?</b> Nine quick questions to find out.<div class="btn-row" style="margin-top:10px"><a class="btn red small" href="#/quiz">Take the quiz</a></div></div>`}
+          </div>` : `<div class="callout"><b>Which character are you?</b> ${C.quiz.length} quick questions to find out.<div class="btn-row" style="margin-top:10px"><a class="btn red small" href="#/quiz">Take the quiz</a></div></div>`}
       </div>
     </section>`;
   }
@@ -265,7 +295,7 @@
       </section>
       <div class="parade" aria-hidden="true">${parade}</div>
       <section class="cards3">
-        <a class="tile" href="#/quiz"><h3>1 · Find yours</h3><p>Nine quick questions match you with one of 13 characters.</p></a>
+        <a class="tile" href="#/quiz"><h3>1 · Find yours</h3><p>${C.quiz.length} quick questions match you with one of ${TOTAL} characters.</p></a>
         <a class="tile" href="#/hunt"><h3>2 · Hunt the city</h3><p>Giant characters are hiding around SF, and ${OBJ_TOTAL} objects are hidden in the mural itself. ${foundCount() ? `<b>${foundCount()} of ${TOTAL} found.</b>` : ""}</p></a>
         <a class="tile" href="#/results"><h3>3 · Who is SF?</h3><p>See which characters the city is made of, live.</p></a>
       </section>
@@ -409,7 +439,7 @@
     g.fillStyle = "#5E5A50"; g.font = "700 42px 'Source Sans 3', sans-serif";
     g.fillText(c.archetype.toUpperCase(), W / 2, 1555);
     g.font = "600 36px 'Source Sans 3', sans-serif";
-    g.fillText(`${c.element} · ${c.trait} · carries a ${c.object.toLowerCase()}`, W / 2, 1610);
+    g.fillText([c.element, c.trait, c.object].filter(Boolean).join(" · "), W / 2, 1610);
     try { // demit's hand-drawn "384 POST ST" lettering
       const lt = await loadImg("assets/brand/384-post-lettering.png");
       const lw = 640, lh = lw * lt.naturalHeight / lt.naturalWidth;
@@ -449,8 +479,11 @@
         return open(`https://bsky.app/intent/compose?text=${enc(short + " " + tags + " " + url)}`);
       case "instagram":
       case "tiktok":
-      case "download":
-        return shareImageToApp(platform, c, long + " " + tags + " " + (S.shareLandingUrl || S.cerosUrl || S.siteUrl || ""));
+      case "download": {
+        // @-tags only on Instagram, where we know the handles
+        const at = platform === "instagram" ? (SH.instagramTags || []).map(h => "@" + h).join(" ") : "";
+        return shareImageToApp(platform, c, long + (at ? " " + at : "") + " " + tags + " " + (S.shareLandingUrl || S.cerosUrl || S.siteUrl || ""));
+      }
     }
   }
   function shareImageToApp(platform, c, caption) {
@@ -745,10 +778,11 @@
     const n = foundCount();
     openModal(`
       <div class="eyebrow">You found a character!</div>
-      <div class="art-stage" style="--c:${esc(c.colorHex)}"><img src="${ART(c.id)}" alt=""></div>
+      ${artStage(c)}
       <h2>${esc(c.name)}</h2>
       <p><b>${esc(c.archetype)}</b> · ${esc(c.spot.name)}</p>
       <p class="muted">${n} of ${TOTAL} found</p>
+      ${challengeHTML(c, true)}
       <div class="btn-row center">
         <a class="btn red" href="#/ar/${c.id}/giant">See ${esc(c.name)} in giant AR</a>
         <a class="btn ghost" href="#/c/${c.id}">Their story</a>
@@ -769,7 +803,7 @@
   // Two big illustrated tabs so nobody misses the second hunt
   function huntTabs(active) {
     const giants = ["ocean", "flora", "sol", "rascal", "pixie"].filter(id => byId[id]);
-    const objs = ["rose", "octobus", "key", "crown", "musicNote", "sailboat", "goldfish", "lotus"].filter(id => objById[id]);
+    const objs = ["bunny", "crown", "rainbow", "musicNote", "globe", "butterfly", "binoculars", "genieLamp"].filter(id => objById[id]);
     return `<nav class="hunt-tabs" aria-label="Choose a hunt">
       <a href="#/hunt" class="${active === "giants" ? "on" : ""}">
         <span class="tab-thumb map-thumb" aria-hidden="true">${giants.map(id => `<img src="${ART(id)}" alt="">`).join("")}<i class="tab-pin"></i></span>
@@ -889,12 +923,12 @@
     const el = document.getElementById(id); if (!el || reduceMotion()) return;
     el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
   }
-  // small milestones along the way: 10 found, halfway, and 8 to go
+  // small milestones along the way: halfway, and a few to go (plus 10 found on bigger lists)
   function milestone(n) {
-    const half = Math.ceil(OBJ_TOTAL / 2), near = OBJ_TOTAL - 8;
-    if (n === 10 && n < OBJ_TOTAL) return "10 found! You've got an eye for this.";
+    const half = Math.ceil(OBJ_TOTAL / 2), left = OBJ_TOTAL >= 30 ? 8 : 3;
+    if (OBJ_TOTAL >= 30 && n === 10) return "10 found! You've got an eye for this.";
     if (n === half) return "Halfway there!";
-    if (n === near && near > half) return "Only 8 left!";
+    if (n === OBJ_TOTAL - left && n > half) return `Only ${left} left!`;
     return "";
   }
   function findObject(btn) {
@@ -1065,7 +1099,8 @@
         </model-viewer>
         <button class="btn red ar-btn" id="arGo" hidden>See ${esc(c.name)} in your space</button>
       </div>
-      <p class="muted" style="margin-top:14px">${giant ? `Giant-size, about ${len(c.spot.giantFeet, true)} tall here: after you tap the button, aim at the ground, then walk back about ${len(c.spot.giantFeet, true)} to fit them on screen.` : "Life-size, about as tall as you: after you tap the button, aim at the ground and stand next to them for a photo."} Snap a photo and tag <b>${esc(S.hashtag)}</b>! On a computer, drag to spin them around.</p>
+      <p class="muted" style="margin-top:14px">${giant ? `Giant-size, about ${len(c.spot.giantFeet, true)} tall here: after you tap the button, aim at the ground, then walk back about ${len(c.spot.giantFeet, true)} to fit them on screen.` : "Life-size, about as tall as you: after you tap the button, aim at the ground and stand next to them for a photo."} On a computer, drag to spin them around.</p>
+      ${challengeHTML(c)}
       <div class="btn-row"><a class="btn ghost small" href="#/c/${c.id}">Read ${esc(c.name)}'s story</a><a class="btn ghost small" href="#/hunt">Back to the hunt</a></div>
     </section>`;
     loadModelViewer().then(ok => {
@@ -1081,6 +1116,54 @@
         // Show the placement tip the first time only; after that, go straight to the camera.
         if (store.get("arTipSeen")) { try { mv.activateAR(); } catch (e) { toast("AR isn't available in this browser."); } }
         else arTip(c, giant, mv);
+      });
+    });
+  }
+
+  // The finale: all 13 characters together in AR, for people who found every one.
+  function pageEveryone(size) {
+    const small = size === "tabletop";
+    if (foundCount() < TOTAL && !isTest()) { location.replace("#/secret"); return; }
+    const src = small ? "assets/models/group/everyone-tabletop.glb" : "assets/models/group/everyone.glb";
+    const ig = ((C.settings.share || {}).instagramTags || []).map(h => "@" + h).join(" ");
+    app.innerHTML = `<section class="ar-wrap">
+      <div class="eyebrow">All ${TOTAL} found · the finale</div>
+      <h2>Everyone, together</h2>
+      <div class="size-toggle" role="group" aria-label="Size">
+        <a href="#/everyone" class="${small ? "" : "on"}">Life-size <small>~${len(17)} tall</small></a>
+        <a href="#/everyone/tabletop" class="${small ? "on" : ""}">Tabletop <small>~${len(2)} tall</small></a>
+      </div>
+      <div style="position:relative">
+        <model-viewer id="mv" src="${src}" alt="All ${TOTAL} characters by ${esc(S.artist)}"
+          ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
+          camera-controls touch-action="pan-y" interaction-prompt="none"
+          camera-orbit="0deg 85deg auto" field-of-view="30deg" shadow-intensity="0.6" shadow-softness="1" exposure="1.1" tone-mapping="neutral">
+          <span slot="ar-button" hidden></span>
+          <div slot="ar-prompt" class="ar-prompt">Point at the ground and move your phone slowly…</div>
+        </model-viewer>
+        <button class="btn red ar-btn" id="arGo" hidden>See everyone in your space</button>
+      </div>
+      <p class="muted" style="margin-top:14px">${small
+        ? "Tabletop size, about 2 feet tall: place them on a table or the floor in front of you."
+        : `Life-size: the front row is about as tall as you, and the whole group is about ${len(33, true)} wide. Find an open space, place them, then walk back to fit everyone in.`} On a computer, drag to spin them around.</p>
+      <div class="challenge" style="--c:var(--yellow)">
+        <div class="eyebrow">The final challenge</div>
+        <p class="challenge-text">Take a group photo with all ${TOTAL} characters!</p>
+        <p class="challenge-tag">Share it and tag ${ig ? `<b>${esc(ig)}</b> ` : ""}<b>${esc(S.hashtag)}</b></p>
+      </div>
+      <div class="btn-row"><a class="btn ghost small" href="#/secret">Back to the artist's note</a></div>
+    </section>`;
+    loadModelViewer().then(ok => {
+      const mv = document.getElementById("mv"); if (!mv) return;
+      if (!ok) { mv.outerHTML = `<p class="muted">The 3D viewer couldn't load on this connection.</p>`; return; }
+      mv.addEventListener("ar-status", e => { if (e.detail.status === "session-started") track("ar_open", { character: "everyone", size: small ? "tabletop" : "life" }); });
+      const go = document.getElementById("arGo");
+      const showIfAR = () => { if (go && mv.canActivateAR) go.hidden = false; };
+      mv.addEventListener("load", showIfAR); setTimeout(showIfAR, 400);
+      const who = { name: "everyone", spot: { giantFeet: 30 } };
+      if (go) go.addEventListener("click", () => {
+        if (store.get("arTipSeen")) { try { mv.activateAR(); } catch (e) { toast("AR isn't available in this browser."); } }
+        else arTip(who, !small, mv);
       });
     });
   }
@@ -1199,14 +1282,25 @@
         <a class="btn green" href="#/hunt">Keep hunting</a></section>`;
       return;
     }
-    const v = S.secretVideoUrl;
+    const v = S.secretVideoUrl, note = S.artistNote;
     app.innerHTML = `<section class="secret">
       <div class="eyebrow">All ${TOTAL} found</div>
       <h1>You found every character</h1>
-      <p>A thank-you from ${esc(S.artist)}.</p>
-      <div class="video">${v
-        ? `<iframe src="${esc(v)}" title="A message from ${esc(S.artist)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
-        : `<div class="ph"><div><h3>A message from ${esc(S.artist)} is on its way ✦</h3><p>Check back soon.</p></div></div>`}</div>
+      <div class="finale">
+        <div class="finale-art" aria-hidden="true">${["rebel", "flora", "sol", "rascal", "ash"].map(id => `<img src="${ART(id)}" alt="">`).join("")}</div>
+        <h2>Everyone, together</h2>
+        <p>You've earned the finale: all ${TOTAL} characters at once, life-size in augmented reality. Line up for a group photo!</p>
+        <a class="btn red" href="#/everyone">See all ${TOTAL} in AR</a>
+      </div>
+      ${v ? `<div class="video"><iframe src="${esc(v)}" title="A message from ${esc(S.artist)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>` : ""}
+      ${note ? `<article class="artist-note">
+        <div class="eyebrow">A special note from the artist</div>
+        <h2>${esc(note.title)}</h2>
+        ${(note.paragraphs || []).map(p => `<p>${esc(p)}</p>`).join("")}
+        ${note.thanks ? `<p class="note-thanks">${esc(note.thanks)}</p>` : ""}
+        <p class="sig">— ${esc(S.artist)}</p>
+        ${artistLinks()}
+      </article>` : (!v ? `<div class="video"><div class="ph"><div><h3>A message from ${esc(S.artist)} is on its way ✦</h3><p>Check back soon.</p></div></div></div>` : "")}
       <div class="btn-row center"><a class="btn" href="#/results">See who SF is</a><a class="btn ghost" href="#/characters">All characters</a></div>
     </section>`;
     confetti();
@@ -1271,6 +1365,7 @@
     [/^hunt\/(\w+)$/, pageHunt],
     [/^ar\/(\w+)(?:\/(giant))?$/, pageAR],
     [/^mural$/, pageMural],
+    [/^everyone(?:\/(tabletop))?$/, pageEveryone],
     [/^results$/, pageResults],
     [/^secret$/, pageSecret],
     [/^restore\/([\w-]+)$/, pageRestore],
@@ -1283,7 +1378,7 @@
     document.getElementById("testBanner").hidden = !isTest();
     const path = location.hash.replace(/^#\/?/, "");
     const section = path.split("/")[0];
-    const navMap = { result: "quiz", c: "characters", ar: "hunt", secret: "hunt", mural: "hunt" };
+    const navMap = { result: "quiz", c: "characters", ar: "hunt", secret: "hunt", mural: "hunt", everyone: "hunt" };
     document.querySelectorAll("[data-nav]").forEach(a => a.classList.toggle("active", a.dataset.nav === (navMap[section] || section)));
     for (const [re, fn] of routes) {
       const m = path.match(re);

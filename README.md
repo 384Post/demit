@@ -50,9 +50,11 @@ Open `…/384post/#/test` (or add `?test=1` to the URL). A yellow "TEST MODE" ba
 
 ### How the quiz decides
 
-Every answer points to a **main** character (3 points) and an **also** character (1 point). The winner is whoever earned the highest *percentage* of the points they could possibly have gotten, so characters that appear in fewer answers aren't disadvantaged. With the current mapping, each of the 13 characters has a roughly equal chance (7–8.5%) across every possible combination of answers. If you rewrite questions, keep each character as a `main` 2–3 times and as an `also` 2–4 times to stay balanced.
+demit's questions each have four answers, one per element (Fire, Earth, Air, Water). The elements are never shown on the site.
+1. The element someone picks most often wins (a tie goes to the element they picked most recently).
+2. Each answer also leans toward two characters of its element: `main` (3 points) and `also` (1 point). Among the winning element's characters, the one with the most lean points from that element's answers wins.
 
-Questions 1–7 are from the Ceros sample; 8–9 were added by Claude (no label shows on the site).
+So a result always matches the person's strongest element. Fog counts as both Water and Air, and Mangrove as both Earth and Water. With the current leans, every character comes up 7.2–8.6% of the time across all 1,048,576 possible sets of answers. If you change questions or leans, ask Claude to re-check the balance.
 
 ## Character art
 
@@ -62,7 +64,7 @@ The page art uses demit's SVGs in `assets/characters/<id>.svg`, with matching PN
 
 Every character comes in **two sizes**, both built from the Spline models:
 - **Life-size** (`assets/models/<id>.glb`): about human height, 5'10"–6'2" standing (Ash, seated, is about 4'9"; Flora is the tallest at about 6'9").
-- **Giant** (`assets/models/giant/<id>.glb`): sized for its hunt spot, set by `giantFeet` in `data/config.js`: 15 ft in tight spots (Clarion Alley, Jack Kerouac Alley, the Transamerica sidewalk), 20 ft at medium ones (384 Post, Salesforce Park, the Exploratorium), 25 ft at open ones (Ferry Building, Pier 14, Hyde Street Pier, Coit Tower) and 30 ft at the wide-open ones (City Hall, the Golden Gate overlook, the Palace of Fine Arts). After changing a `giantFeet`, rebuild with `node tools/make_giants.mjs` (setup notes at the top of that file), or ask Claude.
+- **Giant** (`assets/models/giant/<id>.glb`): sized for its hunt spot, set by `giantFeet` in `data/config.js`: 15 ft in tight spots (Haight & Ashbury, Cole Valley), 20 ft at medium ones (the Painted Ladies, UCSF, the Peace Pagoda), 25 ft at open ones (Fisherman's Wharf, Union Square, the Legion of Honor, the Zoo) and 30 ft at the wide-open ones (City Hall, the Golden Gate Bridge, Dolores Park, the Bay Bridge). After changing a `giantFeet`, rebuild with `node tools/make_giants.mjs` (setup notes at the top of that file), or ask Claude.
 
 The AR page has a **Life-size / Giant** switch. When someone finds a character on the hunt, the "found" pop-up opens it giant-size first; everywhere else it opens life-size.
 
@@ -123,15 +125,12 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 ## Open items for the team
 
 - [ ] Confirm hunt locations with demit and the team (and coordinates on site)
-- [ ] City Lights → currently using the public Jack Kerouac Alley next door
-- [ ] Final quiz questions (demit is drafting)
-- [ ] Character numbering: deck has two "Character 8"s (Thinker set to 7 here)
-- [ ] Proofread character copy (e.g. "Septor" → set to "Scepter"; Sequoia's "turn things imaginations")
 - [ ] demit's secret video (unlisted link)
 - [ ] GA property + IT sign-off on the service account
-- [ ] Approve share text + hashtags (#384Post #UnionSquare)
+- [ ] Approve share text + hashtags (#384Post #demitomphroy #UnionSquare, plus @demit on Instagram)
 - [ ] CBRE legal/marketing review of the Terms & privacy page (`#/terms`) and footer notices
 - [ ] Social wall approach (curated vs. share-only)
-- [ ] Confirm the hidden-object count and names with demit (68; "Mace" is a guess)
+- [ ] Confirm the new hunt spot coordinates on site (they're approximate)
+- [ ] Mangrove's spot on the mural and hidden objects (his notes repeated Fleur's)
 - [ ] demit's reward for finding all mural objects (placeholder: flower + "You did it")
 - [ ] Microsoft Forms link for "Stay in touch" + legal review of the form wording

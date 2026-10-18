@@ -17,7 +17,9 @@ window.CONFIG = {
     // ---- Social sharing (result page) ----
     // In the text, {name} {archetype} {element} {trait} {artist} are filled in automatically.
     share: {
-      hashtags: ["384Post", "UnionSquare"],   // no "#", no spaces
+      hashtags: ["384Post", "demitomphroy", "UnionSquare"],   // no "#", no spaces
+      // Instagram handles to @-tag in the Instagram caption (other platforms use the hashtags only)
+      instagramTags: ["demit"],
       // Facebook (copied for pasting), LinkedIn, Instagram & TikTok captions:
       text: "I'm {name}, {archetype}! ✨ {artist}'s new mural at 384 Post in Union Square brings 13 Characters of San Francisco to life. Take the quiz to find yours, then hunt for the giants around the city.",
       // X and Bluesky (short posts):
@@ -47,6 +49,18 @@ window.CONFIG = {
     // EMBED link, e.g. "https://www.youtube.com/embed/VIDEO_ID".
     // Leave empty to show the placeholder card.
     secretVideoUrl: "",
+    // Shown on the reward page (all characters found). Stays even after a video is added.
+    artistNote: {
+          "title": "The Characters of San Francisco",
+          "paragraphs": [
+                "Step into the mind of Bay Area-born artist Demit Omphroy with his latest series: The Characters of San Francisco.",
+                "Every person carries a distinct narrative of how they arrived in San Francisco—each path uniquely different, bound by similar rhythms of life. These trajectories intersect across the City's iconic hills, cultural landmarks, and storied neighborhoods.",
+                "With The Characters of San Francisco, explore the human experience through a magical and colorful universe. Placed across the different parts of SF, these abstracted giants serve as elemental embodiments of the character traits, energies, and forces that shape us.",
+                "From the Fiery personalities who ignite San Francisco's energy, to the Earthly grounded builders, the Airy whimsical dreamers, and Water-like fluid thinkers. Together, these figures celebrate our individual powers, our collective struggles, and the vibrant pairings that unify our existence.",
+                "We become these Characters of San Francisco—the diverse souls and intersecting journeys that add to the undeniable beauty of San Francisco."
+          ],
+          "thanks": "Thank you for taking the time to explore, play, and discover San Francisco with this art series."
+    },
 
     // Google Analytics 4 measurement ID, e.g. "G-ABC123XYZ". Leave empty
     // while testing so test clicks don't pollute the real numbers.
@@ -94,291 +108,271 @@ window.CONFIG = {
             matches how big each one is in the mural
      The order here is the order of the cloud on the page. */
   muralObjects: [
-    { id: "shield", name: "Shield", size: 89 },
-    { id: "leaf", name: "Leaf", size: 54 },
-    { id: "basket", name: "Basket", size: 97 },
-    { id: "skull", name: "Skull", size: 68 },
-    { id: "flame", name: "Flame", size: 69 },
-    { id: "waves", name: "Wavy Lines", size: 76 },
-    { id: "sage", name: "Sage", size: 69 },
-    { id: "sword", name: "Sword", size: 93 },
-    { id: "ducky", name: "Rubber Ducky", size: 57 },
-    { id: "helmet", name: "Knight's Helmet", size: 97 },
-    { id: "architectTool", name: "Architect's Tool", size: 79 },
-    { id: "ruler", name: "Ruler", size: 74 },
-    { id: "cigarette", name: "Cigarette", size: 64 },
-    { id: "key", name: "Key", size: 61 },
-    { id: "binoculars", name: "Binoculars", size: 105 },
-    { id: "balloon", name: "Balloon", size: 72 },
-    { id: "calendar", name: "Calendar", size: 75 },
-    { id: "saw", name: "Saw", size: 70 },
-    { id: "mushroom", name: "Mushroom", size: 71 },
-    { id: "house", name: "House", size: 105 },
-    { id: "sneaker", name: "Sneaker", size: 77 },
-    { id: "doubleWave", name: "Double Wave", size: 60 },
-    { id: "candle", name: "Candle", size: 64 },
-    { id: "sword_1", name: "Dagger", size: 84 },
-    { id: "flashlight", name: "Flashlight", size: 68 },
-    { id: "glasses", name: "Glasses", size: 65 },
-    { id: "snails", name: "Snails", size: 115 },
-    { id: "hammer", name: "Hammer", size: 84 },
-    { id: "throne", name: "Throne", size: 129 },
-    { id: "boat", name: "Boat", size: 105 },
-    { id: "flowerpot", name: "Flower Pot", size: 67 },
-    { id: "rose", name: "Rose in a Dome", size: 66 },
-    { id: "caterpillar", name: "Caterpillar", size: 102 },
-    { id: "cutlery", name: "Spoon, Fork & Knife", size: 103 },
-    { id: "dancingCouple", name: "Dancing Couple", size: 98 },
-    { id: "mirror", name: "Hand Mirror", size: 79 },
-    { id: "lotus", name: "Lotus", size: 68 },
-    { id: "notebook", name: "Spiral Notebook", size: 80 },
-    { id: "nails", name: "Nails", size: 61 },
-    { id: "yinYang", name: "Yin-Yang", size: 66 },
-    { id: "tripleWaves", name: "Triple Waves", size: 60 },
-    { id: "sailboat", name: "Sailboat", size: 102 },
-    { id: "globe", name: "Globe", size: 92 },
-    { id: "musicNote", name: "Music Notes", size: 64 },
-    { id: "typewriter", name: "Typewriter", size: 93 },
-    { id: "paddle", name: "Paddle", size: 75 },
-    { id: "puzzle", name: "Puzzle Piece", size: 68 },
-    { id: "mase", name: "Mace", size: 97 },
-    { id: "notebook_1", name: "Notebook", size: 82 },
-    { id: "tombstone", name: "Tombstone", size: 102 },
-    { id: "carrot", name: "Carrot", size: 76 },
-    { id: "goldfish", name: "Goldfish", size: 53 },
-    { id: "genieLamp", name: "Genie Lamp", size: 86 },
-    { id: "calculator", name: "Calculator", size: 82 },
-    { id: "wateringCan", name: "Watering Can", size: 118 },
-    { id: "dog", name: "Dog", size: 133 },
-    { id: "gem", name: "Gem", size: 70 },
-    { id: "compass", name: "Compass", size: 78 },
-    { id: "lighteningBolt", name: "Lightning Bolt", size: 80 },
-    { id: "octobus", name: "Octopus", size: 105 },
     { id: "butterfly", name: "Butterfly", size: 81 },
     { id: "crown", name: "Crown", size: 68 },
-    { id: "siren", name: "Siren", size: 72 },
-    { id: "horse", name: "Horse", size: 140 },
-    { id: "pencil2", name: "Pencil", size: 61 },
-    { id: "baton", name: "Baton", size: 80 },
+    { id: "fork", name: "Fork", size: 74 },
+    { id: "pencil", name: "Pencil", size: 59 },
+    { id: "notebook_1", name: "Journal", size: 82 },
+    { id: "puzzle", name: "Puzzle Piece", size: 68 },
+    { id: "flame", name: "Fire", size: 69 },
+    { id: "architectTool", name: "Protractor", size: 79 },
+    { id: "caterpillar", name: "Caterpillar", size: 102 },
+    { id: "sword", name: "Scepter", size: 93 },
+    { id: "binoculars", name: "Binoculars", size: 105 },
+    { id: "calculator", name: "Calculator", size: 82 },
+    { id: "throne", name: "Throne", size: 129 },
+    { id: "wateringCan", name: "Watering Can", size: 118 },
+    { id: "genieLamp", name: "Genie Lamp", size: 86 },
+    { id: "globe", name: "Globe", size: 92 },
+    { id: "musicNote", name: "Music Note", size: 64 },
+    { id: "sneaker", name: "Shoe", size: 77 },
+    { id: "saw", name: "Saw", size: 70 },
     { id: "bunny", name: "Bunny", size: 91 },
+    { id: "snail", name: "Snail", size: 75 },
+    { id: "compass", name: "Compass", size: 78 },
+    { id: "lighteningBolt", name: "Lightning Bolt", size: 80 },
     { id: "rainbow", name: "Rainbow", size: 91 }
   ],
 
   /* ---------- The 13 characters ----------
-     id      – short code used everywhere (don't change once live)
-     art     – stand-in cutouts for now; swap in demit's clean PNGs
-     spot    – hunt location. lat/lng are APPROXIMATE — confirm on site.
-               giantFeet = how tall the giant AR version is at that spot (bigger at
-               wide-open spots, smaller in tight ones). Changing it needs the giant
-               model rebuilt: node tools/make_giants.mjs (see README). */
+     id         – short code used everywhere (keep it even when a name changes: saved
+                  results, analytics and art files all use it)
+     name / archetype – what people see (e.g. "Sunny", "The Spark")
+     elements   – used by the quiz; "element" is the label shown on the page
+     mural      – where the character is on the mural (shown on their page)
+     objects    – their hidden objects in the mural (ids from muralObjects)
+     challenge  – the AR challenge shown when they're unlocked
+     spot       – hunt location. lat/lng are APPROXIMATE — confirm on site.
+                  giantFeet = how tall the giant AR version is there. Changing it needs the
+                  giant models rebuilt: node tools/make_giants.mjs (see README). */
   characters: [
     {
-      id: "sol", number: 1, archetype: "The Catalyst / The Spark", name: "Sol",
-      element: "Fire", trait: "Enthusiasm", color: "Orange", colorHex: "#E3923B", object: "Speaker",
-      description: "Considered to be a ray of light. The moment they arrive, the slow energy shifts. They ignite conversation and can get a room to start dancing. They are the character who gathers all the other characters together when a new idea or adventure pops up.",
-      signature: "A spontaneous dance break on the sidewalk.",
-      power: "Confidence",
-      struggles: "Impulsive, fast energy burner. Can overwhelm others who aren't as outgoing.",
-      antidote: "Some music, and a recharge with a coffee.",
+      id: "sol", number: 1, name: "Sunny", archetype: "The Spark",
+      element: "Fire", elements: ["Fire"], trait: "Optimism", color: "Marigold Yellow", colorHex: "#F0B429", object: "Bolt of Electricity",
+      mural: "Window 1, Powell St", objects: ["flame", "musicNote", "lighteningBolt"],
+      description: "Sunny the Spark is a ray of light for others.\nThe moment they arrive, the energy shifts. They ignite conversation and can get a room to start dancing in a matter of minutes. They are the personality who gathers all the other Characters of San Francisco together when a new idea or adventure pops up.",
+      powers: "Confidence, Spontaneity, Enthusiasm",
+      struggles: "Impulsive, Fast Energy Burner",
+      recharge: ["Listening to music", "Dancing", "A nice cup of coffee"],
+      challenge: "Show off your best dance move with Sunny!",
       pairings: ["ash", "ocean"],
-      spot: { name: "384 Post · Union Square", lat: 37.78862, lng: -122.40778, bonus: false, giantFeet: 20,
-        why: "Sol gathers everyone — so the hunt starts at home base." }
+      spot: { name: "Fisherman's Wharf", lat: 37.808, lng: -122.4157, bonus: false, giantFeet: 25 }
     },
     {
-      id: "rebel", number: 2, archetype: "The Independent", name: "Rebel",
-      element: "Fire", trait: "Autonomy", color: "Burgundy", colorHex: "#8C2B3A", object: "Bandanna",
-      description: "Rebel is bold, unconventional, breaks the mold. Goes their own way and forges their own path—unafraid of risk, completely unapologetic, and comfortable living outside the lines. They cut through the bureaucracy. The Rebel re-shifts the entire process and takes the leap no one else dared to attempt. It's more of a “like them or love them” situation, and they aren't spending energy explaining their decisions.",
-      power: "Integrity",
-      struggles: "Impatience with slow consensus-building or over-explaining.",
-      antidote: "A long walk outside. A home-cooked meal.",
+      id: "rebel", number: 2, name: "Rebel", archetype: "The Explorer",
+      element: "Fire", elements: ["Fire"], trait: "Independence", color: "Burgundy", colorHex: "#8C2B3A", object: "Binoculars",
+      mural: "Window 2, Powell St", objects: ["sneaker", "fork", "binoculars"],
+      description: "Rebel is bold and unconventional. They break the mold and forge their own path, unafraid of risk and completely unapologetic. Their drive is unbreakable once they set their mind to something.\nRebel takes the leap that no one else dared to attempt and isn't spending energy explaining that decision.",
+      powers: "Honest, Fearless",
+      struggles: "Impatience, Impulsive",
+      recharge: ["A long walk outside", "Some sightseeing", "A home-cooked meal"],
+      challenge: "Do that thing you have been wanting to do for a while, and snap a photo with Rebel!",
       pairings: ["compass", "rascal"],
-      spot: { name: "Clarion Alley murals · Mission", lat: 37.76305, lng: -122.42185, bonus: true, giantFeet: 15,
-        why: "Fellow rule-breaking artists, painting outside the lines." }
+      spot: { name: "Painted Ladies · Alamo Square", lat: 37.7762, lng: -122.433, bonus: false, giantFeet: 20 }
     },
     {
-      id: "captain", number: 3, archetype: "The Leader", name: "Captain",
-      element: "Fire", trait: "Leadership", color: "Crimson Red", colorHex: "#C8323C", object: "Scepter",
-      description: "Drive, Ambition, fiercely competitive, natural leader. Wearing a crown with confidence, they roar like a lion with their large mane. A Pioneer. A leader, by every definition. Fiercely competitive, ambitious, with a drive to conquer. Fearless. They will lead their team to success, even if it means stepping through failure to get there. They have no time for sorrows, and no time to dwell on the negative. Forward thinkers whose core motto is “We must overcome.”",
-      power: "Honesty",
-      struggles: "Blunt and difficult to pin down.",
-      antidote: "Adventure and Exploration.",
+      id: "captain", number: 3, name: "Monarch", archetype: "The Leader",
+      element: "Fire", elements: ["Fire"], trait: "Leadership", color: "Crimson Red", colorHex: "#C8323C", object: "Scepter",
+      mural: "Window 3, Powell St", objects: ["throne", "sword", "crown"],
+      description: "Monarch is a natural leader with drive, ambition, and a fierce competitive side. They will lead their team to success, even if it means stepping through failure to get there. They have no time for sorrows, and no time to dwell on the negative. The Leader is a great listener and role model for those who are seeking out guidance.",
+      powers: "Honest, Loyal, Trustworthy",
+      struggles: "Misunderstood, Tendency to Withhold Feelings",
+      recharge: ["Take yourself on a date", "Explore somewhere you have never been", "Share a lesson you have learned"],
+      challenge: "Sit in a throne-like chair and pose next to Monarch the Leader!",
       pairings: ["sol", "flora"],
-      spot: { name: "City Hall · Civic Center", lat: 37.77927, lng: -122.41924, bonus: false, giantFeet: 30,
-        why: "A throne-sitter under the grandest dome in town." }
+      spot: { name: "Union Square", lat: 37.78795, lng: -122.4075, bonus: false, giantFeet: 25 }
     },
     {
-      id: "sequoia", number: 4, archetype: "The Builder", name: "Sequoia",
-      element: "Earth", trait: "Resourceful", color: "Leaf Green", colorHex: "#3F9150", object: "Hammer",
-      description: "Sequoia is the maker—sharp minds and two steps ahead of the blueprint. Practical, grounded, and very hands-on, they turn things imaginations into physical creations. The Builder possesses a rare, resourceful magic that finds total contentment in the present moment. Down-to-earth, deeply understanding, and built on a foundation of grit. They are the backbone. The ones who talk less, roll up their sleeves, and get it done.",
-      power: "Loyal",
-      struggles: "Stubborn, once their mind is made up.",
-      antidote: "Curiosity and Perspective-Shifting. Going to a museum, watching a new movie.",
+      id: "sequoia", number: 4, name: "Timber", archetype: "The Builder",
+      element: "Earth", elements: ["Earth"], trait: "Resourceful", color: "Olive Green", colorHex: "#7A8B3A", object: "Hammer",
+      mural: "Window 4, Powell St", objects: ["pencil", "saw", "snail"],
+      description: "Timber is sharp-minded, practical and works with their hands to turn imaginations into physical creations.\nThe Builder possesses a rare, resourceful magic that finds total happiness in the present moment. They are a down-to-earth person, who is deeply understanding, but still has a solid foundation of grit.\nA Builder talks less, rolls up their sleeves, and gets it done.",
+      powers: "Curiosity, Strength, Heart",
+      struggles: "Stubborn, Anti-Social",
+      recharge: ["Slow your day down", "Go to a museum", "Browse vintage items"],
+      challenge: "Build anything and take a photo next to it with you and Timber!",
       pairings: ["captain", "sol"],
-      spot: { name: "Salesforce Park", lat: 37.78960, lng: -122.39620, bonus: false, giantFeet: 20,
-        why: "A whole park built on top of a transit hub — peak maker energy." }
+      spot: { name: "Haight & Ashbury", lat: 37.76997, lng: -122.44687, bonus: false, giantFeet: 15 }
     },
     {
-      id: "rascal", number: 5, archetype: "The Child, The Dreamer", name: "Rascal",
-      element: "Air", trait: "Imagination", color: "Sky Blue", colorHex: "#6FA8DC", object: "Conductor's Baton",
-      description: "Imaginative, Whimsical, idealistic. A dreamer with their head in the clouds. In some ways, they live in their own world of wonder. You say jump, they say “What color?” Weird but eccentric. They can get caught up in the story and spin it in their own beautiful way. You may not understand them, but how could you? They don't always understand themselves. The doors are constantly opening to another beautiful story—this is the beauty of their imaginative mind. Anything goes. With their conductor's baton in hand, they orchestrate vibrant worlds out of thin air.",
-      power: "Endless Wonder",
-      struggles: "Unpredictability",
-      antidote: "Structure. Puzzle, writing, exercise.",
+      id: "rascal", number: 5, name: "Rascal", archetype: "The Dreamer",
+      element: "Air", elements: ["Air"], trait: "Imagination", color: "Sky Blue", colorHex: "#6FA8DC", object: "Baton",
+      mural: "Window 5, left corner, Powell St", objects: [],
+      description: "The Dreamer is imaginative and whimsical, usually with their head in the clouds, living in their own world of wonder. Beautifully weird and eccentric, with the Dreamer… anything goes.\nYou ask them how they are doing, they respond with the color they are feeling.\nWith their conductor's baton in hand, they orchestrate vibrant worlds out of thin air.",
+      powers: "Endless Wonder, Child-like Spirit",
+      struggles: "Unpredictability, Discipline",
+      recharge: ["Do a puzzle", "Work on some writing", "Exercise"],
+      challenge: "Jump in the air and capture a photo of you flying with Rascal!",
       pairings: ["sequoia", "compass"],
-      spot: { name: "Hyde Street Pier tall ships", lat: 37.80860, lng: -122.42160, bonus: true, giantFeet: 25,
-        why: "Pirate hat on, ships in the harbor — and you arrive by cable car." }
+      spot: { name: "Golden Gate Bridge", lat: 37.8077, lng: -122.4749, bonus: true, giantFeet: 30 }
     },
     {
-      id: "ocean", number: 6, archetype: "The Guardian", name: "Ocean",
-      element: "Water", trait: "Empathy", color: "Cerulean", colorHex: "#2A7AB0", object: "Shield",
-      description: "Lots of empathy, feels safe to be around. A protector and also very intuitive. Doesn't need to say much but will safely be by your side. To have a Guardian is to have a protector. Secure in their own right, strong for both. Their presence provides an immediate sense of calm and security. To the wailing child, they provide a soothing shelter. To the chaotic life, they ease the overworking mind. Despite their imposing physical presence, their eyes radiate deep warmth and quiet understanding.",
-      power: "Protection",
+      id: "ocean", number: 6, name: "Valor", archetype: "The Guardian",
+      element: "Water", elements: ["Water"], trait: "Empathy", color: "Cerulean", colorHex: "#2A7AB0", object: "Shield",
+      mural: "Window 6, corner of Powell St and Post St", objects: [],
+      description: "Valor the Guardian is an intuitive protector. They don't always have much to say in social settings, but will be safely by your side. Secure in their own right, but also strong for both of you.\nTheir presence provides an immediate sense of calm and security.\nTo the wailing child, they provide a soothing shelter. To the chaotic life, they ease the overworking mind.\nBeyond their protective shell, they radiate sensitive depth and quiet understanding.",
+      powers: "Protection, Strength",
       struggles: "Emotional Fatigue",
-      antidote: "Self-Compassion and Boundaries. Self care, massage, relaxation.",
+      recharge: ["Self-care day", "Yoga", "Calming cup of tea"],
+      challenge: "Take a photo with your shields next to Valor!",
       pairings: ["rascal", "sol"],
-      spot: { name: "Golden Gate Bridge overlook", lat: 37.80770, lng: -122.47500, bonus: true, giantFeet: 30,
-        why: "The guardian of the bay, standing watch at the Gate." }
+      spot: { name: "Legion of Honor", lat: 37.7845, lng: -122.5008, bonus: true, giantFeet: 25 }
     },
     {
-      id: "atlas", number: 7, archetype: "The Thinker", name: "Atlas",
-      element: "Air", trait: "Knowledge", color: "Cobalt", colorHex: "#2F4FA3", object: "Notebook",
-      description: "Curiosity, Analytical, quiet observer, solves the puzzle. Asks a lot of questions. Doesn't always talk too much. In their head, quietly observing. Learning. A knowledge-hungry learner who understands the true power of listening before speaking. They take in the world through keen, watchful eyes, constantly asking the right questions and collecting pieces of the grand human puzzle.",
-      power: "Listening (The ability to listen past the noise, connect hidden patterns, and uncover the simple truth inside complex problems.)",
+      id: "atlas", number: 7, name: "Atlas", archetype: "The Thinker",
+      element: "Air", elements: ["Air"], trait: "Knowledge", color: "Cobalt Blue", colorHex: "#2F4FA3", object: "Notebook",
+      mural: "Window 7, right corner, Post St", objects: [],
+      description: "Atlas is curious, analytical, a quiet observer and a total solver of puzzles.\nThey are philosophers, so naturally they may ask a lot of questions.\nUltimately, they are knowledge-hungry learners who understand the true power of listening before speaking.\nThey take in the world through watchful eyes, constantly asking the right questions and collecting pieces to the larger puzzle.",
+      powers: "Listening, Solving",
       struggles: "Paralysis by Analysis",
-      antidote: "Spontaneous Action and Vocal Expression, Singing in the shower.",
+      recharge: ["Spontaneity", "Singing in the shower", "Watch something that makes you laugh"],
+      challenge: "Do your best thinking pose and think with Atlas!",
       pairings: ["rascal", "sol"],
-      spot: { name: "Exploratorium · Pier 15", lat: 37.80170, lng: -122.39730, bonus: false, giantFeet: 20,
-        why: "Notebook out, asking questions at the museum of curiosity." }
+      spot: { name: "UCSF Parnassus", lat: 37.7631, lng: -122.4583, bonus: false, giantFeet: 20 }
     },
     {
-      id: "compass", number: 8, archetype: "The Architect", name: "Compass",
-      element: "Earth", trait: "Precision", color: "Emerald", colorHex: "#1F8A5B", object: "Ruler",
-      description: "Clarity, Precise, organized, loves systems and symmetry. Understands numbers, patterns, and structural symmetry where nature and science meet. The ultimate Type A character: organized, concise, and masterfully efficient. Picture a spider weaving a mathematically flawless web at dawn, or a Queen Bee engineering an intricate, perfectly geometric hive—Precision sees the invisible grid underlying the entire world. They don't just exist in space; they balance it.",
-      power: "Clarity",
-      struggles: "Perfectionism, can become fixated on micro-details.",
-      antidote: "Spontaneity and Flow. Art, Cooking, swimming in the ocean.",
+      id: "compass", number: 8, name: "Abacus", archetype: "The Architect",
+      element: "Earth", elements: ["Earth"], trait: "Precision", color: "Emerald", colorHex: "#1F8A5B", object: "Ruler",
+      mural: "Window 8, Post St", objects: ["compass", "architectTool", "calculator"],
+      description: "Clarity. Precise, organized, loves systems and symmetry. Understands numbers, patterns, and structural symmetry where nature and science meet. The ultimate Type A character: organized, concise, and masterfully efficient.\nPicture a spider weaving a mathematically flawless web at dawn, or a Queen Bee engineering an intricate, perfectly geometric hive. Precision sees the invisible grid underlying the entire world. They don't just exist in space; they balance it.",
+      powers: "Analytical, Finding Clarity",
+      struggles: "Perfectionism",
+      recharge: ["Sculpt with clay", "Color outside the lines", "Swim in the ocean"],
+      challenge: "Grab something mathematical and take a photo with Abacus!",
       pairings: ["sequoia", "sol"],
-      spot: { name: "Transamerica Pyramid", lat: 37.79520, lng: -122.40280, bonus: false, giantFeet: 15,
-        why: "Pure geometry and precision, right on the skyline." }
+      spot: { name: "San Francisco City Hall", lat: 37.7793, lng: -122.4193, bonus: false, giantFeet: 30 }
     },
     {
-      id: "flora", number: 9, archetype: "The Caretaker", name: "Flora",
-      element: "Earth", trait: "Nurture", color: "Terracotta", colorHex: "#C4663F", object: "Harvesting Basket",
-      description: "The Caretaker—Nurturing. A secure, grounded, patient figure. They have a green thumb, understand the rhythms of the seasons, and carry an effortless, deep-rooted wisdom about how life unfolds. They possess the rare ability to listen to others' deepest problems with true empathy without letting that heavy energy cloud their own peace. Because they know exactly who they are, they listen without judgment or influence.",
-      power: "Empathy",
-      struggles: "Detachment or Over-patience",
-      antidote: "Urgency and Action. Dancing in the rain.",
+      id: "flora", number: 9, name: "Fleur", archetype: "The Gardener",
+      element: "Earth", elements: ["Earth"], trait: "Nurture", color: "Terracotta", colorHex: "#C4663F", object: "Basket",
+      mural: "Window 9, Post St", objects: ["bunny", "caterpillar", "wateringCan"],
+      description: "Fleur the Gardener is a natural nurturer. A secure, grounded, patient figure. They have a green thumb, understand the rhythms of the seasons, and carry an effortless, deep-rooted wisdom about how life unfolds.\nThey possess the rare ability to listen to others' deepest problems with true empathy without letting that heavy energy cloud their own peace. Because they know exactly who they are, they listen without judgment or influence.",
+      powers: "Empathy, Kindness, Understanding",
+      struggles: "Detachment, Over-patience",
+      recharge: ["Finish a to-do list", "Meditation", "Dance in the rain"],
+      challenge: "Grab a flower and take a photo together with Fleur the Gardener!",
       pairings: ["captain", "compass"],
-      spot: { name: "Ferry Building farmers market", lat: 37.79555, lng: -122.39365, bonus: false, giantFeet: 25,
-        why: "Basket in hand, meeting the farmers." }
+      spot: { name: "San Francisco Zoo", lat: 37.7325, lng: -122.503, bonus: true, giantFeet: 25 }
     },
     {
-      id: "lorey", number: 10, archetype: "The Storyteller", name: "Lorey",
-      element: "Air", trait: "Expression", color: "Turquoise", colorHex: "#2BB3B1", object: "Book",
-      description: "Expression, Witty, loves sharing ideas. Ideas are their fuel; stories are their magic. They will have you completely wrapped up in their words through a majestic, poetic rhythm. They are the people who are never boring to be around. They open their mouth and effortlessly captivate an entire room.",
-      power: "Captivating Attention",
+      id: "lorey", number: 10, name: "Poet", archetype: "The Storyteller",
+      element: "Air", elements: ["Air"], trait: "Expression", color: "Turquoise", colorHex: "#2BB3B1", object: "Book",
+      mural: "Window 10, Post St", objects: ["rainbow", "butterfly", "genieLamp"],
+      description: "The Storyteller is all about expression, wit, and idea sharing.\nTheir ideas are their fuel; the stories they tell are their magic. The Storyteller will have you completely wrapped up in their magnificently poetic words. They are the personalities who are never boring to be around. Poet the Storyteller can open their mouth and effortlessly captivate an entire room.",
+      powers: "Sharing Fantasy and Imagination",
       struggles: "Hogging the Spotlight",
-      antidote: "Active Listening and Quiet Reflection, Reading a book, listening to music.",
+      recharge: ["Ask someone about their day", "Read a book", "Write a short story"],
+      challenge: "Take a photo with your favorite book together with Poet!",
       pairings: ["atlas", "sol"],
-      spot: { name: "Jack Kerouac Alley · North Beach", lat: 37.79755, lng: -122.40660, bonus: false, giantFeet: 15,
-        why: "A public alley named for a writer, poetry set in the pavement." }
+      spot: { name: "Dolores Park", lat: 37.7596, lng: -122.4269, bonus: false, giantFeet: 30 }
     },
     {
-      id: "pixie", number: 11, archetype: "The Clairvoyant", name: "Pixie",
-      element: "Water", trait: "Understanding", color: "Indigo", colorHex: "#4B3F8F", object: "Mirror",
-      description: "This character has an unmatched depth and understanding; they have a beautifully deep soul—one that sees far beyond just what is in front of you. They see the hidden energy flowing beneath reality. They understand the lives that have been here before and how all energy connects to the present in ways regular folks can't see with the naked eye. They hold a deep interest in mystery, life, and death, yet they never feel scared or nervous—for they know there is profound magic in it all.",
-      power: "Unseen Sight",
-      struggles: "Isolation and Being Misunderstood",
-      antidote: "Human Connection and Shared Experience. Being one with Nature.",
+      id: "pixie", number: 11, name: "Willow", archetype: "The Psychic",
+      element: "Water", elements: ["Water"], trait: "Intuition", color: "Indigo", colorHex: "#4B3F8F", object: "Mirror",
+      mural: "Window 11, Post St", objects: [],
+      description: "Willow the Psychic is a gentle soul with unmatched depth and understanding. Seeing far beyond what meets the eye, Willow senses the hidden energy flowing softly beneath reality. They understand the stories of those who came before and how every thread of energy connects to the present moment. Drawn to the mysteries of life, death, and everything in between, Willow feels no fear, only wonder, knowing there is profound magic in it all.",
+      powers: "Intuition, Understanding, Sees things before they happen",
+      struggles: "Isolation, Being Misunderstood",
+      recharge: ["Social interactions", "Nature", "Walking with a friend"],
+      challenge: "Light a candle with Willow, and capture a photo together!",
       pairings: ["ocean", "atlas"],
-      spot: { name: "Palace of Fine Arts lagoon", lat: 37.80290, lng: -122.44840, bonus: true, giantFeet: 30,
-        why: "A mirror-still lagoon full of history and reflections." }
+      spot: { name: "Cole Valley", lat: 37.7658, lng: -122.4499, bonus: false, giantFeet: 15 }
     },
     {
-      id: "flow", number: 12, archetype: "The Adaptable", name: "Flow",
-      element: "Water / Air", trait: "Adaptability", color: "Aquamarine", colorHex: "#4FC3B5", object: "Wave",
-      description: "Adaptable, flexible, resilient, strong, understanding, and completely free-flowing. They roll with whatever life throws their way, yet they never fall into people-pleasing—their flexibility is born from pure inner strength, not submission. They are a tall, bendy figure with long, limber limbs that look as though they move like liquid in wind. With a free-forming silhouette shifts smoothly around obstacles, proving that true power doesn't crash against walls—it gracefully flows around them and carves its own path.",
-      power: "Resilience",
-      struggles: "Directionless at times.",
-      antidote: "Purposeful Intent and Anchoring, dinners with family. Classes. Going on a planned vacation.",
+      id: "flow", number: 12, name: "Fog", archetype: "The Weightless",
+      element: "Water & Air", elements: ["Water", "Air"], trait: "Adaptability", color: "Gray Cloud", colorHex: "#A9AEB4", object: "Globe",
+      mural: "Window 12, Post St", objects: ["puzzle", "notebook_1", "globe"],
+      description: "Fog is adaptable, resilient, strong and completely free-flowing. The Weightless Fog rolls with whatever life throws their way, yet they never fall into people-pleasing. Their flexibility is born from pure inner strength, not submission.\nFog is a very tall, bendy figure with long, whimsical limbs that appear weightless in the wind.\nThe Weightless Fog has a free-forming silhouette that shifts smoothly around obstacles, a testament to their graceful flow that carves their true path.",
+      powers: "Resilience, Adaptability, Independence",
+      struggles: "Directionless at times",
+      recharge: ["Dinner with family", "Take a class", "Go on a vacation"],
+      challenge: "Do your best flexing pose and stretch those limbs! Take a photo with Fog and flow it out!",
       pairings: ["compass", "sol"],
-      spot: { name: "Pier 14 · Embarcadero", lat: 37.79300, lng: -122.38870, bonus: false, giantFeet: 25,
-        why: "Bending out over the bay where the waves roll in." }
+      spot: { name: "Bay Bridge · Embarcadero", lat: 37.7883, lng: -122.3882, bonus: false, giantFeet: 30 }
     },
     {
-      id: "ash", number: 13, archetype: "The Elder", name: "Ash",
-      element: "Earth / Water", trait: "Wisdom", color: "Amber", colorHex: "#D99A2B", object: "Wooden Staff",
-      description: "Providing, perspective, peace, understanding, emotional intelligence, sound judgment. Empathy, Humility, Composure. They are the quiet anchor of the entire character universe—an iconic mentor carrying a timeless spirit. Where others react with noise and impulse, they operate with a deep, immovable stillness.",
-      power: "Perspective",
+      id: "ash", number: 13, name: "Mangrove", archetype: "The Guru",
+      element: "Earth & Water", elements: ["Earth", "Water"], trait: "Wisdom", color: "Amber", colorHex: "#D99A2B", object: "Feather",
+      mural: "", objects: [],
+      description: "The Guru provides perspective, peace, understanding, and sound judgment.\nThey are the quiet anchors of the entire Character universe. An iconic mentor carrying a timeless spirit.\nWhere others react with noise and impulse, Mangrove the Guru operates with a deep, immovable stillness.",
+      powers: "Empathy, Humility, Composure",
       struggles: "Heavy Solitude",
-      antidote: "Playful Presence and Joy. Seeing family, watching comedy, hanging with friends.",
+      recharge: ["Do something playful", "Be around family", "Hang out with friends"],
+      challenge: "Find your meditative pose together with Mangrove the Guru.",
       pairings: ["rascal", "captain"],
-      spot: { name: "Coit Tower · Telegraph Hill", lat: 37.80239, lng: -122.40582, bonus: false, giantFeet: 25,
-        why: "Wisdom as perspective — the whole city from above." }
+      spot: { name: "Japantown · Peace Pagoda", lat: 37.7852, lng: -122.4297, bonus: false, giantFeet: 20 }
     }
   ],
 
   /* ---------- Quiz ----------
-     Each answer: main = the character it most points to (3 pts),
-     also = a secondary character (1 pt). The winner is the character
-     with the highest % of their possible points (so characters that
-     appear in fewer answers aren't disadvantaged). Ties → higher raw
-     score, then whoever scored most recently. Current mapping gives
-     each character a 7–8.5% chance across all answer combinations.
-     Questions 1–7 are from the Ceros sample; 8–9 were added by Claude. */
+     demit's questions. Each answer has an ELEMENT (never shown on the site) plus the two
+     characters of that element it leans toward: "main" (3 points) and "also" (1 point).
+     How a result is picked:
+       1. The element picked most often wins (a tie goes to the one picked most recently).
+       2. Among that element's characters, the most lean points wins (tie: most recent).
+     So your character always matches your strongest element. Fog counts as Water and Air,
+     Mangrove as Earth and Water. With these leans, each of the 13 characters comes up
+     7.2–8.6% of the time across every possible set of answers. If you change the leans,
+     ask Claude to re-check the balance. */
   quiz: [
-    { q: "What first brought you to San Francisco?", answers: [
-      { text: "A dream I couldn't chase anywhere else.", main: "rascal", also: "captain" },
-      { text: "Family — to set down roots and build a home.", main: "flora", also: "ocean" },
-      { text: "The freedom to become someone new.", main: "flow", also: "pixie" },
-      { text: "A chance to build something that lasts.", main: "sequoia", also: "captain" } ] },
+    { q: "What brought you to San Francisco?", answers: [
+      { text: "Chasing my dream!", element: "Fire", main: "sol", also: "captain" },
+      { text: "I'm here for family, to set down roots.", element: "Earth", main: "flora", also: "compass" },
+      { text: "I'm just in town exploring!", element: "Air", main: "flow", also: "atlas" },
+      { text: "The Bay Area is my home!", element: "Water", main: "ocean", also: "ash" } ] },
 
-    { q: "When you picture your future here, you see…", answers: [
-      { text: "Time to wander, think, and figure it out.", main: "atlas", also: "flow" },
-      { text: "Sharing what I've learned with others.", main: "ash", also: "atlas" },
-      { text: "Doing it my own way, rules aside.", main: "rebel", also: "rascal" },
-      { text: "A community that knows me by name.", main: "sol", also: "flora" } ] },
+    { q: "What do you hope your time in San Francisco will be like?", answers: [
+      { text: "Time to wander, think, and figure it all out as it comes.", element: "Air", main: "flow", also: "rascal" },
+      { text: "Building and sharing what I've learned with others.", element: "Water", main: "pixie", also: "flow" },
+      { text: "Doing it my own way, by my own rules.", element: "Fire", main: "rebel", also: "captain" },
+      { text: "Finding a local café that knows my morning order.", element: "Earth", main: "sequoia", also: "compass" } ] },
 
-    { q: "The Bay Area feels most like home when…", answers: [
-      { text: "I'm showing someone their new favorite spot.", main: "sol", also: "lorey" },
-      { text: "I've got a quiet moment to take it all in.", main: "pixie", also: "atlas" },
-      { text: "The people I love are gathered close.", main: "ocean", also: "ash" },
-      { text: "Anything still feels possible.", main: "captain", also: "flow" } ] },
+    { q: "Finish this sentence: “A special day in San Francisco is when…”", answers: [
+      { text: "I'm showing someone my new favorite spot.", element: "Water", main: "ash", also: "flow" },
+      { text: "I find quiet moments to take life in.", element: "Air", main: "lorey", also: "rascal" },
+      { text: "The people I love are around me.", element: "Earth", main: "compass", also: "sequoia" },
+      { text: "All of my goals are within reach.", element: "Fire", main: "captain", also: "sol" } ] },
 
-    { q: "Your kind of fresh start looks like…", answers: [
-      { text: "A steady, caring home base.", main: "flora", also: "ocean" },
-      { text: "Learning something completely new.", main: "atlas", also: "lorey" },
-      { text: "Tearing up the old rulebook.", main: "rebel", also: "sol" },
-      { text: "A bold goal and people rallied to it.", main: "captain", also: "compass" } ] },
+    { q: "What's your favorite dining experience in San Francisco?", answers: [
+      { text: "A meal at my favorite restaurant.", element: "Water", main: "flow", also: "ocean" },
+      { text: "Finding a place I've never been.", element: "Air", main: "rascal", also: "flow" },
+      { text: "A yummy home-cooked meal.", element: "Earth", main: "flora", also: "sequoia" },
+      { text: "Eating at a park with something I brought.", element: "Fire", main: "sol", also: "rebel" } ] },
 
-    { q: "A newcomer asks you about the city. You…", answers: [
-      { text: "Walk them through your favorite corners.", main: "sol", also: "ocean" },
-      { text: "Tell them what this place really means.", main: "ash", also: "pixie" },
-      { text: "Show them the side guidebooks miss.", main: "lorey", also: "rebel" },
-      { text: "Spin them a vision of all it could be.", main: "rascal", also: "captain" } ] },
+    { q: "What's the best thing about SF?", answers: [
+      { text: "The nature, the views, the sightseeing!", element: "Earth", main: "compass", also: "ash" },
+      { text: "You've gotta try all of the different cuisines!", element: "Fire", main: "captain", also: "rebel" },
+      { text: "The art, the creativity, the innovation!", element: "Water", main: "ocean", also: "pixie" },
+      { text: "There are just too many things to pick one!", element: "Air", main: "lorey", also: "atlas" } ] },
 
-    { q: "What do you hope to leave behind here?", answers: [
-      { text: "A perspective that makes people pause.", main: "pixie", also: "atlas" },
-      { text: "Something I built that outlasts me.", main: "sequoia", also: "compass" },
-      { text: "Knowledge passed to the next generation.", main: "ash", also: "atlas" },
-      { text: "A community that feels cared for.", main: "ocean", also: "flora" } ] },
+    { q: "What's the most important thing you'll remember about your time in San Francisco?", answers: [
+      { text: "Perspective: a greater understanding of why I was meant to be here.", element: "Fire", main: "sol", also: "rebel" },
+      { text: "Career: my time here was meant to better the future generation.", element: "Air", main: "atlas", also: "rascal" },
+      { text: "Calm: a slower pace, mental peace, an understanding of myself.", element: "Water", main: "ocean", also: "flow" },
+      { text: "Connection: my community of friends and family.", element: "Earth", main: "compass", also: "ash" } ] },
 
     { q: "What does San Francisco represent to you?", answers: [
-      { text: "The freedom to become whoever I want.", main: "flow", also: "rascal" },
-      { text: "A place where everyone belongs.", main: "flora", also: "sol" },
-      { text: "The courage to challenge and reinvent.", main: "rebel", also: "captain" },
-      { text: "A future worth building for others.", main: "compass", also: "sequoia" } ] },
+      { text: "The freedom to become whomever you desire.", element: "Water", main: "flow", also: "pixie" },
+      { text: "A diverse community where everyone belongs.", element: "Earth", main: "ash", also: "sequoia" },
+      { text: "Courage to challenge the norm and push your creative boundaries.", element: "Fire", main: "rebel", also: "captain" },
+      { text: "A place that looks to nurture the future of our world.", element: "Air", main: "atlas", also: "rascal" } ] },
 
-    { q: "Your friends call you when they need…", answers: [
-      { text: "A plan that actually works.", main: "sequoia", also: "compass" },
-      { text: "Someone to really listen.", main: "ocean", also: "atlas" },
-      { text: "The best story at dinner.", main: "lorey", also: "sol" },
-      { text: "Honest advice, no sugarcoating.", main: "captain", also: "rebel" } ] },
+    { q: "Finish this sentence: “My friends and family usually come to me because…”", answers: [
+      { text: "They need a plan that actually works.", element: "Water", main: "pixie", also: "ocean" },
+      { text: "We love to gossip.", element: "Air", main: "rascal", also: "flow" },
+      { text: "I'm an awesome listener.", element: "Earth", main: "ash", also: "sequoia" },
+      { text: "I give honest advice, even if it's tough.", element: "Fire", main: "rebel", also: "captain" } ] },
 
-    { q: "Pick something to carry through the city.", answers: [
-      { text: "A hand mirror", main: "pixie", also: "ash" },
-      { text: "A ruler", main: "compass", also: "sequoia" },
-      { text: "A wave", main: "flow", also: "rascal" },
-      { text: "A well-worn book", main: "lorey", also: "atlas" } ] }
+    { q: "Pick one item that best describes your personality:", answers: [
+      { text: "Jewelry", element: "Water", main: "pixie", also: "ocean" },
+      { text: "Measuring tape", element: "Earth", main: "sequoia", also: "compass" },
+      { text: "A book: sketchbook, journal or something to read", element: "Air", main: "atlas", also: "rascal" },
+      { text: "Cell phone", element: "Fire", main: "sol", also: "rebel" } ] },
+
+    { q: "What color best describes you?", answers: [
+      { text: "Cobalt Blue", element: "Water", main: "ash", also: "flow" },
+      { text: "Crimson Red", element: "Fire", main: "captain", also: "rebel" },
+      { text: "Sunflower Yellow", element: "Air", main: "lorey", also: "rascal" },
+      { text: "Sage Green", element: "Earth", main: "flora", also: "sequoia" } ] }
   ]
 };

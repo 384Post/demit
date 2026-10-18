@@ -17,7 +17,7 @@ const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
 fs.mkdirSync(path.join(root, 'assets/models/giant'), { recursive: true });
 
 // each character block: id: "sol", ... giantFeet: 20
-const re = /id: "(\w+)",[\s\S]*?giantFeet: (\d+(?:\.\d+)?)/g;
+const re = /id: "(\w+)", number:[\s\S]*?giantFeet: (\d+(?:\.\d+)?)/g;
 let m;
 while ((m = re.exec(config))) {
   const [, id, ft] = m;
