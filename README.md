@@ -1,8 +1,8 @@
 # Characters of San Francisco · 384 Post
 
-**All character artwork © demit omphroy. All rights reserved. Not for reuse.** The artwork, character names and descriptions in this repository are not open source and may not be copied or reused without permission.
+**All character artwork © Demit Omphroy. All rights reserved. Not for reuse.** The artwork, character names and descriptions in this repository are not open source and may not be copied or reused without permission.
 
-A working concept for the 384 Post mural campaign with demit omphroy:
+A working concept for the 384 Post mural campaign with Demit Omphroy:
 
 - **Quiz** → "Which character are you?" with a shareable result image
 - **Results** → the city's characters sized by popularity
@@ -128,13 +128,14 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 
 ## Open items for the team
 
-- [ ] Confirm hunt locations with demit and the team (and coordinates on site)
-- [ ] demit's secret video (unlisted link)
+- [ ] demit is picking exact hunt spots (he offered); then confirm coordinates on site
 - [ ] GA property + IT sign-off on the service account
 - [ ] Approve share text + hashtags (#384Post #demitomphroy #UnionSquare, plus @demit on Instagram)
 - [ ] CBRE legal/marketing review of the Terms & privacy page (`#/terms`) and footer notices
 - [ ] Social wall approach (curated vs. share-only)
 - [ ] Confirm the new hunt spot coordinates on site (they're approximate)
-- [ ] Mangrove's spot on the mural and hidden objects (his notes repeated Fleur's)
-- [ ] demit's reward for finding all mural objects (placeholder: flower + "You did it")
+- [x] Mangrove shares Window 9 and its 3 objects with Fleur (confirmed by demit)
+- [x] Reward for all mural objects: demit's flower + downloadable icon pack (`assets/downloads/`, `settings.iconPackUrl`)
+- [ ] Reward for all 13 characters: video vs. "You are #N" + a gift from demit (decide)
+- [ ] Group AR scene is too wide: demit may adjust after launch
 - [ ] Microsoft Forms link for "Stay in touch" + legal review of the form wording

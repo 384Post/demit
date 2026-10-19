@@ -11,7 +11,7 @@ window.CONFIG = {
   /* ---------- General settings ---------- */
   settings: {
     title: "Characters of San Francisco",
-    artist: "demit omphroy",                 // ← confirm exact spelling/casing with demit
+    artist: "Demit Omphroy",                 // confirmed by demit (Oct 18)
     hashtag: "#384Post",
 
     // ---- Social sharing (result page) ----
@@ -38,7 +38,7 @@ window.CONFIG = {
       { name: "Alex Sagues", license: "Lic. 02055525", phone: "+1 415 772 0306", email: "Alex.Sagues@cbre.com" },
       { name: "Madeline Redmond", license: "Lic. 02186119", phone: "+1 703 732 8553", email: "Madeline.Redmond@cbre.com" }
     ],
-    artworkNotice: "All Characters of San Francisco artwork, characters, names and descriptions © 2026 demit omphroy. All rights reserved. Used with permission; may not be copied or reused without the artist's written consent.",
+    artworkNotice: "All Characters of San Francisco artwork, characters, names and descriptions © 2026 Demit Omphroy. All rights reserved. Used with permission; may not be copied or reused without the artist's written consent.",
     cbreNotice: "© 2026 CBRE, Inc. This information has been obtained from sources believed reliable. We have not verified it and make no guarantee, warranty or representation about it. Any projections, opinions, assumptions or estimates used are for example only and do not represent the current or future performance of the property. You and your advisors should conduct a careful, independent investigation of the property to determine to your satisfaction the suitability of the property for your needs.",
     privacyPolicyUrl: "https://www.cbre.com/about-us/global-web-privacy-and-cookie-policy",
     californiaPrivacyUrl: "https://www.cbre.com/about-us/california-consumer-privacy-policy",   // ← your GitHub Pages URL (used in share text)
@@ -76,6 +76,9 @@ window.CONFIG = {
     // ---- demit's links (footer + Characters page) ----
     artistInstagram: "https://www.instagram.com/demit/",
     artistWebsite: "https://www.demitomphroy.com/",
+    artistEmail: "team@demitomphroy.com",
+    // Reward for spotting all hidden objects (demit approved). Leave "" to hide the button.
+    iconPackUrl: "assets/downloads/demit-omphroy-icon-pack.zip",
     // ---- "Stay in touch" sign-up (Microsoft Forms) ----
     // Paste the form's share link here. Leave empty to hide the "Stay in touch" links.
     contactFormUrl: "",
@@ -112,10 +115,10 @@ window.CONFIG = {
     { id: "crown", name: "Crown", size: 68 },
     { id: "fork", name: "Fork", size: 74 },
     { id: "pencil", name: "Pencil", size: 59 },
-    { id: "notebook_1", name: "Journal", size: 82 },
+    { id: "notebook_1", name: "Diary", size: 82 },
     { id: "puzzle", name: "Puzzle Piece", size: 68 },
     { id: "flame", name: "Fire", size: 69 },
-    { id: "architectTool", name: "Protractor", size: 79 },
+    { id: "architectTool", name: "Drawing Compass", size: 79 },
     { id: "caterpillar", name: "Caterpillar", size: 102 },
     { id: "sword", name: "Scepter", size: 93 },
     { id: "binoculars", name: "Binoculars", size: 105 },
@@ -129,7 +132,7 @@ window.CONFIG = {
     { id: "saw", name: "Saw", size: 70 },
     { id: "bunny", name: "Bunny", size: 91 },
     { id: "snail", name: "Snail", size: 75 },
-    { id: "compass", name: "Compass", size: 78 },
+    { id: "compass", name: "Directional Compass", size: 78 },
     { id: "lighteningBolt", name: "Lightning Bolt", size: 80 },
     { id: "rainbow", name: "Rainbow", size: 91 }
   ],
@@ -245,7 +248,7 @@ window.CONFIG = {
     {
       id: "flora", number: 9, name: "Fleur", archetype: "The Gardener",
       element: "Earth", elements: ["Earth"], trait: "Nurture", color: "Terracotta", colorHex: "#C4663F", object: "Basket",
-      mural: "Window 9, Post St", objects: ["bunny", "caterpillar", "wateringCan"],
+      mural: "Window 9, Post St · shared with Mangrove", objects: ["bunny", "caterpillar", "wateringCan"],
       description: "Fleur the Gardener is a natural nurturer. A secure, grounded, patient figure. They have a green thumb, understand the rhythms of the seasons, and carry an effortless, deep-rooted wisdom about how life unfolds.\nThey possess the rare ability to listen to others' deepest problems with true empathy without letting that heavy energy cloud their own peace. Because they know exactly who they are, they listen without judgment or influence.",
       powers: "Empathy, Kindness, Understanding",
       struggles: "Detachment, Over-patience",
@@ -293,7 +296,7 @@ window.CONFIG = {
     {
       id: "ash", number: 13, name: "Mangrove", archetype: "The Guru",
       element: "Earth & Water", elements: ["Earth", "Water"], trait: "Wisdom", color: "Amber", colorHex: "#D99A2B", object: "Feather",
-      mural: "", objects: [],
+      mural: "Window 9, Post St · shared with Fleur", objects: ["bunny", "caterpillar", "wateringCan"],
       description: "The Guru provides perspective, peace, understanding, and sound judgment.\nThey are the quiet anchors of the entire Character universe. An iconic mentor carrying a timeless spirit.\nWhere others react with noise and impulse, Mangrove the Guru operates with a deep, immovable stillness.",
       powers: "Empathy, Humility, Composure",
       struggles: "Heavy Solitude",

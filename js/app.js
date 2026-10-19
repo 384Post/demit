@@ -22,6 +22,7 @@
     const l = [];
     if (S.artistInstagram) l.push(`<a href="${esc(S.artistInstagram)}" target="_blank" rel="noopener">Instagram</a>`);
     if (S.artistWebsite) l.push(`<a href="${esc(S.artistWebsite)}" target="_blank" rel="noopener">Website</a>`);
+    if (S.artistEmail) l.push(`<a href="mailto:${esc(S.artistEmail)}">Email</a>`);
     return l.length ? `<p class="artist-links ${cls || ""}"><span>${esc(S.artist)}:</span> ${l.join(" · ")}</p>` : "";
   }
 
@@ -94,6 +95,7 @@
     // Basic, privacy-friendly analytics only: no ad personalization or Google Signals.
     window.gtag("config", S.gaMeasurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false });
   }
+  document.addEventListener("click", e => { if (e.target.closest(".icon-pack")) track("icon_pack_download", {}); });
   function track(name, params) {
     if (isTest() || !window.gtag) return;
     window.gtag("event", name, params || {});
@@ -264,9 +266,9 @@
         ${spotHTML(c)}
         ${you ? `<div class="btn-row">
             <a class="btn red" href="#/ar/${c.id}">See ${esc(c.name)} in AR</a>
-            <a class="btn" href="#/hunt">Start the hunt</a>
+            <a class="btn" href="#/hunt">Start the Scavenger Hunt</a>
             <a class="btn ghost" href="#/quiz">Retake quiz</a>
-          </div>` : `<div class="callout"><b>Which character are you?</b> ${C.quiz.length} quick questions to find out.<div class="btn-row" style="margin-top:10px"><a class="btn red small" href="#/quiz">Take the quiz</a></div></div>`}
+          </div>` : `<div class="callout"><b>Which character are you?</b> ${C.quiz.length} quick questions to find out.<div class="btn-row" style="margin-top:10px"><a class="btn red small" href="#/quiz">Take the Quiz</a></div></div>`}
       </div>
     </section>`;
   }
@@ -285,19 +287,19 @@
     app.innerHTML = `
       <section class="hero">
         <div class="eyebrow">Union Square · a mural by ${esc(S.artist)}</div>
-        <h1>Which <em>character</em> are you?</h1>
-        <p>Every one of us arrives in San Francisco with a distinct story. Find the character who shares yours.</p>
+        <h1>Which <em>Character</em> are you?</h1>
+        <p>Every one of us arrives in San Francisco with a distinct story.<br>Find the character who shares yours.</p>
         <div class="btn-row center">
-          <a class="btn red" href="#/quiz">${r ? "Retake the quiz" : "Take the quiz"}</a>
+          <a class="btn red" href="#/quiz">${r ? "Retake the Quiz" : "Take the Quiz"}</a>
           ${r ? `<a class="btn ghost" href="#/result/${r}">I'm ${esc(byId[r].name)} →</a>` : ""}
-          <a class="btn green" href="#/hunt">Start the hunt</a>
+          <a class="btn green" href="#/hunt">Start the Scavenger Hunt</a>
         </div>
       </section>
       <div class="parade" aria-hidden="true">${parade}</div>
       <section class="cards3">
-        <a class="tile" href="#/quiz"><h3>1 · Find yours</h3><p>${C.quiz.length} quick questions match you with one of ${TOTAL} characters.</p></a>
-        <a class="tile" href="#/hunt"><h3>2 · Hunt the city</h3><p>Giant characters are hiding around SF, and ${OBJ_TOTAL} objects are hidden in the mural itself. ${foundCount() ? `<b>${foundCount()} of ${TOTAL} found.</b>` : ""}</p></a>
-        <a class="tile" href="#/results"><h3>3 · Who is SF?</h3><p>See which characters the city is made of, live.</p></a>
+        <a class="tile" href="#/quiz"><h3>1 · Find Your Character</h3><p>${C.quiz.length} quick questions match you with one of ${TOTAL} characters.</p></a>
+        <a class="tile" href="#/hunt"><h3>2 · Scavenger Hunt</h3><p>Giant characters are hiding around SF, and ${OBJ_TOTAL} objects are hidden in the mural itself. ${foundCount() ? `<b>${foundCount()} of ${TOTAL} found.</b>` : ""}</p></a>
+        <a class="tile" href="#/results"><h3>3 · SF Character Rankings</h3><p>See which characters the city is made of, live.</p></a>
       </section>
       <section class="statement">
         <p>"Though each of us arrive with a distinct story, our paths have a unique way of intersecting. Together, our stories become a celebration of shared journeys that add to the beauty of San Francisco."</p>
@@ -343,7 +345,7 @@
     const c = byId[id]; if (!c) return notFound();
     app.innerHTML = profileHTML(c, true) + shareHTML(c) + `
       <div class="callout blue">
-        <b>${esc(c.name)}'s hunt spot: ${esc(c.spot.name)}.</b> ${TOTAL - 1} more characters are waiting around the city. Find them in any order. <a href="#/hunt">Start the hunt →</a>
+        <b>${esc(c.name)}'s hunt spot: ${esc(c.spot.name)}.</b> ${TOTAL - 1} more characters are waiting around the city. Find them in any order. <a href="#/hunt">Start the Scavenger Hunt →</a>
       </div>`;
     bindShare(c);
   }
@@ -623,10 +625,10 @@
     app.innerHTML = huntTabs("giants") + `
       <section class="hunt-head">
         <div>
-          <div class="eyebrow">The Character Hunt</div>
+          <div class="eyebrow">The Scavenger Hunt</div>
           <h2>Giants are hiding around San Francisco</h2>
           <p class="muted">Walk within about ${len(Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10, true)} of a spot to unlock its character — then see them towering up to ${len(30, true)} tall in AR. Find all ${TOTAL} for a secret message from ${esc(S.artist)}.</p>
-          <p style="margin:0"><button class="linkish strong" id="howBtn">How the hunt works</button></p>
+          <p style="margin:0"><button class="linkish strong" id="howBtn">How the Scavenger Hunt works</button></p>
         </div>
         <div>
           <div class="counter" id="counter">${n}<small> / ${TOTAL} found</small></div>
@@ -641,7 +643,7 @@
           </div>
         </div>
       </section>
-      ${r ? `<div class="callout"><b>You're ${esc(byId[r].name)}!</b> Your character is circled in red on the map. Hunt in any order: start with whoever's closest.</div>` : `<div class="callout"><a href="#/quiz"><b>Take the quiz</b></a> to find your character, then hunt for all ${TOTAL}.</div>`}
+      ${r ? `<div class="callout"><b>You're ${esc(byId[r].name)}!</b> Your character is circled in red on the map. Hunt in any order: start with whoever's closest.</div>` : `<div class="callout"><a href="#/quiz"><b>Take the Quiz</b></a> to find your character, then hunt for all ${TOTAL}.</div>`}
       ${isTest() ? testToolsHTML() : ""}
       <div id="map" role="application" aria-label="Map of hunt locations"></div>
       <div class="hunt-list" id="huntList"></div>
@@ -665,8 +667,8 @@
   function showHowTo() {
     const ft = len(Math.round(S.unlockRadiusMeters * 3.28 / 10) * 10, true);
     openModal(`<div class="howto">
-      <div class="eyebrow">The Character Hunt</div>
-      <h2>How the hunt works</h2>
+      <div class="eyebrow">The Scavenger Hunt</div>
+      <h2>How the Scavenger Hunt works</h2>
       <ol>
         <li><b>Keep this page open while you explore.</b> The site can only spot you while it's open on your screen. It can't alert you when your phone is locked or the browser is closed, so open the Hunt page when you get to a spot.</li>
         <li><b>Tap "Start finding" and allow location.</b> Your location stays on your phone and is never sent anywhere. Each spot shows how far away it is.</li>
@@ -846,6 +848,7 @@
       <div class="obj-cloud" id="objCloud">${left.map(o => objBtn(o)).join("")}</div>
       <a class="obj-bar" href="#foundTray" id="objBar">${n} / ${OBJ_TOTAL} found ↓</a>
       <p class="center muted obj-empty" id="cloudEmpty" ${left.length ? "hidden" : ""}>You've spotted everything. Nicely done.</p>
+      <div id="packSlot">${done ? iconPackCard() : ""}</div>
       <section class="found-tray" id="foundTray">
         <h3>Found <span id="trayCount">${n}</span></h3>
         <div class="obj-tray" id="objTray">${found.map(o => objBtn(o, true)).join("")}</div>
@@ -866,7 +869,19 @@
     }
   }
   function doneSticker() {
-    return `<div class="done-sticker" role="img" aria-label="All ${OBJ_TOTAL} found"><img src="favicon.svg" alt=""><span>All ${OBJ_TOTAL}<br>found!</span></div>`;
+    return `<div class="done-sticker" role="img" aria-label="All ${OBJ_TOTAL} found"><img src="assets/brand/flower.svg" alt=""><span>All ${OBJ_TOTAL}<br>found!</span></div>`;
+  }
+  function iconPackBtn(cls) {
+    return S.iconPackUrl ? `<a class="btn ${cls || "red"} icon-pack" href="${esc(S.iconPackUrl)}" download>Download the icon pack</a>` : "";
+  }
+  function iconPackCard() {
+    if (!S.iconPackUrl) return "";
+    return `<section class="pack-card">
+      <div class="pack-icons" aria-hidden="true">${OBJS.slice(0, 6).map(o => `<img src="${OBJ_ART(o.id)}" alt="">`).join("")}</div>
+      <div><div class="eyebrow">Your reward</div><h3>${esc(S.artist)}'s icon pack</h3>
+      <p class="muted">All ${OBJ_TOTAL} hand-drawn objects as SVG and PNG, free for personal use. Tag @demit if you share them.</p>
+      ${iconPackBtn()}</div>
+    </section>`;
   }
   function updateObjUI() {
     const n = objCount();
@@ -963,6 +978,7 @@
     cloud.insertBefore(btn, next || null);
     btn.classList.add("arrive"); setTimeout(() => btn.classList.remove("arrive"), 600);
     const st = app.querySelector(".done-sticker"); if (st) st.remove();
+    const ps = document.getElementById("packSlot"); if (ps) ps.innerHTML = "";
     updateObjUI();
     toast(`${o.name} went back to the cloud. Tap it again when you spot it.`);
   }
@@ -970,17 +986,18 @@
     track("mural_complete", {});
     const head = app.querySelector(".mural-head");
     if (head && !head.querySelector(".done-sticker")) head.insertAdjacentHTML("beforeend", doneSticker());
+    const slot = document.getElementById("packSlot"); if (slot) slot.innerHTML = iconPackCard();
     const bloom = document.createElement("div"); bloom.className = "bloom";
-    bloom.innerHTML = `<img src="favicon.svg" alt="">`;
+    bloom.innerHTML = `<img src="assets/brand/flower.svg" alt="">`;
     document.body.appendChild(bloom);
     confetti();
     setTimeout(() => {
       bloom.remove();
       openModal(`<div class="eyebrow">Hidden in the Mural</div>
-        <div class="done-flower"><img src="favicon.svg" alt=""></div>
+        <div class="done-flower"><img src="assets/brand/flower.svg" alt=""></div>
         <h2>You did it!</h2>
-        <p>You spotted all ${OBJ_TOTAL} objects ${esc(S.artist)} hid in the mural. Sharp eyes.</p>
-        <div class="btn-row center"><a class="btn green" href="#/hunt">Now hunt the giants</a><button class="btn ghost" data-close>See my collection</button></div>`);
+        <p>You spotted all ${OBJ_TOTAL} objects ${esc(S.artist)} hid in the mural. Sharp eyes.${S.iconPackUrl ? " Your reward: the drawings are yours to download." : ""}</p>
+        <div class="btn-row center">${iconPackBtn()}<a class="btn green" href="#/hunt">Now hunt the giants</a><button class="btn ghost" data-close>See my collection</button></div>`);
     }, reduceMotion() ? 0 : 2100);
   }
 
