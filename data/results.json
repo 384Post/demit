@@ -1,7 +1,6 @@
 {
-  "source": "none",
-  "updated": null,
-  "note": "Real counts from Google Analytics appear here once the GitHub Action runs. The on-screen starting seed lives in data/config.js (resultsSeed).",
+  "source": "google-analytics",
+  "updated": "2026-10-20T10:09:44+00:00",
   "counts": {
     "sol": 0,
     "rebel": 0,
@@ -16,5 +15,6 @@
     "pixie": 0,
     "flow": 0,
     "ash": 0
-  }
+  },
+  "completions": 0
 }
