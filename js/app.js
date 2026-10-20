@@ -1340,7 +1340,7 @@
       <div class="gift-head"><img src="${ART("rascal")}" alt="" aria-hidden="true"><div>
         <div class="eyebrow">Your reward</div>
         <h2>You earned a Gift Ticket!</h2>
-        <p>The first ${total} hunters to find every Character get a gift from ${esc(S.artist)}. Claim yours, and we'll email you when gifts are ready to send.</p>
+        <p>You're one of the few who found every Character! Claim your Gift Ticket: if thank-you gifts from ${esc(S.artist)} are offered, they'll go to up to ${total} hunters, first come, while supplies last. We'll email you if and when gifts are ready. <a href="#/terms">Terms apply.</a></p>
         <p class="gift-left" id="giftLeft" hidden></p>
       </div></div>
       <div class="gift-code-box">
@@ -1351,7 +1351,7 @@
       <div class="btn-row center" id="giftActions">
         <a class="btn red" id="giftClaim" href="${esc(S.giftClaimUrl + (S.giftClaimCodeField && !isTest() ? (S.giftClaimUrl.includes("?") ? "&" : "?") + S.giftClaimCodeField + "=" + encodeURIComponent(code) : ""))}" target="_blank" rel="noopener">Claim your Gift Ticket</a>
       </div>
-      <p class="muted gift-help">${S.giftClaimCodeField ? "Your code fills in on the form automatically. " : "Paste your code into the form's first question. "}Keep it somewhere safe: it's your ticket. One per person; we check every code.</p>
+      <p class="muted gift-help">${S.giftClaimCodeField ? "Your code fills in on the form automatically. " : "Paste your code into the form's first question. "}Keep it somewhere safe. One per person; we review every claim. A claim isn't a guarantee of a gift. <a href="#/terms">Terms apply.</a></p>
     </section>`;
   }
   function wireGiftCard() {
@@ -1370,7 +1370,7 @@
       const total = S.giftTotal || 100, el = document.getElementById("giftLeft"); if (!el || left == null) return;
       el.hidden = false;
       if (left > 0) { el.innerHTML = `<b>${left} of ${total}</b> Gift Tickets left`; return; }
-      el.innerHTML = `<b>All ${total} Gift Tickets have been claimed.</b> You're still one of the few who found every Character! Keep your code: if any tickets free up, we'll share it on @demit.`;
+      el.innerHTML = `<b>All ${total} Gift Tickets have been claimed.</b> You're still one of the few who found every Character! Keep your code: if any more become available, we'll share it on @demit.`;
       const a = document.getElementById("giftActions"); if (a) a.remove();
       card.classList.add("gone");
     });
@@ -1416,46 +1416,55 @@
 
   function pageTerms() {
     const k = (S.contacts || [])[0];
+    const who = `CBRE, Inc., the owner of 384 Post Street, ${esc(S.artist)}, and each of their parents, affiliates, officers, directors, employees, agents, contractors and partners (together, the "Released Parties")`;
     app.innerHTML = `<section class="legal">
       <div class="eyebrow">Last updated October 2026</div>
       <h2>Terms of use &amp; privacy</h2>
-      <p>This site is an interactive art experience featuring the Characters of San Francisco, a mural by ${esc(S.artist)} at 384 Post Street, presented by CBRE, Inc. By using it, you agree to these terms.</p>
+      <p>This site is an interactive art experience featuring the Characters of San Francisco, a mural by ${esc(S.artist)} at 384 Post Street, presented by CBRE, Inc. ("CBRE," "we," "us"). By using this site, taking the quiz, joining the hunt, using the augmented reality (AR) features or submitting a form, you agree to these terms. If you don't agree, please don't use the site.</p>
 
-      <h3>Just for fun</h3>
-      <p>The quiz, character results and popularity counts are for entertainment only. They aren't a personality assessment or advice of any kind, and the results page shows approximate, anonymous totals.</p>
+      <h3>Just for fun; no offer or obligation</h3>
+      <p>Everything on this site, including the quiz, results, hunt, mural objects, AR features, downloads, Gift Tickets and any rewards, is offered for entertainment only, free of charge, as a courtesy. Nothing on this site is an offer, promise, contract or commitment of any kind, and using the site does not create any agreement, partnership, employment, agency or other relationship between you and any Released Party, other than your agreement to these terms. Nothing on this site is an offer to lease, a solicitation, or real estate, financial, legal or professional advice. Quiz results are not a personality assessment, and popularity counts are approximate and anonymous.</p>
 
       <h3>The hunt and AR: please be safe</h3>
-      <p>Taking part in the character hunt is voluntary and at your own risk. Stay aware of your surroundings, follow traffic laws and posted rules, keep to public sidewalks and paths, respect private property, and never use your phone in the street or while driving. Hunt locations are public places we don't own or control; their access, hours and conditions may change, and spots may be moved or removed at any time. GPS accuracy varies, and AR features may not work on every device or browser. Parents and guardians should supervise children.</p>
+      <p>Taking part in the hunt and using AR is entirely voluntary and at your own risk. You are solely responsible for your own safety, conduct, travel and costs, and for anyone in your care. Stay aware of your surroundings, follow traffic laws and posted rules, keep to public sidewalks and paths, respect private property and other people, and never use your phone in the street or while driving or riding. Don't enter closed, restricted, unsafe or paid areas to find a character. Hunt locations are public places that the Released Parties don't own, operate or control, and they are not affiliated with or endorsed by those places; access, hours, conditions and safety can change at any time, and spots may be moved or removed without notice. GPS, maps, distances and AR placement may be inaccurate, and features may not work on every device, browser or network. Minors should take part only with the permission and supervision of a parent or guardian.</p>
 
-      ${S.giftClaimUrl ? `<h3>Gift Tickets</h3>
-      <p>People who find all ${TOTAL} characters can claim a Gift Ticket with the claim code shown on the site. Gifts go to the first ${S.giftTotal || 100} valid claims, in the order received, while supplies last. One per person. No purchase necessary. We check every claim and may decline codes that are duplicated, altered or appear not to come from a real hunt; our decision is final. The "Gift Tickets left" count is approximate. Gifts, timing and this offer may change or end at any time. Gift Tickets have no cash value and can't be transferred or sold.</p>` : ""}
+      ${S.giftClaimUrl ? `<h3>Gift Tickets and rewards</h3>
+      <p>Gift Tickets, the icon pack, the finale and any other rewards are discretionary thank-you gestures, not prizes, and not an offer or contract. No purchase is necessary, and nothing of value is required to take part. A claim code or claim form submission is not a guarantee of any gift; it only lets us consider your claim if and when gifts are available. We may, at any time and for any reason, without notice or liability, decide not to provide gifts, change their number, type, timing or availability, substitute something else, or end the Gift Ticket program.</p>
+      <p>If gifts are offered, they are limited (up to ${S.giftTotal || 100}), go to eligible claims in the order we receive them, while supplies last, and are limited to one per person, household and mailing address. To claim, you must be at least 18 years old (or have a parent or guardian submit the claim on your behalf) and, for anything mailed, have a mailing address in the United States. Void where prohibited or restricted. We check every claim and may, in our sole discretion, decline any claim we believe is duplicated, altered, automated, made with false location data or otherwise not made in good faith; our decisions are final. The "Gift Tickets left" count is an estimate only. Gifts have no cash value and may not be exchanged, transferred or sold. You are responsible for any taxes. We are not responsible for lost, late, incomplete or misdirected claims, emails or deliveries, or for technical problems of any kind.</p>` : ""}
 
-      <h3>No guarantees</h3>
-      <p>This site and everything on it are provided "as is" and "as available," without warranties of any kind, express or implied. We don't guarantee that the site will be available, uninterrupted, accurate or error-free, or that any feature (including saved progress, unlocks, rewards or results) will work as described. Content and features may change or end at any time without notice.</p>
-
-      <h3>Limitation of liability</h3>
-      <p>To the fullest extent permitted by law, CBRE, Inc., the owner of 384 Post Street, ${esc(S.artist)}, and their affiliates, employees and partners are not liable for any loss, injury, damage or expense of any kind arising from your use of this site or your participation in the hunt.</p>
+      <h3>Your content and social posts</h3>
+      <p>If you share photos, results or posts (for example, tagging @demit or using our hashtags), you're responsible for what you post and for having permission from anyone shown. You agree that the Released Parties may, but are never required to, view, like, comment on or reshare publicly posted content that tags or mentions this project, with credit to you where practical, without payment. We don't endorse user content.</p>
 
       <h3>Artwork and content</h3>
-      <p>${esc(S.artworkNotice || "")} The site's design and other content may not be copied or reused without permission.</p>
+      <p>${esc(S.artworkNotice || "")} The site's design, text, code and other content are protected by copyright and other laws and may not be copied or reused without permission, except that downloads we offer (such as the icon pack) may be used for personal, non-commercial purposes as described in the download. "384 Post," "CBRE" and related names and logos are trademarks of their owners. No other license or right is granted.</p>
+
+      <h3>No warranties</h3>
+      <p>To the fullest extent permitted by law, this site and everything on or available through it (including saved progress, unlocks, claim codes, rewards, results, downloads and AR) are provided "as is" and "as available," with all faults and without warranties of any kind, whether express, implied or statutory, including any warranties of merchantability, fitness for a particular purpose, title, non-infringement, accuracy, availability or that the site is free of errors, viruses or other harmful components. We may change, suspend or end any part of the site, the hunt or any reward at any time without notice or liability.</p>
+
+      <h3>Limitation of liability</h3>
+      <p>To the fullest extent permitted by law, the Released Parties are not liable for any direct, indirect, incidental, special, consequential, exemplary or punitive damages, or for any injury, illness, death, property damage, loss of data, progress or rewards, or any other loss, cost or expense of any kind, arising out of or related to this site, the hunt, AR, any reward or these terms, even if advised of the possibility of such damages and whatever the legal theory. If any Released Party is found liable despite this, its total liability will not exceed fifty U.S. dollars (US $50). Some places don't allow certain limitations, so some of these may not apply to you.</p>
+
+      <h3>Release and indemnity</h3>
+      <p>To the fullest extent permitted by law, you release ${who} from all claims, damages and liabilities arising out of or related to your use of this site, participation in the hunt or AR, or any reward. You agree to defend, indemnify and hold harmless the Released Parties from any claims, losses, costs and expenses (including reasonable attorneys' fees) arising from your use of the site, your conduct, your content or your breach of these terms. If you are a California resident, you waive California Civil Code Section 1542, which says: "A general release does not extend to claims that the creditor or releasing party does not know or suspect to exist in his or her favor at the time of executing the release and that, if known by him or her, would have materially affected his or her settlement with the debtor or released party," and any similar law elsewhere.</p>
 
       <h3>Other services and links</h3>
-      <p>This site uses or links to services run by others, including Mapbox (maps), Google Maps (walking directions), Google Analytics, social networks and Ceros. Their own terms and privacy policies apply when you use them.</p>
+      <p>This site uses or links to services run by others, including Mapbox (maps), Google Maps (walking directions), Google Analytics, Microsoft Forms, social networks and Ceros. We don't control them and aren't responsible for them; their own terms and privacy policies apply when you use them.</p>
 
       <h3 id="privacy">Privacy</h3>
       <ul>
         ${S.contactFormUrl || S.giftClaimUrl
-          ? `<li><b>Contact details only if you choose to share them.</b> The site itself doesn't collect your name or email.${S.contactFormUrl ? ` If you sign up through our "Stay in touch" form, we receive what you enter there and use it only for the updates you check on the form.` : ""}${S.giftClaimUrl ? ` If you claim a Gift Ticket, we use what you enter on the claim form only to check your claim and arrange your gift; if we need a mailing address, we'll ask for it then.` : ""} Both forms are run on Microsoft Forms.</li>`
+          ? `<li><b>Contact details only if you choose to share them.</b> The site itself doesn't collect your name or email.${S.contactFormUrl ? ` If you sign up through our "Stay in touch" form, we receive what you enter there and use it only for the updates you check on the form. You can ask to stop receiving updates at any time.` : ""}${S.giftClaimUrl ? ` If you claim a Gift Ticket, we use what you enter on the claim form only to review your claim and, if gifts are offered, to contact you and arrange your gift; if we need a mailing address, we'll ask for it then.` : ""} Both forms are run on Microsoft Forms. Please don't submit a form if you are under 13.</li>`
           : `<li><b>We don't ask for or collect your name, email or contact details.</b></li>`}
         <li><b>Your location stays on your phone.</b> It's used only in your browser to unlock nearby characters and is never sent to us.</li>
-        <li><b>Your quiz result, hunt progress and mural finds are saved only in your browser</b> on your device. Clearing your browser data deletes them.${S.giftClaimUrl ? ` If you find every character, your Gift Ticket claim code (which records when your hunt started and how long it took, not where you were) is saved there too and counted anonymously in our usage statistics.` : ""}</li>
+        <li><b>Your quiz result, hunt progress and mural finds are saved only in your browser</b> on your device. Clearing your browser data deletes them, and we can't recover them.${S.giftClaimUrl ? ` If you find every character, your Gift Ticket claim code (which records when your hunt started and how long it took, not where you were) is saved there too and counted anonymously in our usage statistics.` : ""}</li>
         <li><b>Anonymous usage statistics.</b> We use Google Analytics, which sets cookies, to count visits and actions such as quiz results, characters and mural objects found, shares and AR views. Advertising features are turned off. You can block analytics cookies in your browser settings or with Google's <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">opt-out add-on</a>.</li>
         <li><b>Maps.</b> Mapbox provides the hunt map and receives standard technical information (such as your IP address and device type) needed to load it.</li>
       </ul>
-      <p>For more about how CBRE handles personal information, see the ${S.privacyPolicyUrl ? `<a href="${esc(S.privacyPolicyUrl)}" target="_blank" rel="noopener">CBRE Global Web Privacy &amp; Cookie Policy</a>` : "CBRE privacy policy"}${S.californiaPrivacyUrl ? ` and the <a href="${esc(S.californiaPrivacyUrl)}" target="_blank" rel="noopener">CBRE California Privacy Policy</a>` : ""}.</p>
+      <p>For more about how CBRE handles personal information, including your privacy rights, see the ${S.privacyPolicyUrl ? `<a href="${esc(S.privacyPolicyUrl)}" target="_blank" rel="noopener">CBRE Global Web Privacy &amp; Cookie Policy</a>` : "CBRE privacy policy"}${S.californiaPrivacyUrl ? ` and the <a href="${esc(S.californiaPrivacyUrl)}" target="_blank" rel="noopener">CBRE California Privacy Policy</a>` : ""}.</p>
 
-      <h3>Changes and questions</h3>
-      <p>We may update these terms from time to time; the date above shows the latest version.${k ? ` Questions? Contact <a href="mailto:${esc(k.email)}">${esc(k.name)}</a>.` : ""}</p>
+      <h3>General</h3>
+      <p>These terms are governed by the laws of the State of California, without regard to its conflict-of-law rules, and any dispute will be brought only in the state or federal courts located in San Francisco County, California. If any part of these terms is found unenforceable, the rest stays in effect. Our not enforcing a term is not a waiver. These terms are the entire agreement about the site and replace any earlier statements, posts or messages about it. You may not transfer your rights under these terms. We may update these terms at any time by posting a new version here; the date above shows the latest version, and continuing to use the site means you accept the changes.</p>
+      <p>${k ? `Questions? Contact <a href="mailto:${esc(k.email)}">${esc(k.name)}</a>.` : ""}</p>
     </section>`;
     if (location.hash.includes("#privacy")) setTimeout(() => { const el = document.getElementById("privacy"); if (el) el.scrollIntoView(); }, 50);
   }
