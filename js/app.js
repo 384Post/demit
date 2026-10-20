@@ -1349,7 +1349,7 @@
         <button class="btn small ghost" id="giftCopy">Copy code</button>
       </div>
       <div class="btn-row center" id="giftActions">
-        <a class="btn red" id="giftClaim" href="${esc(S.giftClaimUrl + (S.giftClaimCodeField && !isTest() ? (S.giftClaimUrl.includes("?") ? "&" : "?") + S.giftClaimCodeField + "=" + encodeURIComponent(code) : ""))}" target="_blank" rel="noopener">Claim your Gift Ticket</a>
+        <a class="btn red" id="giftClaim" href="${esc(S.giftClaimUrl + (S.giftClaimCodeField ? (S.giftClaimUrl.includes("?") ? "&" : "?") + S.giftClaimCodeField + "=" + encodeURIComponent(code) : ""))}" target="_blank" rel="noopener">Claim your Gift Ticket</a>
       </div>
       <p class="muted gift-help">${S.giftClaimCodeField ? "Your code fills in on the form automatically. " : "Paste your code into the form's first question. "}Keep it somewhere safe. One per person; we review every claim. A claim isn't a guarantee of a gift. <a href="#/terms">Terms apply.</a></p>
     </section>`;
