@@ -494,3 +494,15 @@ html, body { overflow-x: hidden; }
 .gift-help { font-size: 14px; text-align: center; margin: 10px 0 0; }
 .gift-card.gone .gift-code-box { opacity: .7; }
 @media (max-width: 520px) { .gift-head img { width: 54px; flex-basis: 54px; } }
+
+/* Element icons on character thumbnails */
+.el-badges { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; z-index: 2; }
+.el-badge { width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); display: grid; place-items: center; box-shadow: 2px 2px 0 var(--ink); }
+.el-badge svg { width: 17px; height: 17px; fill: var(--ink); }
+.el-fire svg { fill: #E4572E; } .el-water svg { fill: #3B7DD8; } .el-air svg { fill: #9AA6B2; } .el-earth svg { fill: #3F9B4F; }
+.el-badge svg path { stroke: var(--ink); stroke-width: 5; paint-order: stroke; }
+@media (max-width: 420px) { .el-badge { width: 24px; height: 24px; } .el-badge svg { width: 14px; height: 14px; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.g-item > .el-badges { position: static; justify-content: center; gap: 4px; margin-top: 6px; }
+.g-item > .el-badges .el-badge { width: 24px; height: 24px; border-width: 1.5px; box-shadow: none; }
+.g-item > .el-badges .el-badge svg { width: 14px; height: 14px; }
