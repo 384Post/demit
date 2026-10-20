@@ -40,6 +40,8 @@ window.CONFIG = {
     ],
     artworkNotice: "All Characters of San Francisco artwork, characters, names and descriptions © 2026 Demit Omphroy. All rights reserved. Used with permission; may not be copied or reused without the artist's written consent.",
     cbreNotice: "© 2026 CBRE, Inc. This information has been obtained from sources believed reliable. We have not verified it and make no guarantee, warranty or representation about it. Any projections, opinions, assumptions or estimates used are for example only and do not represent the current or future performance of the property. You and your advisors should conduct a careful, independent investigation of the property to determine to your satisfaction the suitability of the property for your needs.",
+    // "Contact us" link at the bottom of the Terms & privacy page
+    termsContactEmail: "bianca.koutsakos@cbre.com",
     privacyPolicyUrl: "https://www.cbre.com/about-us/global-web-privacy-and-cookie-policy",
     californiaPrivacyUrl: "https://www.cbre.com/about-us/california-consumer-privacy-policy",   // ← your GitHub Pages URL (used in share text)
 
