@@ -1415,7 +1415,6 @@
   }
 
   function pageTerms() {
-    const k = (S.contacts || [])[0];
     const who = `CBRE, Inc., the owner of 384 Post Street, ${esc(S.artist)}, and each of their parents, affiliates, officers, directors, employees, agents, contractors and partners (together, the "Released Parties")`;
     app.innerHTML = `<section class="legal">
       <div class="eyebrow">Last updated October 2026</div>
@@ -1464,7 +1463,7 @@
 
       <h3>General</h3>
       <p>These terms are governed by the laws of the State of California, without regard to its conflict-of-law rules, and any dispute will be brought only in the state or federal courts located in San Francisco County, California. If any part of these terms is found unenforceable, the rest stays in effect. Our not enforcing a term is not a waiver. These terms are the entire agreement about the site and replace any earlier statements, posts or messages about it. You may not transfer your rights under these terms. We may update these terms at any time by posting a new version here; the date above shows the latest version, and continuing to use the site means you accept the changes.</p>
-      <p>${k ? `Questions? Contact <a href="mailto:${esc(k.email)}">${esc(k.name)}</a>.` : ""}</p>
+      <p>${S.termsContactEmail ? `Questions? <a href="mailto:${esc(S.termsContactEmail)}">Contact us</a>.` : ""}</p>
     </section>`;
     if (location.hash.includes("#privacy")) setTimeout(() => { const el = document.getElementById("privacy"); if (el) el.scrollIntoView(); }, 50);
   }
