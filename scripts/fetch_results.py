@@ -34,6 +34,10 @@ def main():
         print("GA_PROPERTY_ID / GA_SA_KEY not set — leaving results.json unchanged.")
         return 0
 
+    if start > datetime.date.today().isoformat():
+        print(f"GA_START_DATE {start} hasn't arrived yet. Nothing to count, leaving results.json unchanged.")
+        return 0
+
     creds = service_account.Credentials.from_service_account_info(
         json.loads(key), scopes=["https://www.googleapis.com/auth/analytics.readonly"])
     client = BetaAnalyticsDataClient(credentials=creds)
