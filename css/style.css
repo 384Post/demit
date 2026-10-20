@@ -513,21 +513,3 @@ html, body { overflow-x: hidden; }
 .btn-row .btn { margin-block: 0; }
 .btn + br + span { display: inline-block; margin-top: 12px; }
 .foot-artist { margin-bottom: 18px; }
-
-/* Photo booth */
-.booth { max-width: 560px; margin: 0 auto; padding-top: 24px; text-align: center; }
-.booth h2 { margin-top: .2em; }
-.booth-stage { position: relative; border: var(--line); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); background: var(--paper); }
-.booth-stage canvas { display: block; width: 100%; }
-.booth-msg { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; background: rgba(251,247,234,.92); }
-.booth-msg[hidden] { display: none; }
-.booth-shutter { position: absolute; left: 50%; bottom: 13%; transform: translateX(-50%); width: 72px; height: 72px; border-radius: 50%; border: 5px solid #fff; background: var(--red); box-shadow: 0 0 0 3px var(--ink), 3px 3px 0 3px var(--ink); cursor: pointer; }
-.booth-shutter:active { transform: translateX(-50%) scale(.92); }
-.booth-shutter[disabled] { opacity: .4; }
-.booth-flip { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; border: var(--line); background: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
-.booth-picks { display: flex; gap: 8px; overflow-x: auto; padding: 14px 4px 10px; scroll-snap-type: x mandatory; }
-.booth-pick { flex: 0 0 64px; height: 64px; border-radius: 50%; border: 2px solid var(--ink); background: var(--c); padding: 4px; cursor: pointer; scroll-snap-align: center; }
-.booth-pick img { width: 100%; height: 100%; object-fit: contain; }
-.booth-pick.on { box-shadow: 0 0 0 3px var(--paper), 0 0 0 6px var(--ink); }
-.booth-shot { display: block; width: 100%; max-width: 360px; margin: 10px auto; border: var(--line); border-radius: 14px; }
-.booth-cta { margin: 14px 0 6px; }
