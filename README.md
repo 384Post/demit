@@ -64,7 +64,7 @@ The page art uses demit's SVGs in `assets/characters/<id>.svg`, with matching PN
 
 Every character comes in **two sizes**, both built from the Spline models:
 - **Life-size** (`assets/models/<id>.glb`): about human height, 5'10"–6'2" standing (Ash, seated, is about 4'9"; Flora is the tallest at about 6'9").
-- **Giant** (`assets/models/giant/<id>.glb`): sized for its hunt spot, set by `giantFeet` in `data/config.js`: 15 ft in tight spots (Haight & Ashbury, Cole Valley), 20 ft at medium ones (the Painted Ladies, UCSF, the Peace Pagoda), 25 ft at open ones (Fisherman's Wharf, Union Square, the Legion of Honor, the Zoo) and 30 ft at the wide-open ones (City Hall, the Golden Gate Bridge, Dolores Park, the Bay Bridge). After changing a `giantFeet`, rebuild with `node tools/make_giants.mjs` (setup notes at the top of that file), or ask Claude.
+- **Giant** (`assets/models/giant/<id>.glb`): sized for its hunt spot, set by `giantFeet` in `data/config.js`: 15 ft in tight spots (Haight & Ashbury, Cole Valley), 20 ft at medium ones (the Painted Ladies, the Legion of Honor, the Peace Pagoda), 25 ft at open ones (Pier 39, Union Square, the Palace of Fine Arts, the Zoo) and 30 ft at the wide-open ones (City Hall, the Golden Gate Bridge, Dolores Park, Rincon Park). After changing a `giantFeet`, rebuild with `node tools/make_giants.mjs` (setup notes at the top of that file), or ask Claude.
 
 The AR page has a **Life-size / Giant** switch. When someone finds a character on the hunt, the "found" pop-up opens it giant-size first; everywhere else it opens life-size.
 
@@ -128,7 +128,9 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 
 ## Open items for the team
 
-- [ ] demit is picking exact hunt spots (he offered); then confirm coordinates on site
+- [x] demit picked exact hunt spots (Oct 19)
+- [ ] Golden Gate Bridge pin (demit's coordinates landed in Marin) and Palace of Fine Arts pin (placeholder: the rotunda)
+- [ ] demit's clues for each spot (rhymes/riddles) → `spot.why`
 - [ ] GA property + IT sign-off on the service account
 - [ ] Approve share text + hashtags (#384Post #demitomphroy #UnionSquare, plus @demit on Instagram)
 - [ ] CBRE legal/marketing review of the Terms & privacy page (`#/terms`) and footer notices
@@ -138,4 +140,14 @@ Until this is connected, the results page shows clearly-labeled **sample numbers
 - [x] Reward for all mural objects: demit's flower + downloadable icon pack (`assets/downloads/`, `settings.iconPackUrl`)
 - [ ] Reward for all 13 characters: video vs. "You are #N" + a gift from demit (decide)
 - [ ] Group AR scene is too wide: demit may adjust after launch
-- [ ] Microsoft Forms link for "Stay in touch" + legal review of the form wording
+- [x] Microsoft Forms: "Stay in touch" (`contactFormUrl`) and "Claim your Gift Ticket" (`giftClaimUrl`, code pre-filled via `giftClaimCodeField`)
+- [ ] CBRE legal review of the Gift Tickets terms (`#/terms`) and both forms' wording
+- [ ] Set `GA_START_DATE` (repo variable) to the launch date so test runs don't count toward results or Gift Tickets
+
+## Gift Tickets (reward for finding all 13)
+
+- Finishing all 13 for real (never in test mode) creates a claim code like `384-XXXX-XXXX-XXXX-XXXX`, saved on the device and in save links. It records when the hunt started, how long it took and any "impossible jumps" between spots (`js/giftcode.js`).
+- The secret page shows the Gift Ticket card: the code, a copy button, and "Claim your Gift Ticket", which opens the Microsoft Form with the code filled in.
+- "Gift Tickets left" = `giftTotal` minus finishers counted by Google Analytics (`completions` in `data/results.json`, refreshed hourly). Set `giftsLeft` in `data/config.js` to override it by hand; at 0 the card switches to "all claimed" and hides the claim button.
+- To pick winners: export the form responses to Excel (oldest first), paste the codes into the private **gift-ticket-checker.html** (kept off the website), and it labels each one: Looks real, Take a look, Not valid or Duplicate, and numbers the first 100 real ones.
+- Each finish also sends the code to Google Analytics (`hunt_complete` → `claim_code`). Optional: add an event-scoped custom dimension "Claim code" (parameter `claim_code`) to see them in GA.

@@ -792,11 +792,12 @@
       <p style="margin:16px 0 0"><button class="linkish" data-close>Keep hunting</button></p>`);
     confetti();
     if (n === TOTAL) {
-      track("hunt_complete", {});
+      const code = ensureGiftCode();
+      track("hunt_complete", code ? { claim_code: code } : {});
       openModal(`
         <div class="eyebrow">All ${TOTAL} found</div>
         <h2>You collected every character!</h2>
-        <p>${esc(S.artist)} left something for you.</p>
+        <p>${esc(S.artist)} left something for you${code && S.giftClaimUrl ? `, including a <b>Gift Ticket</b>` : ""}.</p>
         <div class="btn-row center"><a class="btn red" href="#/secret">Open the secret ✦</a></div>`);
     }
   }
@@ -1010,7 +1011,9 @@
     const got = store.get("objFound", {});
     let ob = 0n;
     OBJ_CODE_ORDER.forEach((id, i) => { if (got[id]) ob |= 1n << BigInt(i); });
-    return bits.toString(36) + "-" + (r ? String.fromCharCode(97 + byId[r].index) : "x") + (ob ? "-" + ob.toString(36) : "");
+    const g = store.get("giftCode");
+    return bits.toString(36) + "-" + (r ? String.fromCharCode(97 + byId[r].index) : "x") + (ob ? "-" + ob.toString(36) : "") +
+      (g && window.GiftCode ? "-_" + GiftCode.normalize(g).toLowerCase() : "");
   }
   async function saveProgress() {
     if (isTest()) { toast("Turn off test mode to save real progress."); return; }
@@ -1022,7 +1025,11 @@
     catch (e) { openModal(`<h3>Your progress link</h3><p style="word-break:break-all">${esc(url)}</p><button class="btn small" data-close>Done</button>`); }
   }
   function pageRestore(code) {
-    const [b, r, o] = code.split("-");
+    const seg = code.split("-");
+    const [b, r] = seg;
+    const o = seg.slice(2).find(x => x && x[0] !== "_");
+    const g = seg.slice(2).find(x => x && x[0] === "_");
+    if (g && window.GiftCode && !store.get("giftCode")) { const d = GiftCode.decode(g.slice(1)); if (d.ok) store.set("giftCode", d.code); }
     const bits = parseInt(b, 36) || 0;
     const f = store.get("found", {});
     let added = 0;
@@ -1291,6 +1298,84 @@
     }, 200);
   });
 
+  /* ---------------- Gift Tickets ---------------- */
+  // A claim code is made once, when all 13 are found for real (never in test mode), and kept on
+  // this device (and in save links). It records the hunt's timing; see js/giftcode.js.
+  function ensureGiftCode() {
+    if (isTest() || !window.GiftCode || foundCount() < TOTAL) return null;
+    let code = store.get("giftCode");
+    if (code && GiftCode.decode(code).ok) return code;
+    const f = store.get("found", {});
+    const finds = chars.filter(c => f[c.id]).map(c => ({ t: f[c.id], lat: c.spot.lat, lng: c.spot.lng }));
+    code = GiftCode.make(finds);
+    store.set("giftCode", code);
+    return code;
+  }
+  let resultsCache = null;
+  async function loadResultsData() {
+    if (resultsCache) return resultsCache;
+    for (const url of (S.resultsDataUrls || [S.resultsDataUrl || "data/results.json"])) {
+      try {
+        const r = await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+        if (!r.ok) throw new Error(r.status);
+        const d = await r.json();
+        if (d && d.counts) return (resultsCache = d);
+      } catch (e) { /* try the next address */ }
+    }
+    return null;
+  }
+  async function giftsLeft() {
+    const total = S.giftTotal || 100;
+    if (typeof S.giftsLeft === "number") return Math.max(0, Math.min(total, S.giftsLeft));
+    const d = await loadResultsData();
+    if (!d || typeof d.completions !== "number") return null;
+    return Math.max(0, total - d.completions);
+  }
+  function giftCardHTML() {
+    if (!S.giftClaimUrl) return "";
+    const code = isTest() ? "384-TEST-TEST-TEST-TEST" : ensureGiftCode();
+    if (!code) return "";
+    const total = S.giftTotal || 100;
+    return `<section class="gift-card" id="giftCard">
+      <div class="gift-head"><img src="${ART("rascal")}" alt="" aria-hidden="true"><div>
+        <div class="eyebrow">Your reward</div>
+        <h2>You earned a Gift Ticket!</h2>
+        <p>The first ${total} hunters to find every Character get a gift from ${esc(S.artist)}. Claim yours, and we'll email you when gifts are ready to send.</p>
+        <p class="gift-left" id="giftLeft" hidden></p>
+      </div></div>
+      <div class="gift-code-box">
+        <small>Your claim code${isTest() ? " (test mode: not a real code)" : ""}</small>
+        <code id="giftCode">${esc(code)}</code>
+        <button class="btn small ghost" id="giftCopy">Copy code</button>
+      </div>
+      <div class="btn-row center" id="giftActions">
+        <a class="btn red" id="giftClaim" href="${esc(S.giftClaimUrl + (S.giftClaimCodeField && !isTest() ? (S.giftClaimUrl.includes("?") ? "&" : "?") + S.giftClaimCodeField + "=" + encodeURIComponent(code) : ""))}" target="_blank" rel="noopener">Claim your Gift Ticket</a>
+      </div>
+      <p class="muted gift-help">${S.giftClaimCodeField ? "Your code fills in on the form automatically. " : "Paste your code into the form's first question. "}Keep it somewhere safe: it's your ticket. One per person; we check every code.</p>
+    </section>`;
+  }
+  function wireGiftCard() {
+    const card = document.getElementById("giftCard"); if (!card) return;
+    const code = document.getElementById("giftCode").textContent;
+    const copy = async (quiet) => {
+      try { await navigator.clipboard.writeText(code); if (!quiet) toast("Code copied!"); return true; }
+      catch (e) { if (!quiet) toast("Press and hold the code to copy it"); return false; }
+    };
+    document.getElementById("giftCopy").onclick = () => copy(false);
+    document.getElementById("giftClaim").addEventListener("click", () => {
+      copy(true).then(ok => ok && !S.giftClaimCodeField && toast("Code copied: paste it into the form"));
+      track("gift_claim_click", isTest() ? {} : { claim_code: code });
+    });
+    giftsLeft().then(left => {
+      const total = S.giftTotal || 100, el = document.getElementById("giftLeft"); if (!el || left == null) return;
+      el.hidden = false;
+      if (left > 0) { el.innerHTML = `<b>${left} of ${total}</b> Gift Tickets left`; return; }
+      el.innerHTML = `<b>All ${total} Gift Tickets have been claimed.</b> You're still one of the few who found every Character! Keep your code: if any tickets free up, we'll share it on @demit.`;
+      const a = document.getElementById("giftActions"); if (a) a.remove();
+      card.classList.add("gone");
+    });
+  }
+
   /* ---------------- Secret ---------------- */
   function pageSecret() {
     const n = foundCount();
@@ -1305,6 +1390,7 @@
     app.innerHTML = `<section class="secret">
       <div class="eyebrow">All ${TOTAL} found</div>
       <h1>You found every character</h1>
+      ${giftCardHTML()}
       <div class="finale">
         <div class="finale-art" aria-hidden="true">${["rebel", "flora", "sol", "rascal", "ash"].map(id => `<img src="${ART(id)}" alt="">`).join("")}</div>
         <h2>Everyone, together</h2>
@@ -1321,7 +1407,9 @@
         ${artistLinks()}
       </article>` : (!v ? `<div class="video"><div class="ph"><div><h3>A message from ${esc(S.artist)} is on its way ✦</h3><p>Check back soon.</p></div></div></div>` : "")}
       <div class="btn-row center"><a class="btn" href="#/results">See who SF is</a><a class="btn ghost" href="#/characters">All characters</a></div>
+      ${S.contactFormUrl ? `<p class="center muted" style="margin-top:18px">Want to hear what ${esc(S.artist)} makes next? <a href="${esc(S.contactFormUrl)}" target="_blank" rel="noopener">Stay in touch</a></p>` : ""}
     </section>`;
+    wireGiftCard();
     confetti();
     track("secret_video_view", {});
   }
@@ -1339,6 +1427,9 @@
       <h3>The hunt and AR: please be safe</h3>
       <p>Taking part in the character hunt is voluntary and at your own risk. Stay aware of your surroundings, follow traffic laws and posted rules, keep to public sidewalks and paths, respect private property, and never use your phone in the street or while driving. Hunt locations are public places we don't own or control; their access, hours and conditions may change, and spots may be moved or removed at any time. GPS accuracy varies, and AR features may not work on every device or browser. Parents and guardians should supervise children.</p>
 
+      ${S.giftClaimUrl ? `<h3>Gift Tickets</h3>
+      <p>People who find all ${TOTAL} characters can claim a Gift Ticket with the claim code shown on the site. Gifts go to the first ${S.giftTotal || 100} valid claims, in the order received, while supplies last. One per person. No purchase necessary. We check every claim and may decline codes that are duplicated, altered or appear not to come from a real hunt; our decision is final. The "Gift Tickets left" count is approximate. Gifts, timing and this offer may change or end at any time. Gift Tickets have no cash value and can't be transferred or sold.</p>` : ""}
+
       <h3>No guarantees</h3>
       <p>This site and everything on it are provided "as is" and "as available," without warranties of any kind, express or implied. We don't guarantee that the site will be available, uninterrupted, accurate or error-free, or that any feature (including saved progress, unlocks, rewards or results) will work as described. Content and features may change or end at any time without notice.</p>
 
@@ -1353,11 +1444,11 @@
 
       <h3 id="privacy">Privacy</h3>
       <ul>
-        ${S.contactFormUrl
-          ? `<li><b>Contact details only if you choose to share them.</b> The site itself doesn't collect your name or email. If you sign up through our "Stay in touch" form (Microsoft Forms), we receive what you enter there and use it only for the purposes you check on the form.</li>`
+        ${S.contactFormUrl || S.giftClaimUrl
+          ? `<li><b>Contact details only if you choose to share them.</b> The site itself doesn't collect your name or email.${S.contactFormUrl ? ` If you sign up through our "Stay in touch" form, we receive what you enter there and use it only for the updates you check on the form.` : ""}${S.giftClaimUrl ? ` If you claim a Gift Ticket, we use what you enter on the claim form only to check your claim and arrange your gift; if we need a mailing address, we'll ask for it then.` : ""} Both forms are run on Microsoft Forms.</li>`
           : `<li><b>We don't ask for or collect your name, email or contact details.</b></li>`}
         <li><b>Your location stays on your phone.</b> It's used only in your browser to unlock nearby characters and is never sent to us.</li>
-        <li><b>Your quiz result, hunt progress and mural finds are saved only in your browser</b> on your device. Clearing your browser data deletes them.</li>
+        <li><b>Your quiz result, hunt progress and mural finds are saved only in your browser</b> on your device. Clearing your browser data deletes them.${S.giftClaimUrl ? ` If you find every character, your Gift Ticket claim code (which records when your hunt started and how long it took, not where you were) is saved there too and counted anonymously in our usage statistics.` : ""}</li>
         <li><b>Anonymous usage statistics.</b> We use Google Analytics, which sets cookies, to count visits and actions such as quiz results, characters and mural objects found, shares and AR views. Advertising features are turned off. You can block analytics cookies in your browser settings or with Google's <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">opt-out add-on</a>.</li>
         <li><b>Maps.</b> Mapbox provides the hunt map and receives standard technical information (such as your IP address and device type) needed to load it.</li>
       </ul>

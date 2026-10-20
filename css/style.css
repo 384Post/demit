@@ -479,3 +479,18 @@ html, body { overflow-x: hidden; }
 .pack-icons { flex: 0 0 132px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .pack-icons img { width: 100%; aspect-ratio: 1; object-fit: contain; }
 @media (max-width: 520px) { .pack-card { flex-direction: column; text-align: center; } .pack-icons { flex-basis: auto; width: 170px; } }
+
+/* Gift Ticket (reward for finding all 13) */
+.gift-card { margin: 18px auto 26px; max-width: 640px; text-align: left; padding: 20px; border: var(--line); border-radius: 20px; background: #fff; box-shadow: var(--shadow);
+  background-image: radial-gradient(circle at 0 50%, var(--paper) 13px, transparent 14px), radial-gradient(circle at 100% 50%, var(--paper) 13px, transparent 14px); }
+.gift-head { display: flex; gap: 14px; align-items: flex-start; }
+.gift-head img { width: 72px; flex: 0 0 72px; }
+.gift-head h2 { margin: .1em 0 .3em; }
+.gift-head p { margin: 0 0 8px; }
+.gift-left { font-size: 15px; }
+.gift-code-box { margin: 14px 0; padding: 14px; border: 2px dashed var(--ink); border-radius: 14px; text-align: center; background: var(--paper); }
+.gift-code-box small { display: block; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 12px; color: var(--ink-soft); }
+.gift-code-box code { display: block; margin: 6px 0 10px; font: 700 clamp(14px, 4.4vw, 26px)/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; user-select: all; -webkit-user-select: all; white-space: nowrap; }
+.gift-help { font-size: 14px; text-align: center; margin: 10px 0 0; }
+.gift-card.gone .gift-code-box { opacity: .7; }
+@media (max-width: 520px) { .gift-head img { width: 54px; flex-basis: 54px; } }

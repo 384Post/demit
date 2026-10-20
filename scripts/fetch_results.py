@@ -54,15 +54,38 @@ def main():
         if cid in counts:
             counts[cid] = int(row.metric_values[0].value)
 
+    # How many people finished the hunt (drives the "Gift Tickets left" counter).
+    # Test mode never sends analytics, so this only counts real finishes.
+    done = client.run_report(RunReportRequest(
+        property=f"properties/{prop}",
+        metrics=[Metric(name="eventCount")],
+        date_ranges=[DateRange(start_date=start, end_date="today")],
+        dimension_filter=FilterExpression(filter=Filter(
+            field_name="eventName",
+            string_filter=Filter.StringFilter(value="hunt_complete"))),
+    ))
+    completions = int(done.rows[0].metric_values[0].value) if done.rows else 0
+
+    # Only rewrite the file when a number changed, so the site isn't republished every hour.
+    try:
+        with open(OUT) as f:
+            old = json.load(f)
+        if old.get("counts") == counts and old.get("completions") == completions:
+            print("No change", counts, completions)
+            return 0
+    except Exception:
+        pass
+
     data = {
         "source": "google-analytics",
         "updated": datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat(),
         "counts": counts,
+        "completions": completions,
     }
     with open(OUT, "w") as f:
         json.dump(data, f, indent=2)
         f.write("\n")
-    print("Wrote", OUT, counts)
+    print("Wrote", OUT, counts, "completions:", completions)
     return 0
 
 

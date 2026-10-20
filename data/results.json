@@ -1,19 +1,20 @@
 {
-  "source": "google-analytics",
-  "updated": "2026-10-20T04:54:22+00:00",
+  "source": "none",
+  "updated": null,
+  "note": "Real counts from Google Analytics appear here once the GitHub Action runs. The on-screen starting seed lives in data/config.js (resultsSeed).",
   "counts": {
-    "sol": 1,
-    "rebel": 1,
-    "captain": 1,
+    "sol": 0,
+    "rebel": 0,
+    "captain": 0,
     "sequoia": 0,
-    "rascal": 1,
-    "ocean": 1,
-    "atlas": 4,
-    "compass": 2,
-    "flora": 2,
-    "lorey": 3,
-    "pixie": 1,
-    "flow": 4,
-    "ash": 2
+    "rascal": 0,
+    "ocean": 0,
+    "atlas": 0,
+    "compass": 0,
+    "flora": 0,
+    "lorey": 0,
+    "pixie": 0,
+    "flow": 0,
+    "ash": 0
   }
 }

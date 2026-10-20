@@ -81,7 +81,18 @@ window.CONFIG = {
     iconPackUrl: "assets/downloads/demit-omphroy-icon-pack.zip",
     // ---- "Stay in touch" sign-up (Microsoft Forms) ----
     // Paste the form's share link here. Leave empty to hide the "Stay in touch" links.
-    contactFormUrl: "",
+    contactFormUrl: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=0OlZAaAJ306WuqPe6jY8KLkod2voSL9OnNT039ADIHZUQ1I1NUpMSENWVVRPTjQ2NzFJSVNWWlNWVS4u",
+
+    // ---- Gift Tickets: reward for finding all 13 characters ----
+    // Finishers get a claim code and a button to this form. Leave "" to hide the whole Gift Ticket card.
+    giftClaimUrl: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=0OlZAaAJ306WuqPe6jY8KLkod2voSL9OnNT039ADIHZUQldaVDVBUVpFUUZaTEZBQjExUFBBQlU0RC4u",
+    // The form's "Claim code" question id, from Microsoft Forms' pre-filled link. The site fills each
+    // person's code in for them. Leave "" if the form changes; people can still paste the code.
+    giftClaimCodeField: "r6458d1028c1b48269cc21e208d4987fe",
+    giftTotal: 100,
+    // The "Gift Tickets left" counter updates itself hourly from Google Analytics (finishers so far).
+    // To set it by hand instead, put a number here, e.g. giftsLeft: 42. Put 0 when all are claimed.
+    giftsLeft: null,
     // Where the results page reads popularity counts from. The GitHub Action in
     // .github/workflows refreshes data/results.json from Google Analytics hourly.
     // The first address reads it straight from the repo (updates within minutes);
@@ -159,7 +170,7 @@ window.CONFIG = {
       recharge: ["Listening to music", "Dancing", "A nice cup of coffee"],
       challenge: "Show off your best dance move with Sunny!",
       pairings: ["ash", "ocean"],
-      spot: { name: "Fisherman's Wharf", lat: 37.808, lng: -122.4157, bonus: false, giantFeet: 25 }
+      spot: { name: "Fisherman's Wharf · Pier 39", lat: 37.809734, lng: -122.409246, bonus: false, giantFeet: 25 }
     },
     {
       id: "rebel", number: 2, name: "Rebel", archetype: "The Explorer",
@@ -195,7 +206,7 @@ window.CONFIG = {
       recharge: ["Slow your day down", "Go to a museum", "Browse vintage items"],
       challenge: "Build anything and take a photo next to it with you and Timber!",
       pairings: ["captain", "sol"],
-      spot: { name: "Haight & Ashbury", lat: 37.76997, lng: -122.44687, bonus: false, giantFeet: 15 }
+      spot: { name: "Haight & Ashbury", lat: 37.770272, lng: -122.446823, bonus: false, giantFeet: 15 }
     },
     {
       id: "rascal", number: 5, name: "Rascal", archetype: "The Dreamer",
@@ -219,7 +230,7 @@ window.CONFIG = {
       recharge: ["Self-care day", "Yoga", "Calming cup of tea"],
       challenge: "Take a photo with your shields next to Valor!",
       pairings: ["rascal", "sol"],
-      spot: { name: "Legion of Honor", lat: 37.7845, lng: -122.5008, bonus: true, giantFeet: 25 }
+      spot: { name: "Palace of Fine Arts", lat: 37.80294, lng: -122.44844, bonus: false, giantFeet: 25 }
     },
     {
       id: "atlas", number: 7, name: "Atlas", archetype: "The Thinker",
@@ -231,7 +242,7 @@ window.CONFIG = {
       recharge: ["Spontaneity", "Singing in the shower", "Watch something that makes you laugh"],
       challenge: "Do your best thinking pose and think with Atlas!",
       pairings: ["rascal", "sol"],
-      spot: { name: "UCSF Parnassus", lat: 37.7631, lng: -122.4583, bonus: false, giantFeet: 20 }
+      spot: { name: "Legion of Honor", lat: 37.785189, lng: -122.499879, bonus: true, giantFeet: 20 }
     },
     {
       id: "compass", number: 8, name: "Abacus", archetype: "The Architect",
@@ -255,7 +266,7 @@ window.CONFIG = {
       recharge: ["Finish a to-do list", "Meditation", "Dance in the rain"],
       challenge: "Grab a flower and take a photo together with Fleur the Gardener!",
       pairings: ["captain", "compass"],
-      spot: { name: "San Francisco Zoo", lat: 37.7325, lng: -122.503, bonus: true, giantFeet: 25 }
+      spot: { name: "San Francisco Zoo · entrance", lat: 37.735365, lng: -122.505409, bonus: true, giantFeet: 25 }
     },
     {
       id: "lorey", number: 10, name: "Poet", archetype: "The Storyteller",
@@ -267,7 +278,7 @@ window.CONFIG = {
       recharge: ["Ask someone about their day", "Read a book", "Write a short story"],
       challenge: "Take a photo with your favorite book together with Poet!",
       pairings: ["atlas", "sol"],
-      spot: { name: "Dolores Park", lat: 37.7596, lng: -122.4269, bonus: false, giantFeet: 30 }
+      spot: { name: "Dolores Park", lat: 37.759913, lng: -122.426088, bonus: false, giantFeet: 30 }
     },
     {
       id: "pixie", number: 11, name: "Willow", archetype: "The Psychic",
@@ -279,7 +290,7 @@ window.CONFIG = {
       recharge: ["Social interactions", "Nature", "Walking with a friend"],
       challenge: "Light a candle with Willow, and capture a photo together!",
       pairings: ["ocean", "atlas"],
-      spot: { name: "Cole Valley", lat: 37.7658, lng: -122.4499, bonus: false, giantFeet: 15 }
+      spot: { name: "Cole Valley", lat: 37.765845, lng: -122.449587, bonus: false, giantFeet: 15 }
     },
     {
       id: "flow", number: 12, name: "Fog", archetype: "The Weightless",
@@ -291,7 +302,7 @@ window.CONFIG = {
       recharge: ["Dinner with family", "Take a class", "Go on a vacation"],
       challenge: "Do your best flexing pose and stretch those limbs! Take a photo with Fog and flow it out!",
       pairings: ["compass", "sol"],
-      spot: { name: "Bay Bridge · Embarcadero", lat: 37.7883, lng: -122.3882, bonus: false, giantFeet: 30 }
+      spot: { name: "Rincon Park · Embarcadero", lat: 37.791504, lng: -122.390221, bonus: false, giantFeet: 30 }
     },
     {
       id: "ash", number: 13, name: "Mangrove", archetype: "The Guru",
