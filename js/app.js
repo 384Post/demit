@@ -200,6 +200,12 @@
       ${d ? `<svg class="el-shape" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="${d}"/></svg>` : ""}
       <img src="${ART(c.id)}" alt="${esc(c.name)}, ${esc(c.archetype)}, by ${esc(S.artist)}"></div>`;
   }
+  // Little element icons for thumbnails (Fog and Mangrove get two)
+  function elBadges(c) {
+    const els = (c.elements || [c.element]).map(e => String(e).toLowerCase()).filter(e => EL_SHAPES[e]);
+    if (!els.length) return "";
+    return `<span class="el-badges" title="${esc(c.element)}">${els.map(e => `<span class="el-badge el-${e}"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="${EL_SHAPES[e]}"/></svg></span>`).join("")}<span class="sr-only">${esc(c.element)}</span></span>`;
+  }
   const paras = t => String(t || "").split(/\n+/).filter(Boolean).map(x => `<p>${esc(x)}</p>`).join("");
   function challengeHTML(c, compact) {
     if (!c.challenge) return "";
@@ -365,7 +371,7 @@
       <div class="gallery">${chars.map(c => `
         <a class="g-item" href="#/c/${c.id}">
           <div class="pic" style="--c:${esc(c.colorHex)}"><img src="${ART(c.id)}" alt="" loading="lazy"></div>
-          <strong>${esc(c.name)}</strong><small>${esc(c.archetype)}</small>
+          <strong>${esc(c.name)}</strong><small>${esc(c.archetype)}</small>${elBadges(c)}
           ${r === c.id ? `<div><span class="badge mine">You</span></div>` : isFound(c.id) ? `<div><span class="badge found">Found</span></div>` : ""}
         </a>`).join("")}</div>
     </section>`;
