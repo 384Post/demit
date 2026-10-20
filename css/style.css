@@ -82,7 +82,7 @@ p { margin: 0 0 1em; }
 .hero { padding: 36px 0 12px; text-align: center; }
 .hero h1 { max-width: 12ch; margin: 0 auto .3em; }
 .hero h1 em { font-style: normal; color: var(--red); }
-.hero p { max-width: 44ch; margin: 0 auto 24px; font-size: 19px; }
+.hero p { max-width: 50ch; margin: 0 auto 24px; font-size: 19px; }
 .parade { position: relative; height: clamp(220px, 42vw, 360px); margin: 8px auto 28px; max-width: 900px; }
 .parade img { position: absolute; bottom: 0; height: var(--h); left: var(--x); transform: translateX(-50%) rotate(var(--r)); animation: bob 4s ease-in-out infinite; animation-delay: var(--d); filter: drop-shadow(2px 3px 0 rgba(0,0,0,.12)); }
 @keyframes bob { 50% { transform: translateX(-50%) rotate(var(--r)) translateY(-8px); } }
@@ -506,3 +506,10 @@ html, body { overflow-x: hidden; }
 .g-item > .el-badges { position: static; justify-content: center; gap: 4px; margin-top: 6px; }
 .g-item > .el-badges .el-badge { width: 24px; height: 24px; border-width: 1.5px; box-shadow: none; }
 .g-item > .el-badges .el-badge svg { width: 14px; height: 14px; }
+
+/* Breathing room around buttons */
+.btn { margin-block: 6px; }
+.btn-row { margin-block: 22px 18px; }
+.btn-row .btn { margin-block: 0; }
+.btn + br + span { display: inline-block; margin-top: 12px; }
+.foot-artist { margin-bottom: 18px; }
