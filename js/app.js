@@ -268,6 +268,7 @@
         </div>
         ${you ? challengeHTML(c) : ""}
         ${pairingsHTML(c)}
+        <div class="booth-cta"><a class="btn blue" href="#/booth/${c.id}">📸 Take a selfie with ${esc(c.name)}</a></div>
         ${muralHTML(c)}
         ${spotHTML(c)}
         ${you ? `<div class="btn-row">
@@ -1304,6 +1305,151 @@
     }, 200);
   });
 
+  /* ---------------- Photo booth ----------------
+     Front camera + Demit's flowers parading around you + a character beside you.
+     Everything happens on the phone: the camera image is never uploaded anywhere. */
+  let booth = null;
+  function cleanupBooth() {
+    if (!booth) return;
+    cancelAnimationFrame(booth.raf);
+    if (booth.stream) booth.stream.getTracks().forEach(t => t.stop());
+    booth = null;
+  }
+  async function pageBooth(id) {
+    cleanupBooth();
+    const pick = byId[id] ? id : (myResult() || "rascal");
+    app.innerHTML = `<section class="booth">
+      <div class="eyebrow">Photo booth</div>
+      <h2>Take a selfie with the Characters</h2>
+      <div class="booth-stage" id="boothStage">
+        <canvas id="boothCanvas" aria-label="Camera preview"></canvas>
+        <div class="booth-msg" id="boothMsg"><p>Allow camera access to start.</p></div>
+        <button class="booth-shutter" id="boothSnap" aria-label="Take photo" disabled></button>
+        <button class="booth-flip" id="boothFlip" aria-label="Switch camera">⟲</button>
+      </div>
+      <div class="booth-picks" id="boothPicks" role="radiogroup" aria-label="Choose a character">
+        ${chars.map(c => `<button class="booth-pick${c.id === pick ? " on" : ""}" data-id="${c.id}" role="radio" aria-checked="${c.id === pick}" style="--c:${esc(c.colorHex)}"><img src="${ART(c.id)}" alt="${esc(c.name)}"></button>`).join("")}
+      </div>
+      <p class="muted center" style="font-size:14px">Your camera stays on your phone: nothing is uploaded. Tag @demit and #384Post if you share!</p>
+    </section>`;
+    const canvas = document.getElementById("boothCanvas"), ctx = canvas.getContext("2d");
+    const msg = document.getElementById("boothMsg");
+    const st = booth = { facing: "user", charId: pick, raf: 0, stream: null, video: document.createElement("video"), imgs: {}, floaters: [] };
+    st.video.playsInline = true; st.video.muted = true; st.video.setAttribute("playsinline", "");
+
+    // artwork
+    const flower = await loadImg("assets/brand/flower.svg");
+    async function charImg(cid) { if (!st.imgs[cid]) st.imgs[cid] = await loadImg(ART_PNG(cid)).catch(() => loadImg(ART(cid))); return st.imgs[cid]; }
+    await charImg(st.charId);
+    if (booth !== st) return;
+    const all = Array.from({ length: 11 }, () => ({ img: flower, kind: "flower" })); // just Demit's flowers
+    // they parade slowly around the edge of the frame (up the left, across the top, down the right),
+    // leaving the middle clear for your face and the bottom-right for the character
+    const PATH = [[.09, .80], [.09, .09], [.91, .09], [.91, .44]];
+    const segs = PATH.slice(1).map((pt, i) => Math.hypot(pt[0] - PATH[i][0], (pt[1] - PATH[i][1]) * 1.33));
+    const plen = segs.reduce((a, b) => a + b, 0);
+    st.along = d => { d = ((d % (2 * plen)) + 2 * plen) % (2 * plen); if (d > plen) d = 2 * plen - d;
+      for (let i = 0; i < segs.length; i++) { if (d <= segs[i]) { const k = d / segs[i]; return [PATH[i][0] + (PATH[i + 1][0] - PATH[i][0]) * k, PATH[i][1] + (PATH[i + 1][1] - PATH[i][1]) * k]; } d -= segs[i]; }
+      return PATH[PATH.length - 1]; };
+    st.floaters = all.map((f, i) => ({ ...f, d: (i + .5) * plen / all.length, r: Math.random() * 6.28, vr: (Math.random() - .5) * .01,
+      s: [.13, .09, .11, .08, .12][i % 5], ph: Math.random() * 6.28 }));
+
+    async function start() {
+      if (st.stream) st.stream.getTracks().forEach(t => t.stop());
+      try {
+        st.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: st.facing, width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false });
+        st.video.srcObject = st.stream; await st.video.play();
+        msg.hidden = true; document.getElementById("boothSnap").disabled = false;
+      } catch (e) {
+        msg.hidden = false;
+        msg.innerHTML = `<p><b>We couldn't open your camera.</b><br>Check that this site is allowed to use the camera in your browser settings, then reload. On iPhone, use Safari.</p>`;
+      }
+    }
+
+    function draw(target, w, h, live) {
+      const g = target.getContext("2d");
+      g.fillStyle = "#FBF7EA"; g.fillRect(0, 0, w, h);
+      const v = st.video;
+      if (v.videoWidth) { // cover-crop, mirrored for the selfie camera
+        const sc = Math.max(w / v.videoWidth, h / v.videoHeight), vw = v.videoWidth * sc, vh = v.videoHeight * sc;
+        g.save();
+        if (st.facing === "user") { g.translate(w, 0); g.scale(-1, 1); }
+        g.drawImage(v, (w - vw) / 2, (h - vh) / 2, vw, vh); g.restore();
+      }
+      const t = performance.now() / 1000, u = w / 100;
+      // floating objects on little white stickers, flowers bare
+      st.floaters.forEach(f => {
+        const [px, py] = st.along(f.d + t * .025);
+        if (live) f.r += f.vr;
+        const size = f.s * w, cx = px * w + Math.cos(t * 1.1 + f.ph) * u * .8, cy = py * h + Math.sin(t * 1.3 + f.ph) * u * 1.2;
+        g.save(); g.translate(cx, cy); g.rotate(Math.sin(f.r) * .35);
+        if (f.kind === "obj") {
+          g.beginPath(); g.arc(0, 0, size * .62, 0, 6.283); g.fillStyle = "#fff"; g.fill();
+          g.lineWidth = Math.max(2, u * .45); g.strokeStyle = "#1d1b16"; g.stroke();
+          const ar = f.img.naturalWidth / f.img.naturalHeight || 1, iw = ar >= 1 ? size * .78 : size * .78 * ar, ih = ar >= 1 ? size * .78 / ar : size * .78;
+          g.drawImage(f.img, -iw / 2, -ih / 2, iw, ih);
+        } else {
+          g.rotate(t * .4 + f.ph); g.drawImage(f.img, -size / 2, -size / 2 * .91, size, size * .91);
+        }
+        g.restore();
+      });
+      // the character, standing in the bottom corner
+      const ci = st.imgs[st.charId];
+      if (ci) {
+        const ch = h * .5, cw = ch * (ci.naturalWidth / ci.naturalHeight || .7);
+        g.drawImage(ci, w - cw - u * 2, h - ch - u * 9 + Math.sin(t * 1.6) * u * .6, cw, ch);
+      }
+      // banner
+      const bh = u * 8;
+      g.fillStyle = "#FBF7EA"; g.fillRect(0, h - bh, w, bh);
+      g.fillStyle = "#1d1b16"; g.fillRect(0, h - bh, w, Math.max(2, u * .5));
+      g.font = `800 ${u * 3.3}px Inter, system-ui, sans-serif`; g.textBaseline = "middle"; g.textAlign = "left";
+      g.fillText("Characters of San Francisco", u * 3, h - bh / 2);
+      g.font = `600 ${u * 2.6}px Inter, system-ui, sans-serif`; g.textAlign = "right"; g.fillStyle = "#4a463c";
+      g.fillText("384 Post · @demit", w - u * 3, h - bh / 2);
+    }
+
+    function size() {
+      const box = document.getElementById("boothStage"); if (!box) return;
+      const w = box.clientWidth, h = Math.round(w * 4 / 3), dpr = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = w * dpr; canvas.height = h * dpr; canvas.style.height = h + "px";
+    }
+    size(); window.addEventListener("resize", size);
+    const loop = () => { if (booth !== st) return; draw(canvas, canvas.width, canvas.height, true); st.raf = requestAnimationFrame(loop); };
+    loop();
+    start();
+
+    document.getElementById("boothPicks").addEventListener("click", async e => {
+      const b = e.target.closest(".booth-pick"); if (!b) return;
+      app.querySelectorAll(".booth-pick").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); });
+      await charImg(b.dataset.id); st.charId = b.dataset.id;
+    });
+    document.getElementById("boothFlip").onclick = () => { st.facing = st.facing === "user" ? "environment" : "user"; start(); };
+    document.getElementById("boothSnap").onclick = () => {
+      const out = document.createElement("canvas"); out.width = 1080; out.height = 1440;
+      draw(out, out.width, out.height, false);
+      track("booth_photo", { character: st.charId });
+      out.toBlob(blob => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob), file = new File([blob], `384post-${st.charId}.jpg`, { type: "image/jpeg" });
+        const canShare = navigator.canShare && navigator.canShare({ files: [file] });
+        openModal(`<div class="eyebrow">Nice one!</div>
+          <img class="booth-shot" src="${url}" alt="Your photo with ${esc(byId[st.charId].name)}">
+          <div class="btn-row center">
+            ${canShare ? `<button class="btn red" id="shotShare">Share</button>` : ""}
+            <a class="btn ${canShare ? "ghost" : "red"}" href="${url}" download="384post-${st.charId}.jpg">Save photo</a>
+            <button class="btn ghost" data-close>Retake</button>
+          </div>
+          <p class="muted" style="font-size:14px">Posting it? Tag @demit and #384Post.</p>`);
+        const sb = document.getElementById("shotShare");
+        if (sb) sb.onclick = async () => {
+          try { await navigator.share({ files: [file], text: "Me and " + byId[st.charId].name + " from the Characters of San Francisco by @demit #384Post" }); track("share_result", { character: st.charId, platform: "booth" }); }
+          catch (e) { /* cancelled */ }
+        };
+      }, "image/jpeg", .9);
+    };
+  }
+
   /* ---------------- Gift Tickets ---------------- */
   // A claim code is made once, when all 13 are found for real (never in test mode), and kept on
   // this device (and in save links). It records the hunt's timing; see js/giftcode.js.
@@ -1421,7 +1567,7 @@
   }
 
   function pageTerms() {
-    const who = `CBRE, Inc., The Cara Group, Lincoln Property Company, ${esc(S.artist)}, and each of their parents, affiliates, officers, directors, employees, agents, contractors and partners (together, the "Released Parties")`;
+    const who = `CBRE, Inc., the owner of 384 Post Street, ${esc(S.artist)}, and each of their parents, affiliates, officers, directors, employees, agents, contractors and partners (together, the "Released Parties")`;
     app.innerHTML = `<section class="legal">
       <div class="eyebrow">Last updated October 2026</div>
       <h2>Terms of use &amp; privacy</h2>
@@ -1460,6 +1606,7 @@
         ${S.contactFormUrl || S.giftClaimUrl
           ? `<li><b>Contact details only if you choose to share them.</b> The site itself doesn't collect your name or email.${S.contactFormUrl ? ` If you sign up through our "Stay in touch" form, we receive what you enter there and use it only for the updates you check on the form. You can ask to stop receiving updates at any time.` : ""}${S.giftClaimUrl ? ` If you claim a Gift Ticket, we use what you enter on the claim form only to review your claim and, if gifts are offered, to contact you and arrange your gift; if we need a mailing address, we'll ask for it then.` : ""} Both forms are run on Microsoft Forms. Please don't submit a form if you are under 13.</li>`
           : `<li><b>We don't ask for or collect your name, email or contact details.</b></li>`}
+        <li><b>Photo booth: your camera stays on your phone.</b> The camera image is used only in your browser to make your photo. Photos are created on your device and are never uploaded to us; they go wherever you choose to save or share them.</li>
         <li><b>Your location stays on your phone.</b> It's used only in your browser to unlock nearby characters and is never sent to us.</li>
         <li><b>Your quiz result, hunt progress and mural finds are saved only in your browser</b> on your device. Clearing your browser data deletes them, and we can't recover them.${S.giftClaimUrl ? ` If you find every character, your Gift Ticket claim code (which records when your hunt started and how long it took, not where you were) is saved there too and counted anonymously in our usage statistics.` : ""}</li>
         <li><b>Anonymous usage statistics.</b> We use Google Analytics, which sets cookies, to count visits and actions such as quiz results, characters and mural objects found, shares and AR views. Advertising features are turned off. You can block analytics cookies in your browser settings or with Google's <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">opt-out add-on</a>.</li>
@@ -1492,12 +1639,13 @@
     [/^everyone(?:\/(tabletop))?$/, pageEveryone],
     [/^results$/, pageResults],
     [/^secret$/, pageSecret],
+    [/^booth(?:\/(\w+))?$/, pageBooth],
     [/^restore\/([\w-]+)$/, pageRestore],
     [/^test$/, pageToggleTest],
     [/^terms(?:#privacy)?$/, pageTerms]
   ];
   function route() {
-    cleanupHunt();
+    cleanupHunt(); cleanupBooth();
     if (!modalEl.hidden) { modalQueue.length = 0; closeModal(); }
     document.getElementById("testBanner").hidden = !isTest();
     const path = location.hash.replace(/^#\/?/, "");
