@@ -1569,7 +1569,7 @@
   }
 
   function pageTerms() {
-    const who = `CBRE, Inc.; The Cara Group and Lincoln Property Company, the owners of 384 Post Street; ${esc(S.artist)}; and each of their parents, affiliates, officers, directors, employees, agents, contractors and partners`;
+    const who = `CBRE, Inc.; The Cara Group and Lincoln Property Company; ${esc(S.artist)}; and each of their parents, affiliates, officers, directors, employees, agents, contractors and partners`;
     app.innerHTML = `<section class="legal">
       <div class="eyebrow">Last updated October 2026</div>
       <h2>Terms of use &amp; privacy</h2>
