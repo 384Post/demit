@@ -524,9 +524,10 @@
   }
 
   /* ---------------- Map ----------------
-     Uses Mapbox when settings.mapboxToken is set; otherwise basic OpenStreetMap tiles (emergency/testing only).
-     One map is created per visit and reused when people come back to the Hunt page,
-     so each visitor counts as a single Mapbox "map load" (the thing Mapbox bills for). */
+     Default: a grey "Positron" map from OpenFreeMap (free, no account, no key, no usage limits),
+     drawn with MapLibre (vendor/maplibre). Mapbox is only used if settings.mapProvider is "mapbox"
+     and a mapboxToken is set. Basic OpenStreetMap tiles are the last-resort fallback.
+     One map is created per visit and reused when people come back to the Hunt page. */
   const MAPBOX_VERSION = "3.32.0";
   const mapHost = document.createElement("div");
   mapHost.className = "map-host";
@@ -544,11 +545,22 @@
       document.head.appendChild(js);
     });
   }
+  function loadMapLibre() {
+    if (window.maplibregl) return Promise.resolve(true);
+    return new Promise(res => {
+      const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "vendor/maplibre/maplibre-gl.css";
+      document.head.appendChild(css);
+      const js = document.createElement("script"); js.src = "vendor/maplibre/maplibre-gl.js";
+      js.onload = () => res(!!window.maplibregl); js.onerror = () => res(false);
+      document.head.appendChild(js);
+    });
+  }
   function getMapView() {
     if (mapView) return Promise.resolve(mapView);
     if (!mapViewPromise) {
-      mapViewPromise = (S.mapboxToken ? loadMapbox() : Promise.resolve(false)).then(ok => {
-        try { mapView = ok ? makeMapbox() : makeLeaflet(); }
+      const useMapbox = S.mapProvider === "mapbox" && S.mapboxToken;
+      mapViewPromise = (useMapbox ? loadMapbox() : loadMapLibre()).then(ok => {
+        try { mapView = !ok ? makeLeaflet() : useMapbox ? makeGL(mapboxgl, true) : makeGL(maplibregl, false); }
         catch (e) { console.warn("map", e); mapView = window.L ? makeLeaflet() : null; }
         return mapView;
       });
@@ -582,24 +594,26 @@
       resize() { m.invalidateSize(); }
     };
   }
-  function makeMapbox() {
-    mapboxgl.accessToken = S.mapboxToken;
-    const m = new mapboxgl.Map({
-      container: mapHost, style: S.mapboxStyle || "mapbox://styles/mapbox/light-v11",
-      center: [-122.405, 37.792], zoom: 13, cooperativeGestures: true
+  // Same code drives MapLibre (default) and Mapbox: their APIs match for everything used here.
+  function makeGL(gl, isMapbox) {
+    if (isMapbox) gl.accessToken = S.mapboxToken;
+    const m = new gl.Map({
+      container: mapHost,
+      style: isMapbox ? (S.mapboxStyle || "mapbox://styles/mapbox/light-v11") : (S.mapStyleUrl || "https://tiles.openfreemap.org/styles/positron"),
+      center: [-122.405, 37.792], zoom: 13, cooperativeGestures: true, attributionControl: isMapbox ? undefined : { compact: true }
     });
-    m.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-left");
+    m.addControl(new gl.NavigationControl({ showCompass: false }), "top-left");
     const markers = {}; let me = null;
-    const bounds = () => { const b = new mapboxgl.LngLatBounds(); coreSpots().forEach(c => b.extend([c.spot.lng, c.spot.lat])); return b; };
+    const bounds = () => { const b = new gl.LngLatBounds(); coreSpots().forEach(c => b.extend([c.spot.lng, c.spot.lat])); return b; };
     return {
       pins() {
         chars.forEach(c => {
           if (markers[c.id]) { markers[c.id].getElement().innerHTML = pinHTML(c); markers[c.id].getPopup().setHTML(popupHTML(c)); return; }
           const el = document.createElement("div");
           el.innerHTML = pinHTML(c); el.style.cursor = "pointer"; el.setAttribute("aria-label", c.name); el.setAttribute("role", "button");
-          markers[c.id] = new mapboxgl.Marker({ element: el })
+          markers[c.id] = new gl.Marker({ element: el })
             .setLngLat([c.spot.lng, c.spot.lat])
-            .setPopup(new mapboxgl.Popup({ offset: 28, maxWidth: "260px" }).setHTML(popupHTML(c)))
+            .setPopup(new gl.Popup({ offset: 28, maxWidth: "260px" }).setHTML(popupHTML(c)))
             .addTo(m);
         });
       },
@@ -610,7 +624,7 @@
       },
       fitCore() { m.fitBounds(bounds(), { padding: 40, duration: 0 }); },
       setMe(p) {
-        if (!me) { const el = document.createElement("div"); el.className = "me-dot"; me = new mapboxgl.Marker({ element: el }).setLngLat([p.lng, p.lat]).addTo(m); }
+        if (!me) { const el = document.createElement("div"); el.className = "me-dot"; me = new gl.Marker({ element: el }).setLngLat([p.lng, p.lat]).addTo(m); }
         else me.setLngLat([p.lng, p.lat]);
       },
       center(p) { m.jumpTo({ center: [p.lng, p.lat], zoom: 15.5 }); },
@@ -1569,7 +1583,7 @@
   }
 
   function pageTerms() {
-    const who = `CBRE, Inc.; The Cara Group and Lincoln Property Company; ${esc(S.artist)}; and each of their parents, affiliates, officers, directors, employees, agents, contractors and partners`;
+    const who = `CBRE, Inc.; The Cara Group; Lincoln Property Company; ${esc(S.artist)}; and each of their parents, affiliates, officers, directors, employees, agents, contractors and partners`;
     app.innerHTML = `<section class="legal">
       <div class="eyebrow">Last updated October 2026</div>
       <h2>Terms of use &amp; privacy</h2>
@@ -1601,7 +1615,7 @@
       <p>To the fullest extent permitted by law, you release the Released Parties from all claims, damages and liabilities arising out of or related to your use of this site, participation in the hunt or AR, or any reward. You agree to defend, indemnify and hold harmless the Released Parties from any claims, losses, costs and expenses (including reasonable attorneys' fees) arising from your use of the site, your conduct, your content or your breach of these terms. If you are a California resident, you waive California Civil Code Section 1542, which says: "A general release does not extend to claims that the creditor or releasing party does not know or suspect to exist in his or her favor at the time of executing the release and that, if known by him or her, would have materially affected his or her settlement with the debtor or released party," and any similar law elsewhere.</p>
 
       <h3>Other services and links</h3>
-      <p>This site uses or links to services run by others, including Mapbox (maps), Google Maps (walking directions), Google Analytics, Microsoft Forms, social networks and Ceros. We don't control them and aren't responsible for them; their own terms and privacy policies apply when you use them.</p>
+      <p>This site uses or links to services run by others, including OpenFreeMap and OpenStreetMap (maps), Google Maps (walking directions), Google Analytics, Microsoft Forms, social networks and Ceros. We don't control them and aren't responsible for them; their own terms and privacy policies apply when you use them.</p>
 
       <h3 id="privacy">Privacy</h3>
       <ul>
@@ -1612,7 +1626,7 @@
         <li><b>Your location stays on your phone.</b> It's used only in your browser to unlock nearby characters and is never sent to us.</li>
         <li><b>Your quiz result, hunt progress and mural finds are saved only in your browser</b> on your device. Clearing your browser data deletes them, and we can't recover them.${S.giftClaimUrl ? ` If you find every character, your Gift Ticket claim code (which records when your hunt started and how long it took, not where you were) is saved there too and counted anonymously in our usage statistics.` : ""}</li>
         <li><b>Anonymous usage statistics.</b> We use Google Analytics, which sets cookies, to count visits and actions such as quiz results, characters and mural objects found, shares and AR views. Advertising features are turned off. You can block analytics cookies in your browser settings or with Google's <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">opt-out add-on</a>.</li>
-        <li><b>Maps.</b> Mapbox provides the hunt map and receives standard technical information (such as your IP address and device type) needed to load it.</li>
+        <li><b>Maps.</b> The hunt map is loaded from OpenFreeMap, which receives standard technical information (such as your IP address and device type) needed to load it. Map data &copy; OpenStreetMap contributors.</li>
       </ul>
       <p>For more about how CBRE handles personal information, including your privacy rights, see the ${S.privacyPolicyUrl ? `<a href="${esc(S.privacyPolicyUrl)}" target="_blank" rel="noopener">CBRE Global Web Privacy &amp; Cookie Policy</a>` : "CBRE privacy policy"}${S.californiaPrivacyUrl ? ` and the <a href="${esc(S.californiaPrivacyUrl)}" target="_blank" rel="noopener">CBRE California Privacy Policy</a>` : ""}.</p>
 
