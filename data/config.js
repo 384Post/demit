@@ -45,7 +45,7 @@ window.CONFIG = {
     privacyPolicyUrl: "https://www.cbre.com/about-us/global-web-privacy-and-cookie-policy",
     californiaPrivacyUrl: "https://www.cbre.com/about-us/california-consumer-privacy-policy",   // ← your GitHub Pages URL (used in share text)
 
-    unlockRadiusMeters: 100,     // how close someone must be to "find" a character
+    unlockRadiusMeters: 200,     // how close someone must be to "find" a character
 
     // Secret reward once all 13 are found. Use an UNLISTED YouTube/Vimeo
     // EMBED link, e.g. "https://www.youtube.com/embed/VIDEO_ID".
@@ -70,9 +70,11 @@ window.CONFIG = {
 
     // Mapbox map (optional). Paste a URL-restricted PUBLIC token (starts with "pk.").
     // Leave empty to fall back to basic OpenStreetMap tiles (emergency/testing only).
-    mapboxToken: "pk.eyJ1IjoibGh1ZmZtYW5jYnJlIiwiYSI6ImNtdjZlN3J5ejAxa3gyeHBxN3FjejdqbHEifQ.rmqGXEF9O1lin0F_VPlLdw",
-    // Map look: any Mapbox style URL, e.g. one you design in Mapbox Studio
-    // ("mapbox://styles/your-account/your-style-id").
+    // Hunt map: a free grey map (OpenFreeMap "Positron"): no account, key, card or usage limits.
+    mapProvider: "openfreemap",
+    mapStyleUrl: "https://tiles.openfreemap.org/styles/positron",
+    // Mapbox is switched off. To use it again, set mapProvider: "mapbox" and paste a token here.
+    mapboxToken: "",
     mapboxStyle: "mapbox://styles/mapbox/light-v11",
 
     // ---- demit's links (footer + Characters page) ----
@@ -220,7 +222,7 @@ window.CONFIG = {
       recharge: ["Do a puzzle", "Work on some writing", "Exercise"],
       challenge: "Jump in the air and capture a photo of you flying with Rascal!",
       pairings: ["sequoia", "compass"],
-      spot: { name: "Golden Gate Bridge", lat: 37.8077, lng: -122.4749, bonus: true, giantFeet: 30 }
+      spot: { name: "Golden Gate Bridge · Torpedo Wharf", lat: 37.809275, lng: -122.469793, bonus: true, giantFeet: 30 }
     },
     {
       id: "ocean", number: 6, name: "Valor", archetype: "The Guardian",
