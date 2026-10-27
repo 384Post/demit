@@ -335,7 +335,7 @@ window.CONFIG = {
   quiz: [
     { q: "What brought you to San Francisco?", answers: [
       { text: "Chasing my dream!", element: "Fire", main: "sol", also: "captain" },
-      { text: "I'm here for family, to set down roots.", element: "Earth", main: "flora", also: "compass" },
+      { text: "I'm here for family, to set down roots.", element: "Earth", main: "flora", also: "sequoia" },
       { text: "I'm just in town exploring!", element: "Air", main: "flow", also: "atlas" },
       { text: "The Bay Area is my home!", element: "Water", main: "ocean", also: "ash" } ] },
 
@@ -343,7 +343,7 @@ window.CONFIG = {
       { text: "Time to wander, think, and figure it all out as it comes.", element: "Air", main: "flow", also: "rascal" },
       { text: "Building and sharing what I've learned with others.", element: "Water", main: "pixie", also: "flow" },
       { text: "Doing it my own way, by my own rules.", element: "Fire", main: "rebel", also: "captain" },
-      { text: "Finding a local café that knows my morning order.", element: "Earth", main: "sequoia", also: "compass" } ] },
+      { text: "Finding a local café that knows my morning order.", element: "Earth", main: "sequoia", also: "flora" } ] },
 
     { q: "Finish this sentence: “A special day in San Francisco is when…”", answers: [
       { text: "I'm showing someone my new favorite spot.", element: "Water", main: "ash", also: "flow" },
@@ -367,7 +367,7 @@ window.CONFIG = {
       { text: "Perspective: a greater understanding of why I was meant to be here.", element: "Fire", main: "sol", also: "rebel" },
       { text: "Career: my time here was meant to better the future generation.", element: "Air", main: "atlas", also: "rascal" },
       { text: "Calm: a slower pace, mental peace, an understanding of myself.", element: "Water", main: "ocean", also: "flow" },
-      { text: "Connection: my community of friends and family.", element: "Earth", main: "compass", also: "ash" } ] },
+      { text: "Connection: my community of friends and family.", element: "Earth", main: "compass", also: "sequoia" } ] },
 
     { q: "What does San Francisco represent to you?", answers: [
       { text: "The freedom to become whomever you desire.", element: "Water", main: "flow", also: "pixie" },
