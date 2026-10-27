@@ -345,6 +345,12 @@
     const id = scoreQuiz(quizAnswers);
     store.set("result", id);
     track("quiz_complete", { character: id });
+    // Which answer was picked for each question (anonymous), so we can see which answers are popular
+    // and keep the quiz balanced. GA custom dimension "Quiz answer" = event parameter quiz_answer.
+    quizAnswers.forEach((ai, qi) => {
+      const a = C.quiz[qi] && C.quiz[qi].answers[ai];
+      if (a) track("quiz_answer", { quiz_answer: `Q${qi + 1} · ${a.element} · ${a.text}`.slice(0, 100), character: id });
+    });
     setTimeout(() => { location.hash = "#/result/" + id; }, 1300);
   }
 
